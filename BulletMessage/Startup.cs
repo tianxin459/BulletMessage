@@ -25,7 +25,6 @@ namespace BulletMessage
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
             services.AddCors(options =>
             {
                 options.AddPolicy("SignalrCore",
@@ -33,6 +32,7 @@ namespace BulletMessage
                                     .AllowAnyHeader()
                                     .AllowAnyMethod());
             });
+            services.AddSignalR();
             services.AddSingleton<IServiceProvider, ServiceProvider>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -41,12 +41,13 @@ namespace BulletMessage
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
+            app.UseCors("SignalrCore");
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chat");
+            });
             app.UseStaticFiles();
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-            ////跨域支持
 
             //app.UseMvc();
 
@@ -58,15 +59,9 @@ namespace BulletMessage
             {
                 app.UseHsts();
             }
-
-            app.UseCors("SignalrCore");
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ChatHub>("/chat");
-            });
             app.UseWebSockets();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

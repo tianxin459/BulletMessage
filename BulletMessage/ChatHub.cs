@@ -87,7 +87,7 @@ namespace BulletMessage
         /// <param name="user"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task SendMessage2(string user, string message)
+        public async Task SendMessage(string user, string message)
         {
 
             await Clients.All.SendAsync("ReceiveMessage", Context.ConnectionId, message);
