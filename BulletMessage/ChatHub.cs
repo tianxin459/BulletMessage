@@ -8,13 +8,14 @@ namespace BulletMessage
 {
     public class ChatHub : Hub
     {
+
+        public static IHubCallerClients Hub { get; set; }
         /// <summary>
         /// 建立连接时触发
         /// </summary>
         /// <returns></returns>
         public override async Task OnConnectedAsync()
         {
-
             await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined");
         }
 
@@ -90,7 +91,8 @@ namespace BulletMessage
         public async Task SendMessage(string user, string message)
         {
 
-            await Clients.All.SendAsync("ReceiveMessage", Context.ConnectionId, message);
+            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            //await Clients.All.SendAsync("ReceiveMessage", Context.ConnectionId, message);
 
         }
     }

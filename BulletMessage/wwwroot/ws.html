@@ -15,6 +15,7 @@
         <button onclick="doDisconnect()">Disconnect</button>
     </div>
     <div class="input">
+        <input id="txtID" type="text" />
         <input id="txtMsg" type="text" />
         <button id="sendButton" onclick=" doSend()">send Message</button>
     </div>
@@ -30,7 +31,8 @@
     var output;
     var text = "test echo";
     //var url = "http://sha-etian-l2/BulletMessage/chat";
-    var url = "http://localhost/BulletMessage/chat";
+    //var url = "http://localhost/BulletMessage/chat";
+    var url = "/chat";
 
     function write(s) {
         var p = document.createElement("p");
@@ -45,42 +47,19 @@
             transport: signalR.HttpTransportType.WebSockets
         })
         .build();
-    //const connection = new signalR.HubConnectionBuilder().withUrl("/BulletMessage/chat").build();
-
-
-    // function doConnect() {
-    //     if (!socket) {
-    //         socket = new WebSocket(uri);
-    //     } else if (socket.readyState != 1) {
-    //         console.log(socket.readyState);
-    //         socket = new WebSocket(uri);
-    //     }
-    //     socket.onopen = e => {
-    //         write("opened " + uri);
-    //     };
-    //     socket.onclose = e => {
-    //         write("closed");
-    //     };
-    //     socket.onmessage = e => {
-    //         write("Received: " + e.data);
-    //     };
-    //     socket.onerror = function(e) {
-    //         write("Error: " + e.data);
-    //     };
-    // }
 
     function doDisconnect() {
         socket.close();
     }
 
     function doSend(txt) {
-
+        let id;
         var txtMsg = document.querySelector('#txtMsg');
         txt = txtMsg.value;
-
+        var txtID = document.querySelector('#txtID');
+        id = txtID.value;
         write("Sending: " + txt);
-        // socket.send(txt);
-        connection.invoke("Send", txt)
+        connection.invoke("SendMessage", id,txt)
             .catch(err => console.error(err));
         event.preventDefault();
     }
