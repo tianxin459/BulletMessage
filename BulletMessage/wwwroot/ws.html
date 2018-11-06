@@ -29,6 +29,8 @@
     var uri = "ws://" + window.location.host + "/ws";
     var output;
     var text = "test echo";
+    //var url = "http://sha-etian-l2/BulletMessage/chat";
+    var url = "http://localhost/BulletMessage/chat";
 
     function write(s) {
         var p = document.createElement("p");
@@ -37,7 +39,13 @@
         output.appendChild(p);
     }
 
-    const connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(url, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .build();
+    //const connection = new signalR.HubConnectionBuilder().withUrl("/BulletMessage/chat").build();
 
 
     // function doConnect() {
@@ -82,9 +90,20 @@
         //doConnect();
     }
 
+
+    function httpGetAsync(theUrl, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.send(null);
+    }
     //window.onload = onInit;
     $(document).ready(() => {
         onInit();
+        httpGetAsync("http://localhost/BulletMessage/api/values", (resp) => { console.log(resp); })
     })
 </script>
 <script language="javascript" type="text/javascript">

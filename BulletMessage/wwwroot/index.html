@@ -35,7 +35,7 @@
 </script>
 <script src="lib/signalr.js"></script>
 <script type="text/javascript">
-    const connection = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+    const connection = new signalR.HubConnectionBuilder().withUrl("/BulletMessage/chat").build();
     connection.on("ReceiveMessage", (user, message) => {
         const encodedMsg = user + " says " + message;
         const li = document.createElement("li");
