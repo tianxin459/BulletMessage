@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -9,7 +10,7 @@
             position: relative;
             padding-top: 1.5rem;
         }
-
+        
         label {
             position: absolute;
             top: 0;
@@ -18,46 +19,80 @@
             transform: translateY(0);
             transition: all 0.2s ease-out;
         }
-
-        input:placeholder-shown + label {
+        
+        input:placeholder-shown+label {
             opacity: 0;
             transform: translateY(1rem);
         }
-
+        
         .container {
             height: 50vh;
             border: 1px solid green;
             width: 100%;
         }
-
+        
         .message {
             height: 2vh;
         }
-
+        
         .bullet {
             position: absolute;
             text-wrap: none;
             white-space: nowrap;
+            color: #fffd5d;
+            text-shadow: black 1px 1px 1px;
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .bullet .bulletAvator {
+            height: 20px;
+            /* width: 20px; */
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .bullet .emoji {
+            height: 20px;
+            margin-right: 5px;
+        }
+        
+        .bullet p {
+            align-self: center;
+            margin: 0 auto;
+        }
+        
+        img.background {
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
+
 <body>
     <div class="message">
         <p id="msg" class="msg"></p>
     </div>
-    <div class="container"></div>
-    <div>
+    <div class="container">
+        <img class="background" src="lib/green-light.jpg"></img>
+    </div>
+    <!-- <div>
         <div class="form-group">
             <input type="text" id="dynamic-label-input" placeholder="Enter some text">
             <label for="dynamic-label-input">Enter some text</label>
         </div>
-    </div>
+    </div> -->
 </body>
+
 </html>
 <script src="lib/signalr.js"></script>
 <script type="text/javascript">
     //var url = "http://localhost/BulletMessage/chat";
-    var url = "/chat";
+    // var url = "/chat";
+    var url = "https://ellist.cn/bulletmessage/chat";
 
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -68,7 +103,8 @@
 
     connection.on("ReceiveMessage", (user, message) => {
         console.log(`${user}: ${message}`);
-        addMsg(`${user}: ${message}`);
+        // addMsg(`${user}: ${message}`);
+        addMsgWithAvator(user, message);
     });
 </script>
 <script>
@@ -79,6 +115,7 @@
     }
     let msgList = ["adsfasdf", "dasdeawer", "cccccccccccc"];
     let sl;
+
     function move(ele, speed, i) {
         var lp = ele.css('left');
         lp = lp.replace('px', '');
@@ -86,20 +123,10 @@
         if (lp < -500) {
             console.log(ele.text() + ' removed');
             ele.remove();
-            let ia = messageList[i];
-            clearInterval(ia);
-            console.log(ia);
-            if (i > -1) {
-                messageList.splice(i, 1);
-            }
+            clearInterval(i);
         }
         ele.css('left', lp + 'px');
     }
-    $(document).ready(() => {
-        //addMsg('testsets');
-
-        //setInterval(() => { /*console.log('---') */}, 500);
-    })
     addMsg = (text) => {
         let p = $('<p class="bullet"></p>');
         p.text(text);
@@ -109,63 +136,55 @@
         p.css('top', top + 'px');
         p.css('left', window.innerWidth + 'px');
         $('.container').append(p);
-        let iai = messageList.length;
-        let ia = setInterval(() => { move(p, speed, iai); }, 100);
-        messageList.push(ia);
+        let ia = setInterval(() => {
+            move(p, speed, ia);
+        }, 100);
+        // messageList.push(ia);
         //console.log(p);
     }
-
-</script>
-
-<script language="javascript" type="text/javascript">
-    var socket;
-    var uri = "ws://" + window.location.host + "/ws";
-    var output;
-    var text = "test echo";
-
-    function write(s) {
-        show(s);
-    }
-
-    function doConnect() {
-        if (!socket) {
-            socket = new WebSocket(uri);
+    addMsgWithAvator = (avatorUrl, text) => {
+            if (text == undefined) return;
+            let p = $('<div class="bullet"></div>');
+            let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
+            let txt = $(`<p>${text}</p>`);
+            let prefix = '#$%'
+            if (text.indexOf(prefix) != -1) {
+                text = text.replace(prefix, '')
+                let src = ''
+                switch (text) {
+                    case 'like':
+                        src = 'static/img/like.png'
+                        break;
+                    case 'star':
+                        src = 'static/img/star.png'
+                        break;
+                    case 'clap':
+                        src = 'static/img/clapping.png'
+                        break;
+                    default:
+                        src = 'static/img/clapping.png'
+                        break;
+                }
+                let strImg = `<img class="emoji" src=" ${src}"></img>`;
+                txt = $(strImg + strImg + strImg);
+            }
+            console.log(txt);
+            p.append(img);
+            p.append(txt);
+            // p.text(text);
+            console.log(window.innerHeight);
+            let top = (Math.random() * 1000) % window.innerHeight;
+            let speed = Math.random() * 10;
+            // p.css('top', '100' + 'px');
+            // p.css('left', '100' + 'px');
+            p.css('top', top + 'px');
+            p.css('left', window.innerWidth + 'px');
+            $('.container').append(p);
+            let ia = setInterval(() => {
+                move(p, speed, ia);
+            }, 100);
         }
-        else if (socket.readyState != 1) {
-            console.log(socket.readyState);
-            socket = new WebSocket(uri);
-        }
-        show('connect');
-        socket.onopen = e => { write("opened " + uri); };
-        socket.onclose = e => { write("closed"); };
-        socket.onmessage = onMessageRecieve;
-        socket.onerror = function (e) { write("Error: " + e.data); };
-    }
-
-    function onMessageRecieve(e) {
-        write("message recieve: " + e.data);
-        addMsg(e.data);
-    }
-
-    function doDisconnect() {
-        socket.close();
-    }
-
-    function doSend(txt) {
-
-        var txtMsg = document.querySelector('#txtMsg');
-        txt = txtMsg.value;
-
-        write("Sending: " + txt);
-        socket.send(txt);
-    }
-
-    function onInit() {
-        output = document.getElementById("output");
-        doConnect();
-    }
-
-    //window.onload = onInit;
+        //window.onload = onInit;
     $(document).ready(() => {
         connection.start().catch(err => console.error(err.toString()));
     })
