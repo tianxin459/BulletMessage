@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\lib\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,5 +29,10 @@
     <None Include="wwwroot\lib\signalr.js.map" />
     <None Include="wwwroot\lib\signalr.min.js" />
     <None Include="wwwroot\lib\signalr.min.js.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\static\vedio\mov_bbb.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

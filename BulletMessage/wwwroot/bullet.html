@@ -26,7 +26,7 @@
         }
         
         .container {
-            height: 50vh;
+            height: 100vh;
             border: 1px solid green;
             width: 100%;
         }
@@ -69,6 +69,32 @@
             top: 0;
             left: 0;
         }
+
+        .masktext{
+            position:absolute;
+            top: 100px;
+        }
+        /*video{
+            width:100vw;
+            height:100vh;
+        }*/
+        .fullscreen-bg {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: -100;
+        }
+
+        .fullscreen-bg video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
@@ -78,8 +104,17 @@
     </div>
     <div class="container">
         <img class="background" src="lib/green-light.jpg"></img>
-    </div>
-    <!-- <div>
+        <!--https://www.w3schools.com/html/mov_bbb.mp4-->
+        <!--<div class="fullscreen-bg">
+            <video class="video" width="400" autoplay controls>
+                <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+            <div class="masktext bullet">
+                test test
+            </div>
+        </div>-->
+    </div>        <!-- <div>
         <div class="form-group">
             <input type="text" id="dynamic-label-input" placeholder="Enter some text">
             <label for="dynamic-label-input">Enter some text</label>

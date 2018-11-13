@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title></title>
+    <style lang="css">
+        .form-group {
+            position: relative;
+            padding-top: 1.5rem;
+        }
+        
+        label {
+            position: absolute;
+            top: 0;
+            font-size: var(--font-size-small);
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.2s ease-out;
+        }
+        
+        input:placeholder-shown+label {
+            opacity: 0;
+            transform: translateY(1rem);
+        }
+        
+        .container {
+            height: 100vh;
+            border: 1px solid green;
+            width: 100%;
+        }
+        
+        .message {
+            height: 2vh;
+        }
+        
+        .bullet {
+            position: absolute;
+            text-wrap: none;
+            white-space: nowrap;
+            color: #fffd5d;
+            text-shadow: black 1px 1px 1px;
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .bullet .bulletAvator {
+            height: 20px;
+            /* width: 20px; */
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .bullet .emoji {
+            height: 20px;
+            margin-right: 5px;
+        }
+        
+        .bullet p {
+            align-self: center;
+            margin: 0 auto;
+        }
+        
+        img.background {
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .masktext{
+            position:absolute;
+            top: 100px;
+        }
+        /*video{
+            width:100vw;
+            height:100vh;
+        }*/
+        .fullscreen-bg {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: -100;
+        }
+
+        .fullscreen-bg video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="message">
+        <p id="msg" class="msg"></p>
+    </div>
+    <div class="container">
+        <!--<img class="background" src="lib/green-light.jpg">--></img>
+        <!--https://www.w3schools.com/html/mov_bbb.mp4-->
+        <div class="fullscreen-bg">
+            <video class="video" width="400" autoplay controls>
+                <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+            <div class="masktext bullet">
+                test test
+            </div>
+        </div>
+    </div>        <!-- <div>
+        <div class="form-group">
+            <input type="text" id="dynamic-label-input" placeholder="Enter some text">
+            <label for="dynamic-label-input">Enter some text</label>
+        </div>
+    </div> -->
+</body>
+
+</html>
+<script src="lib/signalr.js"></script>
+<script type="text/javascript">
+    var url = "https://ellist.cn/bulletmessage/chat";
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(url, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .build();
+
+    connection.on("ReceiveMessage", (user, message) => {
+        console.log(`${user}: ${message}`);
+        addMsgWithAvator(user, message);
+    });
+</script>
+<script>
+    function show(msg) {
+        $('#msg').text(msg);
+    }
+    let msgList = ["adsfasdf", "dasdeawer", "cccccccccccc"];
+    let sl;
+
+    function move(ele, speed, i) {
+        var lp = ele.css('left');
+        lp = lp.replace('px', '');
+        lp = lp - speed;
+        if (lp < -500) {
+            console.log(ele.text() + ' removed');
+            ele.remove();
+            clearInterval(i);
+        }
+        ele.css('left', lp + 'px');
+    }
+    addMsg = (text) => {
+        let p = $('<p class="bullet"></p>');
+        p.text(text);
+        console.log(window.innerHeight);
+        let top = (Math.random() * 1000) % window.innerHeight;
+        let speed = Math.random() * 10;
+        p.css('top', top + 'px');
+        p.css('left', window.innerWidth + 'px');
+        $('.container').append(p);
+        let ia = setInterval(() => {
+            move(p, speed, ia);
+        }, 100);
+        // messageList.push(ia);
+        //console.log(p);
+    }
+    addMsgWithAvator = (avatorUrl, text) => {
+            if (text == undefined) return;
+            let p = $('<div class="bullet"></div>');
+            let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
+            let txt = $(`<p>${text}</p>`);
+            let prefix = '#$%'
+            if (text.indexOf(prefix) != -1) {
+                text = text.replace(prefix, '')
+                let src = ''
+                switch (text) {
+                    case 'like':
+                        src = 'static/img/like.png'
+                        break;
+                    case 'star':
+                        src = 'static/img/star.png'
+                        break;
+                    case 'clap':
+                        src = 'static/img/clapping.png'
+                        break;
+                    default:
+                        src = 'static/img/clapping.png'
+                        break;
+                }
+                let strImg = `<img class="emoji" src=" ${src}"></img>`;
+                txt = $(strImg + strImg + strImg);
+            }
+            console.log(txt);
+            p.append(img);
+            p.append(txt);
+            // p.text(text);
+            console.log(window.innerHeight);
+            let top = (Math.random() * 1000) % window.innerHeight;
+            let speed = Math.random() * 10;
+            // p.css('top', '100' + 'px');
+            // p.css('left', '100' + 'px');
+            p.css('top', top + 'px');
+            p.css('left', window.innerWidth + 'px');
+            $('.container').append(p);
+            let ia = setInterval(() => {
+                move(p, speed, ia);
+            }, 100);
+        }
+        //window.onload = onInit;
+    $(document).ready(() => {
+        connection.start().catch(err => console.error(err.toString()));
+
+
+        $(".container").click(e => {
+            console.log(e);
+            playPause();
+        })
+    })
+</script>
+
+<script type="text/javascript">
+
+    function playPause() {
+        let myVideo = $('video');
+        console.log(myVideo.paused);
+        if (myVideo.paused)
+            myVideo.play();
+        else
+            myVideo.pause();
+    } 
+</script>
