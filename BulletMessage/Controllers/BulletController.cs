@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BulletMessage.Contract.Request;
+using BulletMessage.Hubs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace BulletMessage.Controllers
 {
@@ -13,18 +15,18 @@ namespace BulletMessage.Controllers
     [ApiController]
     public class BulletController : ControllerBase
     {
-        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IHubContext<BulletHub> _hubContext;
+        private readonly ILogger<BulletController> _logger;
 
-        public BulletController(IHubContext<ChatHub> hubContext)
+        public BulletController(IHubContext<BulletHub> hubContext, ILogger<BulletController> logger)
         {
+            _logger = logger;
             _hubContext = hubContext;
         }
         [HttpGet]
         [Route("ping")]
         public IActionResult get()
         {
-            //var hubManager = new DefaultHubManager(GlobalHost.DependencyResolver);
-            //var hub = hubManager.ResolveHub("myHub") as ChatHub;
             _hubContext.Clients.All.SendAsync("ReceiveMessage", "Admin", "Test" + DateTime.Now.ToLongDateString());
             return Ok("test");
         }

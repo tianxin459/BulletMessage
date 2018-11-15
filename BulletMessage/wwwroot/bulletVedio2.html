@@ -6,105 +6,36 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="node_modules/jquery-background-video/jquery.background-video.js"></script>
     <link rel="stylesheet" type="text/css" href="node_modules/jquery-background-video/jquery.background-video.css">
+    <link rel="stylesheet" type="text/css" href="lib/global.css">
     <title>BUllet Vedio</title>
-    <style lang="css">
-        .form-group {
-            position: relative;
-            padding-top: 1.5rem;
-        }
-        
-        label {
-            position: absolute;
-            top: 0;
-            font-size: var(--font-size-small);
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.2s ease-out;
-        }
-        
-        input:placeholder-shown+label {
-            opacity: 0;
-            transform: translateY(1rem);
-        }
-        
-        .container {
-          height: 100vh;
-          width: 100vw;
-        }
-        
-        .message {
-            height: 2vh;
-        }
-        
-        .bullet {
-            position: absolute;
-            text-wrap: none;
-            white-space: nowrap;
-            color: #fffd5d;
-            text-shadow: black 1px 1px 1px;
-            display: flex;
-            flex-direction: row;
-        }
-        
-        .bullet .bulletAvator {
-            height: 20px;
-            /* width: 20px; */
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .bullet .emoji {
-            height: 20px;
-            margin-right: 5px;
-        }
-        
-        .bullet p {
-            align-self: center;
-            margin: 0 auto;
-        }
-        
-        img.background {
-            height: 100vh;
-            width: 100vw;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .masktext{
-            position:absolute;
-            top: 100px;
-        }
-
-    </style>
 </head>
 
 <body>
     <!-- <div class="message">
         <p id="msg" class="msg"></p>
     </div> -->
-        <div class=" container element-with-video-bg jquery-background-video-wrapper">
-            <video class="my-background-video jquery-background-video" loop autoplay muted>
-                <!-- <source src="static/vedio/mov_bbb.mp4" type="video/mp4"> -->
-                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-                <!-- <source src="https://d2ezlykacdqcnj.cloudfront.net/_assets/home-video/beach-waves-loop.mp4" type="video/mp4"> -->
-            </video>
-            <div class="display-zone">
-                <div class="video-hero--content">
-                    Loading...
-                </div>
+    <div class=" container element-with-video-bg jquery-background-video-wrapper">
+        <video class="my-background-video jquery-background-video" loop autoplay muted>
+            <!-- <source src="static/vedio/mov_bbb.mp4" type="video/mp4"> -->
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            <!-- <source src="https://d2ezlykacdqcnj.cloudfront.net/_assets/home-video/beach-waves-loop.mp4" type="video/mp4"> -->
+        </video>
+        <div class="display-zone">
+            <div class="video-hero--content">
+                Loading...
             </div>
         </div>
+    </div>
 
-        <div class="masktext bullet">
-            test test
-        </div>
+    <div class="masktext bullet">
+        test test
+    </div>
 </body>
 
 </html>
 <script src="lib/signalr.js"></script>
+<script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
-    var url = "https://ellist.cn/bulletmessage/chat";
 
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -152,6 +83,7 @@
         //console.log(p);
     }
     addMsgWithAvator = (avatorUrl, text) => {
+        console.log('message recieved')
         if (text == undefined) return;
         let p = $('<div class="bullet"></div>');
         let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
@@ -195,22 +127,22 @@
     }
     //window.onload = onInit;
     $(document).ready(() => {
-        $('.my-background-video').bgVideo({fullScreen:true});
-        $('.container').click(e=>{
-            console.log('test');
+        $('.my-background-video').bgVideo({ fullScreen: true });
+        $('.container').click(e => {
+            playPause();
         })
-        // connection.start().catch(err => console.error(err.toString()));
+        connection.start().catch(err => console.error(err.toString()));
     })
 </script>
 
 <script type="text/javascript">
 
     function playPause() {
-        let myVideo = $('video');
-        console.log(myVideo.paused);
+        let myVideo = $('video')[0];
+        console.log(myVideo.paused ? 'play' : 'pause');
         if (myVideo.paused)
             myVideo.play();
         else
             myVideo.pause();
-    } 
+    }
 </script>

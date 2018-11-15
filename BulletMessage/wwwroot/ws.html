@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <title></title>
+    <title>ws</title>
 </head>
 
 <body>
@@ -24,15 +24,13 @@
 </html>
 
 <script src="lib/signalr.js"></script>
-
+<script src="lib/globalConfig.js"></script>
 <script language="javascript" type="text/javascript">
     var socket;
     var uri = "ws://" + window.location.host + "/ws";
     var output;
     var text = "test echo";
-    //var url = "http://localhost/BulletMessage/chat";
-    // var url = "/chat";
-    var url = "https://ellist.cn/bulletmessage/chat";
+
 
     function write(s) {
         var p = document.createElement("p");
@@ -72,11 +70,11 @@
 
     function httpGetAsync(theUrl, callback) {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
+        xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
                 callback(xmlHttp.responseText);
         }
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous
         xmlHttp.send(null);
     }
     //window.onload = onInit;

@@ -1,0 +1,39 @@
+﻿body {
+}
+.track{
+    width:100vw;
+    height:90vh;
+    border:1px solid green;
+}
+
+
+@keyframes runnerHead {
+    from {
+        top: 19px;
+    }
+    50%{
+        top:21px;
+    }
+    to {
+        top: 19px;
+    }
+}
+.runner {
+    position: absolute;
+}
+    .runner .running-head {
+        position: absolute;
+        width: 40px;
+        border: 1px solid green;
+        border-radius: 50%;
+        animation-name: runnerHead;
+        animation-duration: 0.5s;
+        animation-iteration-count: infinite;
+    }
+
+    .runner .running-body {
+        position: absolute;
+        top: 33px;
+        left: -5px;
+        width: 50px;
+    }
