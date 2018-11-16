@@ -55,6 +55,7 @@ namespace BulletMessage
             {
                 routes.MapHub<BulletHub>("/chat");
                 routes.MapHub<RaceHub>("/race");
+                routes.MapHub<ClientHub>("/client");
             });
             app.UseStaticFiles();
             //app.UseExceptionHandler(options => {
