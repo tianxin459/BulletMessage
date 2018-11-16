@@ -16,8 +16,8 @@
     </div> -->
     <div class=" container element-with-video-bg jquery-background-video-wrapper">
         <video class="my-background-video jquery-background-video" loop autoplay muted>
-            <!-- <source src="static/vedio/mov_bbb.mp4" type="video/mp4"> -->
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
+            <!-- <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"> -->
             <!-- <source src="https://d2ezlykacdqcnj.cloudfront.net/_assets/home-video/beach-waves-loop.mp4" type="video/mp4"> -->
         </video>
         <div class="display-zone">
@@ -36,7 +36,6 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
-
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
             skipNegotiation: true,
@@ -83,51 +82,53 @@
         //console.log(p);
     }
     addMsgWithAvator = (avatorUrl, text) => {
-        console.log('message recieved')
-        if (text == undefined) return;
-        let p = $('<div class="bullet"></div>');
-        let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
-        let txt = $(`<p>${text}</p>`);
-        let prefix = '#$%'
-        if (text.indexOf(prefix) != -1) {
-            text = text.replace(prefix, '')
-            let src = ''
-            switch (text) {
-                case 'like':
-                    src = 'static/img/like.png'
-                    break;
-                case 'star':
-                    src = 'static/img/star.png'
-                    break;
-                case 'clap':
-                    src = 'static/img/clapping.png'
-                    break;
-                default:
-                    src = 'static/img/clapping.png'
-                    break;
+            console.log('message recieved')
+            if (text == undefined) return;
+            let p = $('<div class="bullet"></div>');
+            let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
+            let txt = $(`<p>${text}</p>`);
+            let prefix = '#$%'
+            if (text.indexOf(prefix) != -1) {
+                text = text.replace(prefix, '')
+                let src = ''
+                switch (text) {
+                    case 'like':
+                        src = 'static/img/like.png'
+                        break;
+                    case 'star':
+                        src = 'static/img/star.png'
+                        break;
+                    case 'clap':
+                        src = 'static/img/clapping.png'
+                        break;
+                    default:
+                        src = 'static/img/clapping.png'
+                        break;
+                }
+                let strImg = `<img class="emoji" src=" ${src}"></img>`;
+                txt = $(strImg + strImg + strImg);
             }
-            let strImg = `<img class="emoji" src=" ${src}"></img>`;
-            txt = $(strImg + strImg + strImg);
+            console.log(txt);
+            p.append(img);
+            p.append(txt);
+            // p.text(text);
+            console.log(window.innerHeight);
+            let top = (Math.random() * 1000) % window.innerHeight;
+            let speed = Math.random() * 10;
+            // p.css('top', '100' + 'px');
+            // p.css('left', '100' + 'px');
+            p.css('top', top + 'px');
+            p.css('left', window.innerWidth + 'px');
+            $('.container').append(p);
+            let ia = setInterval(() => {
+                move(p, speed, ia);
+            }, 100);
         }
-        console.log(txt);
-        p.append(img);
-        p.append(txt);
-        // p.text(text);
-        console.log(window.innerHeight);
-        let top = (Math.random() * 1000) % window.innerHeight;
-        let speed = Math.random() * 10;
-        // p.css('top', '100' + 'px');
-        // p.css('left', '100' + 'px');
-        p.css('top', top + 'px');
-        p.css('left', window.innerWidth + 'px');
-        $('.container').append(p);
-        let ia = setInterval(() => {
-            move(p, speed, ia);
-        }, 100);
-    }
-    //window.onload = onInit;
+        //window.onload = onInit;
     $(document).ready(() => {
-        $('.my-background-video').bgVideo({ fullScreen: true });
+        $('.my-background-video').bgVideo({
+            fullScreen: true
+        });
         $('.container').click(e => {
             playPause();
         })
@@ -136,7 +137,6 @@
 </script>
 
 <script type="text/javascript">
-
     function playPause() {
         let myVideo = $('video')[0];
         console.log(myVideo.paused ? 'play' : 'pause');

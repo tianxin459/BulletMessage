@@ -1,11 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/race.css">
     <title>race</title>
 </head>
+
 <body>
     <div>
         race
@@ -15,8 +17,8 @@
             <button id="btnSubmit">Submit</button>
         </div>
         <div>
-            <audio controls>
-                <!--<source src="static/music/12 Bar BOT.mp3" type="audio/mp3">-->
+            <audio controls autoplay="autoplay">
+                <source src="static/music/12_bar_bot_funfair_remix.mp3" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
         </div>
@@ -31,10 +33,13 @@
 
     </div>
 </body>
+
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script src="lib/race.js"></script>
 <script>
-   
+    // $('document').ready(() => {
+    //     $('audio')[0].play()
+    // });
 </script>

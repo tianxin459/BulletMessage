@@ -1,4 +1,4 @@
-﻿var url = "/race";
+﻿// var url = "/race";
 var url = "https://ellist.cn/bulletmessage/race";
 
 const connection = new signalR.HubConnectionBuilder()
@@ -11,7 +11,7 @@ const connection = new signalR.HubConnectionBuilder()
 var listRunner = new Set();
 
 connection.on("ReceiveMessage", (userId, message) => {
-    console.log("ReceiveMessage",userId, message);
+    console.log("ReceiveMessage", userId, message);
     let distant = parseInt(message, 10)
     if (!!distant) {
         moveRunner(userId, distant);
@@ -20,15 +20,25 @@ connection.on("ReceiveMessage", (userId, message) => {
 })
 
 
-connection.on("SetRacer", (userId,avatorUrl, message) => {
+connection.on("SetRacer", (userId, avatorUrl, message) => {
     let distant = parseInt(message, 10)
     if (listRunner.has(userId)) {
         console.log("moveRacer", userId, message);
         moveRunner(userId, distant)
-    }
-    else {
+    } else {
         listRunner.add(userId);
         console.log("SetRacer", userId, avatorUrl, message);
+        setRacer(userId, avatorUrl, distant);
+    }
+})
+connection.on("readyRacer", (userId, avatorUrl, message) => {
+    let distant = parseInt(message, 10)
+    if (listRunner.has(userId)) {
+        console.log("readyRacer moveRacer", userId, message);
+        moveRunner(userId, distant)
+    } else {
+        listRunner.add(userId);
+        console.log("readyRacer SetRacer", userId, avatorUrl, message);
         setRacer(userId, avatorUrl, distant);
     }
 })
@@ -36,7 +46,9 @@ connection.on("SetRacer", (userId,avatorUrl, message) => {
 $('document').ready(() => {
     connection
         .start()
-        .catch(err => { console.error(err); })
+        .catch(err => {
+            console.error(err);
+        })
 
     $('#btnSubmit').click(e => {
         let userId = $('#userId').val();
@@ -59,12 +71,13 @@ function parseName(name) {
 }
 
 const css_direction = 'left';
+
 function setRacer(name, avatorUrl, position) {
     //if (listRunner.has(userId)) {
     //    return;
     //}
     //listRunner.add(userId);
-    avatorUrl = 'https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg'
+    // avatorUrl = 'https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg'
     let track = $('div.track');
     let top = (Math.random() * 1000) % window.innerHeight;
     let strRunner = ` <div id="${parseName(name)}" class="runner">
@@ -74,9 +87,10 @@ function setRacer(name, avatorUrl, position) {
         </div>`;
     let runner = $(strRunner);
     runner.css('top', top + 'px');
-    runner.css(css_direction, position+'px');
+    runner.css(css_direction, position + 'px');
     track.append(runner);
 }
+
 function moveRunner(name, distant) {
     let runner = $('#' + parseName(name));
     let position = runner.css(css_direction);
