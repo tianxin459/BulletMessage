@@ -1,13 +1,21 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>client</title>
 </head>
-<body>
 
+<body>
+    <div>
+        <input id="txtName" type="text" />
+        <input id="txt" type="text" />
+        <button id="btnSubmit">Submit</button>
+    </div>
+    <div class="display"></div>
 </body>
+
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
@@ -22,15 +30,40 @@
 
     connection.on("onConnect", (message) => {
         console.log(`connectionId=${message}`);
-        //addMsgWithAvator(user, message);
     });
 
     connection.on("ReceiveMessage", (user, message) => {
         console.log(`${user}: ${message}`);
-        addMsgWithAvator(user, message);
+        write(`ReceiveMessage: ${user}: ${message}`)
     });
 
+    function write(s) {
+        $('.display')
+        let p = $(`<p>${s}</p>`);
+        // var p = document.createElement("p");
+        console.log(s);
+        // p.innerHTML = s;
+        // output.appendChild(p);
+        $('.display').append(p);
+    }
+
     $('document').ready(() => {
-        connection.start().catch(err => console.error(err.toString()));
+        connection.start()
+            .then(() => {
+                let id = 'eett1';
+                let avatorUrl = 'ccc';
+                console.log('connected=>regist')
+                connection.invoke("Register", id, avatorUrl)
+                    .catch(err => console.error(err));
+            })
+            .catch(err => console.error(err.toString()));
+
+        $('#btnSubmit').click(() => {
+            let userId = $('#txtName').val() || 'et'
+            let msg = $('#txt').val()
+            console.log('register', userId, msg);
+            connection.invoke("SendMessage", userId, msg)
+                .catch(err => console.error(err));
+        });
     })
 </script>

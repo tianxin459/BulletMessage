@@ -31,25 +31,46 @@ namespace BulletMessage.Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("onConnect", Context.ConnectionId);
             _logger.LogInformation("Context.ConnectionId connected");
         }
-
-
-        public Task Register(string userid,string avatorUrl)
+        public override async Task OnDisconnectedAsync(Exception ex)
         {
-            ClientList.Add(new ClientInfo()
+            ClientList = ClientList.Where(c => c.ConnectionId != Context.ConnectionId).ToList();
+            await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} left");
+        }
+
+
+        public Task Register(string userid, string avatorUrl)
+        {
+            if (ClientList.Any(c => c.UserId == userid))
             {
-                UserId = userid,
-                AvatorUrl = avatorUrl,
-                ConnectionId = Context.ConnectionId
-            });
+                ClientList.Where(c => c.UserId == userid).FirstOrDefault().ConnectionId = Context.ConnectionId;
+            }
+            else
+            {
+                ClientList.Add(new ClientInfo()
+                {
+                    UserId = userid,
+                    AvatorUrl = avatorUrl,
+                    ConnectionId = Context.ConnectionId
+                });
+            }
             return Clients.Client(Context.ConnectionId).SendAsync("onRegister", $"{Context.ConnectionId}: {userid}");
         }
 
 
         public async Task SendMessage(string userID, string msg)
         {
-            _logger.LogDebug($"{userID}=>{msg}");
-            
-            await Clients.All.SendAsync("ReceiveMessage", userID, msg);
+            _logger.LogDebug($"SendMessage {userID}=>{msg}");
+            if (userID == "all")
+            {
+                await Clients.All.SendAsync("ReceiveMessage", userID, msg);
+            }
+            else
+            {
+                // var client = Clients.Client(Context.ConnectionId);
+                var user = ClientList.FirstOrDefault(c => c.UserId == userID);
+                if (user == null) return;
+                await Clients.Client(user.ConnectionId)?.SendAsync("ReceiveMessage", userID, msg);
+            }
         }
     }
 }
