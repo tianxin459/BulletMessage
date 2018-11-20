@@ -30,7 +30,7 @@ namespace BulletMessage.Controllers
         [Route("run")]
         public IActionResult Run(RaceRequest request)
         {
-            _logger.LogInformation(JsonConvert.SerializeObject(request));
+            _logger.LogDebug(JsonConvert.SerializeObject(request));
             //if(RunnerList.Contains(request.UserId))
             //{
             //    _hubContext.Clients.All.SendAsync("ReceiveMessage", request.UserId, request.Message);
@@ -48,7 +48,7 @@ namespace BulletMessage.Controllers
         [Route("ready")]
         public IActionResult Ready(RaceRequest request)
         {
-            _logger.LogInformation(JsonConvert.SerializeObject(request));
+            _logger.LogDebug(JsonConvert.SerializeObject(request));
             _hubContext.Clients.All.SendAsync("readyRacer", request.UserId, request.AvatorUrl, request.Message);
             return Ok(new { Success = true });
         }

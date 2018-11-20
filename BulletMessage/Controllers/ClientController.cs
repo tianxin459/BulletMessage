@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using BulletMessage.Contract.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using BulletMessage.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BulletMessage.Controllers
 {
@@ -13,21 +16,47 @@ namespace BulletMessage.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
+        private readonly IHubContext<ClientHub> _hubContext;
+        private readonly ILogger<ClientController> _logger;
+
+        public ClientController(IHubContext<ClientHub> hubContext, ILogger<ClientController> logger)
+        {
+            _hubContext = hubContext;
+            _logger = logger;
+        }
         public static string ConfigurationJson { get; set; }
+
+
+
+
+        [HttpGet]
+        [Route("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("ping");
+        }
+
+
         [HttpGet]
         [Route("config")]
         public IActionResult GetConfig()
         {
             var path = Directory.GetCurrentDirectory() + @"\config";
-            StreamReader sr = new StreamReader(path);
-            List<string> strOutput = new List<string>();
-            string line;
-            while ((line = sr.ReadLine()) != null)
+            if (!System.IO.File.Exists(path)) return Ok("no configuration");
+            string outputStr;
+
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                Console.WriteLine(line);
-                strOutput.Add(line);
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    outputStr = sr.ReadToEnd();
+                }
             }
-            return Ok();
+            // using (StreamReader sr = new StreamReader(path))
+            // {
+            //     outputStr = sr.ReadToEnd();
+            // }
+            return Ok(outputStr);
         }
 
 
@@ -36,15 +65,27 @@ namespace BulletMessage.Controllers
         public IActionResult SetConfig(ConfigureRequest request)
         {
             ConfigurationJson = request.ConfigurationJson;
-            var path = Directory.GetCurrentDirectory()+@"\config";
+            var path = Directory.GetCurrentDirectory() + @"\config";
 
-            FileStream fs = new FileStream(path, FileMode.Create);
-            StreamWriter sw = new StreamWriter(fs);
-            sw.Write(request.ConfigurationJson);
-            sw.Flush();
-            sw.Close();
-            fs.Close();
-            return Ok();
+            using (FileStream fs = new FileStream(path, FileMode.Create))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                try
+                {
+                    sw.Write(request.ConfigurationJson);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
+                    sw.Flush();
+                    sw.Close();
+                    fs.Close();
+                }
+            }
+            return Ok(new { Success = true });
         }
     }
 }
