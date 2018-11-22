@@ -62,16 +62,25 @@ namespace BulletMessage.Controllers
             return Ok(new { success = true });
         }
 
-
+        [HttpGet]
+        [Route("uploadfiles")]
+        public IActionResult GetUploadFileList()
+        {
+            var webRootPath = _environment.WebRootPath;
+            var filePath = "/Uploads/Images/";
+            DirectoryInfo dir = new DirectoryInfo(webRootPath + filePath);
+            var fileList = dir.GetFiles().Select(f => f.Name).ToList();
+            return Ok(fileList);
+        }
 
         [HttpPost]
         [Route("upload")]
         public async Task<IActionResult> uploadFile()
         {
-            _logger.LogDebug($"UploadFile");
             var uploadfile = Request.Form.Files[0];
             var nickName = Request.Form["nickName"].ToString();
             var avatarUrl = Request.Form["avatarUrl"].ToString();
+            _logger.LogDebug($"UploadFile=>{nickName}=>{avatarUrl}");
 
             var now = DateTime.Now;
             var webRootPath = _environment.WebRootPath;
@@ -115,11 +124,13 @@ namespace BulletMessage.Controllers
                 {
                     await uploadfile.CopyToAsync(stream);
                 }
-                
+                var prefix = "img=>";
+                await _hubContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, prefix + strDateTime + ".png");
             }
+
             return Ok(new { isSucceed = true, resultMsg = "upload success" });
             // return Ok("Ok");
         }
-        
+
     }
 }

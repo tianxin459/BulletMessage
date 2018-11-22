@@ -30,7 +30,7 @@
     </div>-->
         <!--<div class="masktext bullet">
             <img class="bulletImg" src="/Uploads/Images/181122024940880.png"></img>
-        </div>--> 
+        </div>-->
     </div>
     <!-- <div>
         <div class="form-group">
@@ -44,7 +44,6 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
-
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
             skipNegotiation: true,
@@ -56,10 +55,10 @@
         console.log(`${user}: ${message}`);
         // addMsg(`${user}: ${message}`);
         let prefix = "img=>"
-        if (user == 'img' || text.indexOf(prefix) != -1) {
-            addImageFly(user, message.replace(prefix,''))
-        }
-        else {
+        if (!message) return;
+        if (user == 'img' || message.indexOf(prefix) != -1) {
+            addImageFly(user, message.replace(prefix, ''))
+        } else {
             addMsgWithAvator(user, message);
         }
     });
@@ -88,13 +87,13 @@
         }
         ele.css('left', lp + 'px');
     }
-    addImageFly = (imgFile) => {
-        let imgUrl = "/Uploads/Images/"
-        imgFile = imgFile||"181122024940880.png"
+    addImageFly = (userInfo, imgFile) => {
+        let imgUrl = "./Uploads/Images/"
+        console.log(imgFile);
         let p = $('<div class="bullet"></div>');
         let img = $(`<img class="bulletImg" src="${imgUrl + imgFile}"></img>`);
         p.append(img);
-        let top = (Math.random() * 1000) % (window.innerHeight/2);
+        let top = (Math.random() * 1000) % (window.innerHeight / 2);
         let speed = Math.random() * 10;
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');
@@ -121,57 +120,57 @@
         //console.log(p);
     }
     addMsgWithAvator = (avatorUrl, text) => {
-        if (text == undefined) return;
-        let p = $('<div class="bullet"></div>');
-        let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
-        let txt = $(`<p>${text}</p>`);
-        let prefix = '#$%'
-        if (text.indexOf(prefix) != -1) {
-            text = text.replace(prefix, '')
-            let src = ''
-            switch (text) {
-                case 'like':
-                    src = 'static/img/like.png'
-                    break;
-                case 'star':
-                    src = 'static/img/star.png'
-                    break;
-                case 'clap':
-                    src = 'static/img/clapping.png'
-                    break;
-                case 'cheers':
-                    src = 'static/img/cheers.png'
-                    break;
-                case 'horn':
-                    src = 'static/img/horn.png'
-                    break;
-                case 'money':
-                    src = 'static/img/money.png'
-                    break;
-                default:
-                    src = 'static/img/clapping.png'
-                    break;
+            if (text == undefined) return;
+            let p = $('<div class="bullet"></div>');
+            let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
+            let txt = $(`<p>${text}</p>`);
+            let prefix = '#$%'
+            if (text.indexOf(prefix) != -1) {
+                text = text.replace(prefix, '')
+                let src = ''
+                switch (text) {
+                    case 'like':
+                        src = 'static/img/like.png'
+                        break;
+                    case 'star':
+                        src = 'static/img/star.png'
+                        break;
+                    case 'clap':
+                        src = 'static/img/clapping.png'
+                        break;
+                    case 'cheers':
+                        src = 'static/img/cheers.png'
+                        break;
+                    case 'horn':
+                        src = 'static/img/horn.png'
+                        break;
+                    case 'money':
+                        src = 'static/img/money.png'
+                        break;
+                    default:
+                        src = 'static/img/clapping.png'
+                        break;
+                }
+                let strImg = `<img class="emoji" src=" ${src}"></img>`;
+                txt = $(strImg + strImg + strImg);
             }
-            let strImg = `<img class="emoji" src=" ${src}"></img>`;
-            txt = $(strImg + strImg + strImg);
+            console.log(txt);
+            p.append(img);
+            p.append(txt);
+            // p.text(text);
+            console.log(window.innerHeight);
+            let top = (Math.random() * 1000) % (window.innerHeight / 2);
+            let speed = Math.random() * 10;
+            // p.css('top', '100' + 'px');
+            // p.css('left', '100' + 'px');
+            p.css('top', top + 'px');
+            p.css('left', window.innerWidth + 'px');
+            $('.container').append(p);
+            let ia = setInterval(() => {
+                move(p, speed, ia);
+            }, 100);
         }
-        console.log(txt);
-        p.append(img);
-        p.append(txt);
-        // p.text(text);
-        console.log(window.innerHeight);
-        let top = (Math.random() * 1000) % (window.innerHeight/2);
-        let speed = Math.random() * 10;
-        // p.css('top', '100' + 'px');
-        // p.css('left', '100' + 'px');
-        p.css('top', top + 'px');
-        p.css('left', window.innerWidth + 'px');
-        $('.container').append(p);
-        let ia = setInterval(() => {
-            move(p, speed, ia);
-        }, 100);
-    }
-    //window.onload = onInit;
+        //window.onload = onInit;
     $(document).ready(() => {
         connection.start().catch(err => console.error(err.toString()));
     })
