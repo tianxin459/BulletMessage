@@ -52,5 +52,19 @@ namespace BulletMessage.Controllers
             _hubContext.Clients.All.SendAsync("readyRacer", request.UserId, request.AvatorUrl, request.Message);
             return Ok(new { Success = true });
         }
+
+
+
+        [HttpPost]
+        [Route("begin")]
+        public IActionResult Begin(RaceRequest request)
+        {
+            _logger.LogDebug(JsonConvert.SerializeObject(request));
+            if (request.Message == "GoGoGo")
+            {
+                _hubContext.Clients.All.SendAsync("beginRace",request.Message);
+            }
+            return Ok(new { Success = true });
+        }
     }
 }

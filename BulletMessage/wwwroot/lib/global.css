@@ -19,8 +19,9 @@ input:placeholder-shown + label {
 }
 
 .container {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .message {
@@ -55,8 +56,8 @@ input:placeholder-shown + label {
     }
 
 img.background {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     position: absolute;
     top: 0;
     left: 0;

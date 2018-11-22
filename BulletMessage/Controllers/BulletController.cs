@@ -51,29 +51,28 @@ namespace BulletMessage.Controllers
             return Ok(new { success = true });
         }
 
-        // [HttpPost("upload-file")]
-        // public async Task<IActionResult> uploadFile(UploadFileData data)
-        // {
-        //     return Ok("Ok");
-        // }
 
-        [HttpGet]
-        [Route("uploadfiles")]
-        public IActionResult GetUploadFileList()
+        // POST api/values
+        [HttpPost]
+        [Route("changebg")]
+        public IActionResult ChangeBackground(BulletRequest request)
         {
-            var webRootPath = _environment.WebRootPath;
-            var filePath = "/Uploads/Images/";
-            DirectoryInfo dir = new DirectoryInfo(webRootPath + filePath);
-            var fileList = dir.GetFiles().Select(f => f.Name).ToList();
-            return Ok(fileList);
+            _logger.LogDebug($"changeBackground=>{request.Id}:{request.Message}");
+            _hubContext.Clients.All.SendAsync("changeBackground", request.Message);
+            return Ok(new { success = true });
         }
+
+
 
         [HttpPost]
         [Route("upload")]
-        public async Task<IActionResult> uploadFile(string fileName)
+        public async Task<IActionResult> uploadFile()
         {
             _logger.LogDebug($"UploadFile");
             var uploadfile = Request.Form.Files[0];
+            var nickName = Request.Form["nickName"].ToString();
+            var avatarUrl = Request.Form["avatarUrl"].ToString();
+
             var now = DateTime.Now;
             var webRootPath = _environment.WebRootPath;
             // var webRootPath = Server.MapPath("~/");
@@ -116,84 +115,11 @@ namespace BulletMessage.Controllers
                 {
                     await uploadfile.CopyToAsync(stream);
                 }
-
-
-
-                // //插入图片数据
-                // var picture = new Picture
-                // {
-                //     MimeType = uploadfile.ContentType,
-                //     AltAttribute = "",
-                //     FilePath = filePath + saveName,
-                //     CreatedDateTime = DateTime.Now
-                // };
-                // using (FileStream fs = System.IO.File.Create(webRootPath + filePath + saveName))
-                // {
-                //     uploadfile.CopyTo(fs);
-                //     fs.Flush();
-                // }
-                // _pictureService.Insert(picture);
-                // return Ok(new { isSuccess = true, returnMsg = "上传成功", imgId = picture.Id, imgUrl = picture.FilePath });
+                
             }
             return Ok(new { isSucceed = true, resultMsg = "upload success" });
             // return Ok("Ok");
         }
-
-        [HttpPost("upload2")]
-        public async Task<IActionResult> Post(List<IFormFile> files)
-        {
-            long size = files.Sum(f => f.Length);
-
-            // full path to file in temp location
-            var filePath = Path.GetTempFileName();
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-            }
-
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
-
-            return Ok(new { count = files.Count, size, filePath });
-        }
-
-        // /// <summary>
-        // /// 上传图片
-        // /// </summary>
-        // /// <returns></returns>
-        // [HttpPost]
-        // public IActionResult UploadFileNew()
-        // {
-        //     _logger.LogDebug($"UploadFile");
-        //     // ResultData result = new ResultData();
-        //     string parameters = "";
-        //     string operating = "图片上传";
-        //     string path = "/tmp/";
-        //     HttpPostedFile file = System.Web.HttpContext.Current.Request.Files["content"]; //对应小程序 name
-        //     parameters = string.Format("postData:{0}", file.ToString());
-        //     //_logger.LogInformation("file文件：" + file.ToString(), 0, "miapp", module, operating);
-        //     //获取文件
-        //     if (file != null)
-        //     {
-        //         Stream sr = file.InputStream;        //文件流
-        //         Bitmap bitmap = (Bitmap)Bitmap.FromStream(sr);
-        //         path += file.FileName;
-        //         string currentpath = System.Web.HttpContext.Current.Server.MapPath("~");
-
-
-        //         bitmap.Save(currentpath + path);
-        //     }
-
-        //     return Ok("upload complete");
-
-        // }
-
+        
     }
 }

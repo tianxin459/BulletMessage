@@ -20,6 +20,7 @@
 }
 .runner {
     position: absolute;
+    transition: all linear 0.1s;
 }
     .runner .running-head {
         position: absolute;

@@ -6,6 +6,24 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/race.css">
     <title>race</title>
+    <style>
+    .track { 
+        background: url("static/img/background/race_track.png") no-repeat;
+        background-size:100% 100%;
+    }
+
+        .startLine, 
+        .finishLine {
+        width:1px;
+        border:2px solid white;
+        position:absolute;
+        height:100%;
+        }
+
+        .startLine {
+            left: 90px;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,7 +48,8 @@
     </div>
 
     <div class="track">
-
+        <div class="startLine"></div>
+        <div class="finishLine"></div>
     </div>
 </body>
 
@@ -39,7 +58,10 @@
 <script src="lib/globalConfig.js"></script>
 <script src="lib/race.js"></script>
 <script>
-    // $('document').ready(() => {
-    //     $('audio')[0].play()
-    // });
+    $('document').ready(() => {
+        //setup finish line
+        let finishLinePos = window.innerWidth - 100;
+        console.log(finishLinePos);
+        $('.finishLine').css("left", finishLinePos + 'px');
+     });
 </script>

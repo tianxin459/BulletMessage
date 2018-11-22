@@ -5,98 +5,14 @@
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/global.css">
-    <title></title>
-    <!--<style lang="css">
-        .form-group {
-            position: relative;
-            padding-top: 1.5rem;
+    <title>LiveChat</title>
+    <style>
+        .bulletImg {
+            height: 30vh;
+            border: 1px solid black;
+            box-shadow: 0 0 0 1px white;
         }
-
-        label {
-            position: absolute;
-            top: 0;
-            font-size: var(--font-size-small);
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.2s ease-out;
-        }
-
-        input:placeholder-shown + label {
-            opacity: 0;
-            transform: translateY(1rem);
-        }
-
-        .container {
-            height: 100vh;
-            border: 1px solid green;
-            width: 100%;
-        }
-
-        .message {
-            height: 2vh;
-        }
-
-        .bullet {
-            position: absolute;
-            text-wrap: none;
-            white-space: nowrap;
-            color: #fffd5d;
-            text-shadow: black 1px 1px 1px;
-            display: flex;
-            flex-direction: row;
-        }
-
-            .bullet .bulletAvator {
-                height: 20px;
-                /* width: 20px; */
-                border-radius: 50%;
-                margin-right: 5px;
-            }
-
-            .bullet .emoji {
-                height: 20px;
-                margin-right: 5px;
-            }
-
-            .bullet p {
-                align-self: center;
-                margin: 0 auto;
-            }
-
-        img.background {
-            height: 100vh;
-            width: 100vw;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .masktext {
-            position: absolute;
-            top: 100px;
-        }
-        /*video{
-            width:100vw;
-            height:100vh;
-        }*/
-        .fullscreen-bg {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            overflow: hidden;
-            z-index: -100;
-        }
-
-            .fullscreen-bg video {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
-    </style>-->
+    </style>
 </head>
 
 <body>
@@ -104,17 +20,17 @@
         <p id="msg" class="msg"></p>
     </div>
     <div class="container">
-        <img class="background" src="lib/green-light.jpg"></img>
+        <img class="background" src="static/img/background/bg2.png"></img>
         <!--https://www.w3schools.com/html/mov_bbb.mp4-->
         <!--<div class="fullscreen-bg">
-            <video class="video" width="400" autoplay controls>
-                <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
-                Your browser does not support HTML5 video.
-            </video>
-            <div class="masktext bullet">
-                test test
-            </div>
-        </div>-->
+        <video class="video" width="400" autoplay controls>
+            <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+    </div>-->
+        <!--<div class="masktext bullet">
+            <img class="bulletImg" src="/Uploads/Images/181122024940880.png"></img>
+        </div>--> 
     </div>
     <!-- <div>
         <div class="form-group">
@@ -139,7 +55,17 @@
     connection.on("ReceiveMessage", (user, message) => {
         console.log(`${user}: ${message}`);
         // addMsg(`${user}: ${message}`);
-        addMsgWithAvator(user, message);
+        let prefix = "img=>"
+        if (user == 'img' || text.indexOf(prefix) != -1) {
+            addImageFly(user, message.replace(prefix,''))
+        }
+        else {
+            addMsgWithAvator(user, message);
+        }
+    });
+    connection.on("changeBackground", (message) => {
+        console.log(`changeBackground => ${message}`);
+        $('img.background').attr("src", `static/img/background/bg${message}.png`);
     });
 </script>
 <script>
@@ -161,6 +87,23 @@
             clearInterval(i);
         }
         ele.css('left', lp + 'px');
+    }
+    addImageFly = (imgFile) => {
+        let imgUrl = "/Uploads/Images/"
+        imgFile = imgFile||"181122024940880.png"
+        let p = $('<div class="bullet"></div>');
+        let img = $(`<img class="bulletImg" src="${imgUrl + imgFile}"></img>`);
+        p.append(img);
+        let top = (Math.random() * 1000) % (window.innerHeight/2);
+        let speed = Math.random() * 10;
+        // p.css('top', '100' + 'px');
+        // p.css('left', '100' + 'px');
+        p.css('top', top + 'px');
+        p.css('left', window.innerWidth + 'px');
+        $('.container').append(p);
+        let ia = setInterval(() => {
+            move(p, speed, ia);
+        }, 100);
     }
     addMsg = (text) => {
         let p = $('<p class="bullet"></p>');
@@ -196,6 +139,15 @@
                 case 'clap':
                     src = 'static/img/clapping.png'
                     break;
+                case 'cheers':
+                    src = 'static/img/cheers.png'
+                    break;
+                case 'horn':
+                    src = 'static/img/horn.png'
+                    break;
+                case 'money':
+                    src = 'static/img/money.png'
+                    break;
                 default:
                     src = 'static/img/clapping.png'
                     break;
@@ -208,7 +160,7 @@
         p.append(txt);
         // p.text(text);
         console.log(window.innerHeight);
-        let top = (Math.random() * 1000) % window.innerHeight;
+        let top = (Math.random() * 1000) % (window.innerHeight/2);
         let speed = Math.random() * 10;
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');

@@ -1,8 +1,9 @@
-﻿// var url = "/race";
-var url = "https://ellist.cn/bulletmessage/race";
+﻿var urlRace = "/race";
+//var urlRace = "https://ellist.cn/bulletmessage/race";
+let isRacing = false;
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl(url, {
+    .withUrl(urlRace, {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
     })
@@ -19,6 +20,11 @@ connection.on("ReceiveMessage", (userId, message) => {
     }
 })
 
+
+connection.on("beginRace", (message) => {
+    console.log("beginRace", message);
+    isRacing = true;
+})
 
 connection.on("SetRacer", (userId, avatorUrl, message) => {
     let distant = parseInt(message, 10)
@@ -92,6 +98,7 @@ function setRacer(name, avatorUrl, position) {
 }
 
 function moveRunner(name, distant) {
+    if (!isRacing) return; // if not racing then do not move the player
     let runner = $('#' + parseName(name));
     let position = runner.css(css_direction);
     position = position.replace('px', '');
