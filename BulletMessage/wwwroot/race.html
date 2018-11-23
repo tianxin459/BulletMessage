@@ -33,6 +33,7 @@
             <input type="text" id="userId" />
             <input type="text" id="msg" />
             <button id="btnSubmit">Submit</button>
+            <button id="btnStartRace">StartRace</button>
         </div>
         <div>
             <audio controls autoplay="autoplay">
@@ -59,9 +60,8 @@
 <script src="lib/race.js"></script>
 <script>
     $('document').ready(() => {
-        //setup finish line
-        let finishLinePos = window.innerWidth - 100;
-        console.log(finishLinePos);
-        $('.finishLine').css("left", finishLinePos + 'px');
+        $('#btnStartRace').click(() => {
+            console.log('startRace');
+        });
      });
 </script>

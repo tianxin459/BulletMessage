@@ -1,6 +1,34 @@
 ﻿var urlRace = "/race";
 //var urlRace = "https://ellist.cn/bulletmessage/race";
 let isRacing = false;
+let trackTop = 0;
+let trackBottom = 0;
+
+$('document').ready(() => {
+    connection
+        .start()
+        .catch(err => {
+            console.error(err);
+        })
+
+    // track size
+    trackTop = $('.track').position().top
+    trackBottom = $('.track').position().top + $('.track').height()
+    let finishLinePos = window.innerWidth - 100;
+    console.log(finishLinePos);
+    $('.finishLine').css("left", finishLinePos + 'px');
+
+    $('#btnSubmit').click(e => {
+        let userId = $('#userId').val();
+        let msg = $('#msg').val();
+        setRacer(userId, 'ddd', 10);
+
+        connection.invoke("SendMessage", userId, msg)
+            .catch(err => console.error(err));
+        e.preventDefault();
+    })
+});
+
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl(urlRace, {
@@ -47,29 +75,6 @@ connection.on("readyRacer", (userId, avatorUrl, message) => {
         console.log("readyRacer SetRacer", userId, avatorUrl, message);
         setRacer(userId, avatorUrl, distant);
     }
-})
-
-$('document').ready(() => {
-    connection
-        .start()
-        .catch(err => {
-            console.error(err);
-        })
-
-    $('#btnSubmit').click(e => {
-        let userId = $('#userId').val();
-        let msg = $('#msg').val();
-        setRacer(userId, 'ddd', 10);
-
-        connection.invoke("SendMessage", userId, msg)
-            .catch(err => console.error(err));
-        e.preventDefault();
-    })
-});
-
-
-$('document').ready(() => {
-
 })
 
 function parseName(name) {
