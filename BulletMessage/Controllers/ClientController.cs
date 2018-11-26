@@ -20,7 +20,7 @@ namespace BulletMessage.Controllers
         private readonly IHubContext<ClientHub> _hubContext;
         private readonly ILogger<ClientController> _logger;
 
-        public static List<User> UserList = null
+        public static List<User> UserList = null;
 
         public ClientController(IHubContext<ClientHub> hubContext, ILogger<ClientController> logger)
         {
@@ -47,6 +47,8 @@ namespace BulletMessage.Controllers
                 return new List<User>();
             }
             string line;
+
+            if (UserList == null) UserList = new List<User>();
 
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
