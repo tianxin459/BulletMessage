@@ -1,8 +1,9 @@
-﻿var urlRace = "/race";
+﻿// var urlRace = "/race";
 //var urlRace = "https://ellist.cn/bulletmessage/race";
 let isRacing = false;
 let trackTop = 0;
 let trackBottom = 0;
+let finishLinePos, startLinePos
 
 $('document').ready(() => {
     connection
@@ -14,14 +15,26 @@ $('document').ready(() => {
     // track size
     trackTop = $('.track').position().top
     trackBottom = $('.track').position().top + $('.track').height()
-    let finishLinePos = window.innerWidth - 100;
+    finishLinePos = window.innerWidth - 100;
+    startLinePos = $('.startLine').position().left;
+
     console.log(finishLinePos);
     $('.finishLine').css("left", finishLinePos + 'px');
 
     $('#btnSubmit').click(e => {
         let userId = $('#userId').val();
         let msg = $('#msg').val();
-        setRacer(userId, 'ddd', 10);
+        // let avatorUrl = "dddd";
+        // setRacer(userId, 'ddd', 10);
+
+        // if (listRunner.has(userId)) {
+        //     console.log("readyRacer moveRacer", userId, msg);
+        //     moveRunner(userId, distant)
+        // } else {
+        //     listRunner.add(userId);
+        //     console.log("readyRacer SetRacer", userId, avatorUrl, msg);
+        //     setRacer(userId, avatorUrl, distant);
+        // }
 
         connection.invoke("SendMessage", userId, msg)
             .catch(err => console.error(err));
@@ -38,6 +51,7 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 var listRunner = new Set();
+var listFinish = new Set();
 
 connection.on("ReceiveMessage", (userId, message) => {
     console.log("ReceiveMessage", userId, message);
@@ -51,7 +65,8 @@ connection.on("ReceiveMessage", (userId, message) => {
 
 connection.on("beginRace", (message) => {
     console.log("beginRace", message);
-    isRacing = true;
+    // isRacing = true;
+    startRace();
 })
 
 connection.on("SetRacer", (userId, avatorUrl, message) => {
@@ -83,18 +98,27 @@ function parseName(name) {
 
 const css_direction = 'left';
 
+
+function getRacerTop() {
+    let trackHeight = $('.track')[0].clientHeight;
+    let top = (Math.random() * 1000) % trackHeight;
+    return top + trackTop;
+}
+
 function setRacer(name, avatorUrl, position) {
     //if (listRunner.has(userId)) {
     //    return;
     //}
     //listRunner.add(userId);
     // avatorUrl = 'https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg'
+    position = startLinePos - 40;
     let track = $('div.track');
-    let top = (Math.random() * 1000) % window.innerHeight;
+    let top = getRacerTop();
     let strRunner = ` <div id="${parseName(name)}" class="runner">
-            <div>${name}</div>
+            <div class="nickName">${name}</div>
             <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
             <image class="running-head" src="${avatorUrl}"></image>
+            <div class="info"></div>
         </div>`;
     let runner = $(strRunner);
     runner.css('top', top + 'px');
@@ -104,9 +128,20 @@ function setRacer(name, avatorUrl, position) {
 
 function moveRunner(name, distant) {
     if (!isRacing) return; // if not racing then do not move the player
+    if (listFinish.has(name)) return;
     let runner = $('#' + parseName(name));
     let position = runner.css(css_direction);
     position = position.replace('px', '');
     console.log(position);
-    runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
+    if (position > finishLinePos) {
+        listFinish.add(name);
+        runner.addClass('finishRun');
+        runner.css("top", (listFinish.size) * 50 + 'px')
+        runner.css("left", '100px');
+        console.log(`${name} finish run`);
+        connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
+            .catch(err => console.error(err));
+    } else {
+        runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
+    }
 }

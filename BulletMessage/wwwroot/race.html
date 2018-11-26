@@ -7,21 +7,94 @@
     <link rel="stylesheet" type="text/css" href="lib/race.css">
     <title>race</title>
     <style>
-    .track { 
-        background: url("static/img/background/race_track.png") no-repeat;
-        background-size:100% 100%;
-    }
-
-        .startLine, 
-        .finishLine {
-        width:1px;
-        border:2px solid white;
-        position:absolute;
-        height:100%;
+        body {
+            height: 100vh;
         }
-
+        
+        .track {
+            background: url("static/img/background/race_track.png") no-repeat;
+            background-size: 100% 100%;
+        }
+        
+        .startLine,
+        .finishLine {
+            width: 1px;
+            /* border: 2px solid white; */
+            position: absolute;
+            border-left: 5px solid white;
+            height: 100%;
+        }
+        
         .startLine {
             left: 90px;
+        }
+        
+        .showStart {
+            position: fixed;
+            top: 40%;
+            left: 40%;
+            font-weight: bolder;
+            font-size: 100px;
+            display: none;
+            color: gold;
+            /* border: 2px solid white;
+            box-shadow: 0 0 0 2px black; */
+        }
+        
+        .c1,
+        .c2,
+        .c3,
+        .c4,
+        .c5,
+        .c6,
+        .cf {
+            display: none;
+            transition: all 1s;
+        }
+        
+        @keyframes toBig {
+            from {
+                transform: scale(1, 1)
+            }
+            to {
+                transform: scale(2, 2)
+            }
+        }
+        
+        .aniBig {
+            animation: toBig 1s;
+            display: block;
+        }
+        
+        .show {
+            display: block;
+        }
+        
+        .finishRun {
+            /* border: 2px solid gold; */
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: flex-end;
+        }
+        
+        .finishRun>.nickName {
+            align-self: center;
+            color: white;
+            font-weight: bolder;
+            margin: 0 5px;
+        }
+        
+        .finishRun>.running-body {
+            display: none;
+        }
+        
+        .finishRun>.running-head {
+            display: block;
+            position: static;
+        }
+        
+        #audioBg {
+            display: none;
         }
     </style>
 </head>
@@ -34,24 +107,32 @@
             <input type="text" id="msg" />
             <button id="btnSubmit">Submit</button>
             <button id="btnStartRace">StartRace</button>
+            <button id="btnFinish">finishRace</button>
         </div>
         <div>
-            <audio controls autoplay="autoplay">
+            <audio id="audioBg" controls loop>
                 <source src="static/music/12_bar_bot_funfair_remix.mp3" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
         </div>
-        <!--<div id="ee" class="runner">
+        <!-- <div id="ee" class="runner finishRun">
             <div>ellis</div>
             <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
             <image class="running-head" src="https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg"></image>
-        </div>-->
+            <div class="info"></div>
+        </div> -->
     </div>
-
+    <div class="showStart">
+        <div class="c1">3</div>
+        <div class="c2">2</div>
+        <div class="c3">1</div>
+        <div class="c4">GO!</div>
+    </div>
     <div class="track">
         <div class="startLine"></div>
         <div class="finishLine"></div>
     </div>
+    <div class="resultDisplay"></div>
 </body>
 
 </html>
@@ -61,7 +142,43 @@
 <script>
     $('document').ready(() => {
         $('#btnStartRace').click(() => {
-            console.log('startRace');
+            startRace();
         });
-     });
+
+        $('#btnFinish').click(() => {
+            endRace();
+        });
+    });
+
+    endRace = () => {
+        let userId = $('#userId').val();
+        let txt = 'finish at 1';
+        console.log("FinishRun", userId);
+        connection.invoke("FinishRun", userId, txt)
+            .catch(err => console.error(err));
+    }
+
+    startRace = () => {
+        console.log('startRace');
+        $('.showStart').addClass('show');
+        let countI = 1;
+        let si = setInterval(() => {
+            console.log('countI', countI);
+            $('.showStart > div').removeClass('aniBig');
+            if ($('.showStart > .c' + countI).length === 0) {
+                isRacing = true;
+                $('#audioBg')[0].play();
+                clearInterval(si);
+                console.log('gogogo')
+
+                connection.invoke("SendMessageAll", 'GoGoGo')
+                    .catch(err => console.error(err));
+            }
+
+            let cd = $('.showStart > .c' + countI);
+            cd.addClass('aniBig');
+            countI++;
+        }, 1000)
+
+    }
 </script>

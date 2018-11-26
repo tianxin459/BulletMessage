@@ -18,6 +18,15 @@ namespace BulletMessage.Hubs
     public class ClientHub : Hub
     {
         public static List<ClientInfo> ClientList { get; set; } = new List<ClientInfo>();
+
+        public static string GetConnectionID(string userId)
+        {
+            var user = ClientList.FirstOrDefault(c => c.UserId == userId);
+            if (user == null) return "";
+            return user.ConnectionId;
+        }
+
+
         private ILogger<ClientHub> _logger;
 
         public ClientHub(ILogger<ClientHub> logger)
@@ -67,9 +76,11 @@ namespace BulletMessage.Hubs
             else
             {
                 // var client = Clients.Client(Context.ConnectionId);
-                var user = ClientList.FirstOrDefault(c => c.UserId == userID);
-                if (user == null) return;
-                await Clients.Client(user.ConnectionId)?.SendAsync("ReceiveMessage", userID, msg);
+                // var user = ClientList.FirstOrDefault(c => c.UserId == userID);
+                // if (user == null) return;
+                var connectionId = GetConnectionID(userID);
+                if (string.IsNullOrEmpty(connectionId)) return;
+                await Clients.Client(connectionId)?.SendAsync("ReceiveMessage", userID, msg);
             }
         }
     }

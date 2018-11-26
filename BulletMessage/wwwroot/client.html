@@ -13,6 +13,7 @@
         <input id="txt" type="text" />
         <button id="btnSubmit">Submit</button>
     </div>
+    <div id="output"></div>
     <div class="display"></div>
 </body>
 
@@ -20,6 +21,15 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
+    // function write(s) {
+    //     let output = $('#output');
+    //     var p = document.createElement("p");
+    //     console.log(s);
+    //     p.innerHTML = s;
+    //     output.appendChild(p);
+    // }
+
+
     var url = URLBASE + "/client";
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -50,7 +60,7 @@
     $('document').ready(() => {
         connection.start()
             .then(() => {
-                let id = 'eett1';
+                let id = 'et';
                 let avatorUrl = 'ccc';
                 console.log('connected=>regist')
                 connection.invoke("Register", id, avatorUrl)
@@ -61,7 +71,7 @@
         $('#btnSubmit').click(() => {
             let userId = $('#txtName').val() || 'et'
             let msg = $('#txt').val()
-            console.log('register', userId, msg);
+            console.log('SendMessage', userId, msg);
             connection.invoke("SendMessage", userId, msg)
                 .catch(err => console.error(err));
         });
