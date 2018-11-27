@@ -94,13 +94,14 @@ namespace BulletMessage.Controllers
                 StreamWriter sw = new StreamWriter(fs);
                 try
                 {
-                    sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl);
+                    sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl + "\t" + request.Email);
 
                     UserList.Add(new User()
                     {
                         NickName = request.NickName,
                         AvatarUrl = request.EnglisthName,
-                        EnglisthName = request.AvatarUrl
+                        EnglisthName = request.AvatarUrl,
+                        Email = request.Email
                     });
                 }
                 catch (Exception e)

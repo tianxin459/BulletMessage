@@ -10,5 +10,6 @@ namespace BulletMessage.Contract.Model
         public string NickName { get; set; }
         public string EnglisthName { get; set; }
         public string AvatarUrl { get; set; }
+        public string Email { get; set; }
     }
 }
