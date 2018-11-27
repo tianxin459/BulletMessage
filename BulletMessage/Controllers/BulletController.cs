@@ -24,14 +24,16 @@ namespace BulletMessage.Controllers
     public class BulletController : ControllerBase
     {
         private readonly IHubContext<BulletHub> _hubContext;
+        private readonly IHubContext<ClientHub> _clientContext;
         private readonly ILogger<BulletController> _logger;
         private IHostingEnvironment _environment;
 
-        public BulletController(IHubContext<BulletHub> hubContext, ILogger<BulletController> logger, IHostingEnvironment hostingEnvironment)
+        public BulletController(IHubContext<BulletHub> hubContext, IHubContext<ClientHub> clientContext,ILogger<BulletController> logger, IHostingEnvironment hostingEnvironment)
         {
             _environment = hostingEnvironment;
             _logger = logger;
             _hubContext = hubContext;
+            _clientContext = clientContext;
         }
         [HttpGet]
         [Route("ping")]
@@ -48,6 +50,7 @@ namespace BulletMessage.Controllers
         {
             _logger.LogDebug($"ReceiveMessage=>{request.Id}:{request.Message}");
             _hubContext.Clients.All.SendAsync("ReceiveMessage", request.Id, request.Message);
+            _clientContext.Clients.All.SendAsync("ReceiveMessage", "all", request.Message);//send message to live chat room
             return Ok(new { success = true });
         }
 
