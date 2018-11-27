@@ -122,6 +122,7 @@ function setRacer(name, avatorUrl, position) {
         </div>`;
     let runner = $(strRunner);
     runner.css('top', top + 'px');
+    runner.data('currentLocation', 0);
     runner.css(css_direction, position + 'px');
     track.append(runner);
 }
@@ -130,18 +131,23 @@ function moveRunner(name, distant) {
     if (!isRacing) return; // if not racing then do not move the player
     if (listFinish.has(name)) return;
     let runner = $('#' + parseName(name));
-    let position = runner.css(css_direction);
-    position = position.replace('px', '');
+    //let position = runner.css(css_direction);
+    let position = runner.data('currentLocation');
+    //position = position.replace('px', '');
     console.log(position);
     if (position > finishLinePos) {
         listFinish.add(name);
         runner.addClass('finishRun');
         runner.css("top", (listFinish.size) * 50 + 'px')
         runner.css("left", '100px');
+        runner.css('transform', `translateX(0)`);
         console.log(`${name} finish run`);
         connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
             .catch(err => console.error(err));
     } else {
-        runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
+        position = position + parseInt(distant);
+        runner.data('currentLocation', position);
+        runner.css('transform', `translateX(${position}px)`);
+        //runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
     }
 }

@@ -137,8 +137,9 @@
 
     connection.on("ReceiveMessage", (user, message) => {
         console.log(`${user}: ${message}`);
+        if (message == undefined) return;
         let prefix = "img=>"
-        if (user == 'img' || text.indexOf(prefix) != -1) {
+        if (user == 'img' || message.indexOf(prefix) != -1) {
             addImageFly(user, message.replace(prefix, ''))
         }
         else {
@@ -152,17 +153,18 @@
     }
     let msgList = ["adsfasdf", "dasdeawer", "cccccccccccc"];
     let sl;
+    let direction = "-"
 
     function move(ele, speed, i) {
-        var lp = ele.css('left');
-        lp = lp.replace('px', '');
-        lp = lp - speed;
-        if (lp < -500) {
+        var lp = ele.data('currentLocation');
+        lp = lp + speed;
+        if (lp > (window.innerWidth + 500)) {
             console.log(ele.text() + ' removed');
             ele.remove();
             clearInterval(i);
         }
-        ele.css('left', lp + 'px');
+        ele.data('currentLocation', lp);
+        ele.css('transform', `translateX(${direction}${lp}px)`);
     }
     addImageFly = (imgFile) => {
         let imgUrl = "/Uploads/Images/"
@@ -232,6 +234,7 @@
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');
         p.css('top', top + 'px');
+        p.data('currentLocation', 0);
         p.css('left', window.innerWidth + 'px');
         $('.container').append(p);
         let ia = setInterval(() => {
@@ -239,7 +242,7 @@
         }, 100);
     }
     //window.onload = onInit;
-    $(document).ready(() => {
+    $('document').ready(() => {
         connection.start().catch(err => console.error(err.toString()));
 
 
