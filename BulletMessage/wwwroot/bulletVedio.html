@@ -10,7 +10,7 @@
             position: relative;
             padding-top: 1.5rem;
         }
-
+        
         label {
             position: absolute;
             top: 0;
@@ -19,22 +19,22 @@
             transform: translateY(0);
             transition: all 0.2s ease-out;
         }
-
-        input:placeholder-shown + label {
+        
+        input:placeholder-shown+label {
             opacity: 0;
             transform: translateY(1rem);
         }
-
+        
         .container {
             height: 100vh;
             border: 1px solid green;
             width: 100%;
         }
-
+        
         .message {
             height: 2vh;
         }
-
+        
         .bullet {
             position: absolute;
             text-wrap: none;
@@ -44,24 +44,24 @@
             display: flex;
             flex-direction: row;
         }
-
-            .bullet .bulletAvator {
-                height: 20px;
-                /* width: 20px; */
-                border-radius: 50%;
-                margin-right: 5px;
-            }
-
-            .bullet .emoji {
-                height: 20px;
-                margin-right: 5px;
-            }
-
-            .bullet p {
-                align-self: center;
-                margin: 0 auto;
-            }
-
+        
+        .bullet .bulletAvator {
+            height: 20px;
+            /* width: 20px; */
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .bullet .emoji {
+            height: 20px;
+            margin-right: 5px;
+        }
+        
+        .bullet p {
+            align-self: center;
+            margin: 0 auto;
+        }
+        
         img.background {
             height: 100vh;
             width: 100vw;
@@ -69,7 +69,7 @@
             top: 0;
             left: 0;
         }
-
+        
         .masktext {
             position: absolute;
             top: 100px;
@@ -78,6 +78,7 @@
             width:100vw;
             height:100vh;
         }*/
+        
         .fullscreen-bg {
             position: fixed;
             top: 0;
@@ -87,14 +88,14 @@
             overflow: hidden;
             z-index: -100;
         }
-
-            .fullscreen-bg video {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
+        
+        .fullscreen-bg video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
@@ -127,7 +128,6 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
-
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
             skipNegotiation: true,
@@ -141,8 +141,7 @@
         let prefix = "img=>"
         if (user == 'img' || message.indexOf(prefix) != -1) {
             addImageFly(user, message.replace(prefix, ''))
-        }
-        else {
+        } else {
             addMsgWithAvator(user, message);
         }
     });
@@ -172,11 +171,12 @@
         let p = $('<div class="bullet"></div>');
         let img = $(`<img class="bulletImg" src="${imgUrl + imgFile}"></img>`);
         p.append(img);
-        let top = (Math.random() * 1000) % (window.innerHeight / 2);
+        let top = (Math.random() * 2000) % (window.innerHeight / 2);
         let speed = Math.random() * 10;
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');
         p.css('top', top + 'px');
+        p.data('currentLocation', 0);
         p.css('left', window.innerWidth + 'px');
         $('.container').append(p);
         let ia = setInterval(() => {
@@ -199,49 +199,49 @@
         //console.log(p);
     }
     addMsgWithAvator = (avatorUrl, text) => {
-        if (text == undefined) return;
-        let p = $('<div class="bullet"></div>');
-        let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
-        let txt = $(`<p>${text}</p>`);
-        let prefix = '#$%'
-        if (text.indexOf(prefix) != -1) {
-            text = text.replace(prefix, '')
-            let src = ''
-            switch (text) {
-                case 'like':
-                    src = 'static/img/like.png'
-                    break;
-                case 'star':
-                    src = 'static/img/star.png'
-                    break;
-                case 'clap':
-                    src = 'static/img/clapping.png'
-                    break;
-                default:
-                    src = 'static/img/clapping.png'
-                    break;
+            if (text == undefined) return;
+            let p = $('<div class="bullet"></div>');
+            let img = $(`<img class="bulletAvator" src="${avatorUrl}"></img>`);
+            let txt = $(`<p>${text}</p>`);
+            let prefix = '#$%'
+            if (text.indexOf(prefix) != -1) {
+                text = text.replace(prefix, '')
+                let src = ''
+                switch (text) {
+                    case 'like':
+                        src = 'static/img/like.png'
+                        break;
+                    case 'star':
+                        src = 'static/img/star.png'
+                        break;
+                    case 'clap':
+                        src = 'static/img/clapping.png'
+                        break;
+                    default:
+                        src = 'static/img/clapping.png'
+                        break;
+                }
+                let strImg = `<img class="emoji" src=" ${src}"></img>`;
+                txt = $(strImg + strImg + strImg);
             }
-            let strImg = `<img class="emoji" src=" ${src}"></img>`;
-            txt = $(strImg + strImg + strImg);
+            console.log(txt);
+            p.append(img);
+            p.append(txt);
+            // p.text(text);
+            console.log(window.innerHeight);
+            let top = (Math.random() * 1000) % window.innerHeight;
+            let speed = Math.random() * 10;
+            // p.css('top', '100' + 'px');
+            // p.css('left', '100' + 'px');
+            p.css('top', top + 'px');
+            p.data('currentLocation', 0);
+            p.css('left', window.innerWidth + 'px');
+            $('.container').append(p);
+            let ia = setInterval(() => {
+                move(p, speed, ia);
+            }, 100);
         }
-        console.log(txt);
-        p.append(img);
-        p.append(txt);
-        // p.text(text);
-        console.log(window.innerHeight);
-        let top = (Math.random() * 1000) % window.innerHeight;
-        let speed = Math.random() * 10;
-        // p.css('top', '100' + 'px');
-        // p.css('left', '100' + 'px');
-        p.css('top', top + 'px');
-        p.data('currentLocation', 0);
-        p.css('left', window.innerWidth + 'px');
-        $('.container').append(p);
-        let ia = setInterval(() => {
-            move(p, speed, ia);
-        }, 100);
-    }
-    //window.onload = onInit;
+        //window.onload = onInit;
     $('document').ready(() => {
         connection.start().catch(err => console.error(err.toString()));
 
@@ -254,7 +254,6 @@
 </script>
 
 <script type="text/javascript">
-
     function playPause() {
         let myVideo = $('video');
         console.log(myVideo.paused);

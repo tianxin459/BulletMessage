@@ -82,7 +82,7 @@
         var lp = ele.data('currentLocation');
         //console.log(ele.data('currentLocation'));
         lp = lp + speed;
-        if (lp > (window.innerWidth+500)) {
+        if (lp > (window.innerWidth + 500)) {
             console.log(ele.text() + ' removed');
             ele.remove();
             clearInterval(i);
@@ -96,7 +96,7 @@
         let p = $('<div class="bullet"></div>');
         let img = $(`<img class="bulletImg" src="${imgUrl + imgFile}"></img>`);
         p.append(img);
-        let top = (Math.random() * 1000) % (window.innerHeight / 2);
+        let top = (Math.random() * 2000) % (window.innerHeight / 2);
         let speed = Math.random() * 10;
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');
@@ -114,6 +114,7 @@
         let top = (Math.random() * 1000) % window.innerHeight;
         let speed = Math.random() * 10;
         p.css('top', top + 'px');
+        p.data('currentLocation', 0)
         p.css('left', window.innerWidth + 'px');
         $('.container').append(p);
         let ia = setInterval(() => {

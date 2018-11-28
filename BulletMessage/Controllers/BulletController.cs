@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
+using BulletMessage.Contract.Model;
 
 namespace BulletMessage.Controllers
 {
@@ -28,12 +29,16 @@ namespace BulletMessage.Controllers
         private readonly ILogger<BulletController> _logger;
         private IHostingEnvironment _environment;
 
-        public BulletController(IHubContext<BulletHub> hubContext, IHubContext<ClientHub> clientContext,ILogger<BulletController> logger, IHostingEnvironment hostingEnvironment)
+        public static List<Message> MessageHistory;
+
+        public BulletController(IHubContext<BulletHub> hubContext, IHubContext<ClientHub> clientContext, ILogger<BulletController> logger, IHostingEnvironment hostingEnvironment)
         {
             _environment = hostingEnvironment;
             _logger = logger;
             _hubContext = hubContext;
             _clientContext = clientContext;
+            if (MessageHistory == null)
+                MessageHistory = new List<Message>();
         }
         [HttpGet]
         [Route("ping")]
@@ -48,9 +53,17 @@ namespace BulletMessage.Controllers
         [HttpPost]
         public IActionResult Post(BulletRequest request)
         {
+            //request.Id is avatorUrl
             _logger.LogDebug($"ReceiveMessage=>{request.Id}:{request.Message}");
             _hubContext.Clients.All.SendAsync("ReceiveMessage", request.Id, request.Message);
-            _clientContext.Clients.All.SendAsync("ReceiveMessage", "all", request.Message);//send message to live chat room
+            _clientContext.Clients.All.SendAsync("ReceiveMessage", request.Id, request.Message, request.nickName);//send message to live chat room
+            MessageHistory.Add(new Message()
+            {
+                NickName = request.nickName,
+                Msg = request.Message,
+                AvatarUrl = request.Id,
+                TimeStamp = DateTime.Now
+            });
             return Ok(new { success = true });
         }
 
@@ -63,6 +76,13 @@ namespace BulletMessage.Controllers
             _logger.LogDebug($"changeBackground=>{request.Id}:{request.Message}");
             _hubContext.Clients.All.SendAsync("changeBackground", request.Message);
             return Ok(new { success = true });
+        }
+
+        [HttpGet]
+        [Route("messageHistory")]
+        public IActionResult GetMessageHistory()
+        {
+            return Ok(MessageHistory);
         }
 
         [HttpGet]

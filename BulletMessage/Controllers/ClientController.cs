@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using BulletMessage.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BulletMessage.Contract.Model;
+using Newtonsoft.Json;
 
 namespace BulletMessage.Controllers
 {
@@ -26,7 +27,7 @@ namespace BulletMessage.Controllers
         {
             _hubContext = hubContext;
             _logger = logger;
-            if(UserList==null)
+            if (UserList == null)
                 UserList = readUserListFromStorage();
         }
         public static string ConfigurationJson { get; set; }
@@ -42,36 +43,49 @@ namespace BulletMessage.Controllers
         private List<User> readUserListFromStorage()
         {
             var path = Directory.GetCurrentDirectory() + @"\userList";
-            if (!System.IO.File.Exists(path)) {
+            if (!System.IO.File.Exists(path))
+            {
                 _logger.LogError(path + " not exists");
                 return new List<User>();
             }
             string line;
 
             if (UserList == null) UserList = new List<User>();
-
+            var outputStr = "";
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (StreamReader sr = new StreamReader(fs))
                 {
-                    while ((line = sr.ReadLine()) != null)
-                    {
+                    outputStr = sr.ReadToEnd();
+                    // while ((line = sr.ReadLine()) != null)
+                    // {
 
-                        if (line.Split("\t").Count() < 3) _logger.LogError("read UserList Error line=> " + line);
-                        string nickName = line.Split("\t")[0];
-                        string englishName = line.Split("\t")[1];
-                        string avatarUrl = line.Split("\t")[2];
+                    //     if (line.Split("\t").Count() < 3) _logger.LogError("read UserList Error line=> " + line);
+                    //     string nickName = line.Split("\t")[0];
+                    //     string englishName = line.Split("\t")[1];
+                    //     string avatarUrl = line.Split("\t")[2];
+
+                    //     string model = "";
+                    //     string email = "";
+                    //     if (line.Split("\t").Count() > 4)
+                    //     {
+                    //         email = avatarUrl = line.Split("\t")[3];
+                    //         model = avatarUrl = line.Split("\t")[4];
+                    //     }
 
 
-                        UserList.Add(new User()
-                        {
-                            NickName = nickName,
-                            AvatarUrl = avatarUrl,
-                            EnglisthName = englishName
-                        });
-                    }
+                    //     UserList.Add(new User()
+                    //     {
+                    //         NickName = nickName,
+                    //         AvatarUrl = avatarUrl,
+                    //         EnglisthName = englishName,
+                    //         Email = email,
+                    //         Model = model
+                    //     });
+                    // }
                 }
             }
+            UserList = JsonConvert.DeserializeObject<List<User>>(outputStr);
             return UserList;
         }
 
@@ -89,20 +103,24 @@ namespace BulletMessage.Controllers
             //ConfigurationJson = request.ConfigurationJson;
             var path = Directory.GetCurrentDirectory() + @"\userList";
 
+            if (UserList.Any(u => u.NickName == request.NickName))
+                return Ok(new { Success = false, Message = "duplicate user", req = request });
+
             using (FileStream fs = new FileStream(path, FileMode.Create))
             {
                 StreamWriter sw = new StreamWriter(fs);
                 try
                 {
-                    sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl + "\t" + request.Email);
-
                     UserList.Add(new User()
                     {
                         NickName = request.NickName,
-                        AvatarUrl = request.EnglisthName,
-                        EnglisthName = request.AvatarUrl,
-                        Email = request.Email
+                        AvatarUrl = request.AvatarUrl,
+                        EnglishName = request.EnglishName,
+                        Email = request.Email,
+                        Model = request.Model
                     });
+                    sw.Write(JsonConvert.SerializeObject(UserList));
+                    // sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl + "\t" + request.Email + "\t" + request.Model);
                 }
                 catch (Exception e)
                 {

@@ -12,9 +12,11 @@ namespace BulletMessage.Contract.Request
         public string NickName { get; set; }
         [DataMember(Name = "email")]
         public string Email { get; set; }
-        [DataMember(Name = "englisthName")]
-        public string EnglisthName { get; set; }
+        [DataMember(Name = "englishName")]
+        public string EnglishName { get; set; }
         [DataMember(Name = "avatarUrl")]
         public string AvatarUrl { get; set; }
+        [DataMember(Name = "model")]
+        public string Model { get; set; }
     }
 }
