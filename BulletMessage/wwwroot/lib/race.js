@@ -100,7 +100,7 @@ const css_direction = 'left';
 
 
 function getRacerTop() {
-    let trackHeight = $('.track')[0].clientHeight;
+    let trackHeight = ($('.track')[0].clientHeight - 90);
     let top = (Math.random() * 1000) % trackHeight;
     return top + trackTop;
 }
@@ -128,6 +128,7 @@ function setRacer(name, avatorUrl, position) {
 }
 
 function moveRunner(name, distant) {
+    if (!distant) distant = 10;
     if (!isRacing) return; // if not racing then do not move the player
     if (listFinish.has(name)) return;
     let runner = $('#' + parseName(name));

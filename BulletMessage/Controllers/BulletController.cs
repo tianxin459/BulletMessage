@@ -102,6 +102,7 @@ namespace BulletMessage.Controllers
         {
             var uploadfile = Request.Form.Files[0];
             var nickName = Request.Form["nickName"].ToString();
+            var englishName = Request.Form["englishName"].ToString();
             var avatarUrl = Request.Form["avatarUrl"].ToString();
             _logger.LogDebug($"UploadFile=>{nickName}=>{avatarUrl}");
 
@@ -142,13 +143,29 @@ namespace BulletMessage.Controllers
                 var strDateTime = DateTime.Now.ToString("yyMMddhhmmssfff"); //取得时间字符串
                 var strRan = Convert.ToString(new Random().Next(100, 999)); //生成三位随机数
                 var saveName = strDateTime + strRan + fileExtension;
-                var savePath = webRootPath + filePath + strDateTime + ".png";
+                var avatarUrlShort = avatarUrl.Replace("https://wx.qlogo.cn/mmopen/vi_32/", "");
+                avatarUrlShort = avatarUrlShort.Replace("\\132", "");
+                avatarUrlShort = avatarUrlShort.Replace("/132", "");
+                _logger.LogInformation("short cut=>" + avatarUrlShort);
+                var fileName = nickName + "_" + strDateTime + "_" + avatarUrlShort;
+                // _logger.LogInformation(fileName);
+                var savePath = webRootPath + filePath + fileName + fileExtension;//".png";
                 using (FileStream stream = new FileStream(savePath, FileMode.Create))
                 {
                     await uploadfile.CopyToAsync(stream);
                 }
                 var prefix = "img=>";
                 await _hubContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, prefix + strDateTime + ".png");
+
+                var message = "img=>" + fileName + fileExtension;
+                await _clientContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, message, nickName);//send message to live chat room
+                MessageHistory.Add(new Message()
+                {
+                    NickName = nickName,
+                    Msg = message,
+                    AvatarUrl = avatarUrl,
+                    TimeStamp = DateTime.Now
+                });
             }
 
             return Ok(new { isSucceed = true, resultMsg = "upload success" });
