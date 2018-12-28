@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using BulletMessage.Contract.Request;
 using BulletMessage.Hubs;
@@ -30,7 +31,7 @@ namespace BulletMessage.Controllers
         [Route("run")]
         public IActionResult Run(RaceRequest request)
         {
-            _logger.LogDebug(JsonConvert.SerializeObject(request));
+            _logger.LogInformation(JsonConvert.SerializeObject(request));
             //if(RunnerList.Contains(request.UserId))
             //{
             //    _hubContext.Clients.All.SendAsync("ReceiveMessage", request.UserId, request.Message);
@@ -40,7 +41,7 @@ namespace BulletMessage.Controllers
             //    RunnerList.Add(request.UserId);
             //    _hubContext.Clients.All.SendAsync("setRacer", request.UserId, request.AvatorUrl, request.Message);
             //}
-            _hubContext.Clients.All.SendAsync("setRacer", request.UserId, request.AvatorUrl, request.Message);
+            _hubContext.Clients.All.SendAsync("setRacer", request.UserId, request.AvatorUrl, request.Message, request.EnglishName);
             return Ok(new { Success = true });
         }
 
@@ -62,7 +63,38 @@ namespace BulletMessage.Controllers
             _logger.LogDebug(JsonConvert.SerializeObject(request));
             if (request.Message == "GoGoGo")
             {
-                _hubContext.Clients.All.SendAsync("beginRace",request.Message);
+                _hubContext.Clients.All.SendAsync("beginRace", request.Message);
+            }
+            return Ok(new { Success = true });
+        }
+
+
+        [HttpPost]
+        [Route("result")]
+        public IActionResult Result(RaceResultRequest request)
+        {
+            _logger.LogError(request.Value);
+            var strDateTime = DateTime.Now.ToString("yyMMddhhmmssfff"); //取得时间字符串
+            var path = Directory.GetCurrentDirectory() + @"\raceresult_" + strDateTime;
+            using (FileStream fs = new FileStream(path, FileMode.Create))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                try
+                {
+                    sw.Write(request.Value);
+                    // sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl + "\t" + request.Email + "\t" + request.Model);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    throw e;
+                }
+                finally
+                {
+                    sw.Flush();
+                    sw.Close();
+                    fs.Close();
+                }
             }
             return Ok(new { Success = true });
         }

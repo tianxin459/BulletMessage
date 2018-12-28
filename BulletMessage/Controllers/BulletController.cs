@@ -92,8 +92,50 @@ namespace BulletMessage.Controllers
             var webRootPath = _environment.WebRootPath;
             var filePath = "/Uploads/Images/";
             DirectoryInfo dir = new DirectoryInfo(webRootPath + filePath);
-            var fileList = dir.GetFiles().Select(f => f.Name).ToList();
+
+            var files = dir.GetFiles();
+
+            List<FileInfo> list = new List<FileInfo>(files);
+            list.Sort(new Comparison<FileInfo>(delegate (FileInfo a, FileInfo b)
+            {
+                return b.CreationTime.CompareTo(a.CreationTime);
+
+            }));
+
+            var fileList = list.Select(f => f.Name).ToList();
             return Ok(fileList);
+        }
+
+        [HttpPost]
+        [Route("deletefiles")]
+        public IActionResult DeleteUploadFile(DeleteFileRequest request)
+        {
+            var webRootPath = _environment.WebRootPath;
+            var filePath = "/Uploads/Images/";
+            DirectoryInfo dir = new DirectoryInfo(webRootPath + filePath);
+
+            var targetFilePath = webRootPath + filePath + request.FileName;
+
+            try
+            {
+                System.IO.File.Delete(targetFilePath);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw e;
+            }
+            // var files = dir.GetFiles();
+
+            // List<FileInfo> list = new List<FileInfo>(files);
+            // list.Sort(new Comparison<FileInfo>(delegate (FileInfo a, FileInfo b)
+            // {
+            //     return b.CreationTime.CompareTo(a.CreationTime);
+
+            // }));
+
+            // var fileList = list.Select(f => f.Name).ToList();
+            return Ok("file delete" + targetFilePath);
         }
 
         [HttpPost]
@@ -135,7 +177,7 @@ namespace BulletMessage.Controllers
 
                 //判断文件大小    
                 long length = uploadfile.Length;
-                if (length > 1024 * 1024 * 5) //2M
+                if (length > 1024 * 1024 * 10) //2M
                 {
                     return Ok(new { isSucceed = false, resultMsg = "file exceed 5M" });
                 }
@@ -171,6 +213,8 @@ namespace BulletMessage.Controllers
             return Ok(new { isSucceed = true, resultMsg = "upload success" });
             // return Ok("Ok");
         }
+
+
 
     }
 }

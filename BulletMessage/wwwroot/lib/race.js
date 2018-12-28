@@ -3,7 +3,9 @@
 let isRacing = false;
 let trackTop = 0;
 let trackBottom = 0;
-let finishLinePos, startLinePos
+let finishLinePos, startLinePos;
+let reportSend = false;
+let racerList = [];
 
 $('document').ready(() => {
     connection
@@ -18,8 +20,8 @@ $('document').ready(() => {
     finishLinePos = window.innerWidth - 100;
     startLinePos = $('.startLine').position().left;
 
-    console.log(finishLinePos);
     $('.finishLine').css("left", finishLinePos + 'px');
+    console.log(finishLinePos);
 
     $('#btnSubmit').click(e => {
         let userId = $('#userId').val();
@@ -69,15 +71,15 @@ connection.on("beginRace", (message) => {
     startRace();
 })
 
-connection.on("SetRacer", (userId, avatorUrl, message) => {
+connection.on("SetRacer", (userId, avatorUrl, message, englishName) => {
     let distant = parseInt(message, 10)
     if (listRunner.has(userId)) {
         console.log("moveRacer", userId, message);
         moveRunner(userId, distant)
     } else {
         listRunner.add(userId);
-        console.log("SetRacer", userId, avatorUrl, message);
-        setRacer(userId, avatorUrl, distant);
+        console.log("SetRacer", userId, avatorUrl, message, englishName);
+        setRacer(userId, avatorUrl, distant, englishName);
     }
 })
 connection.on("readyRacer", (userId, avatorUrl, message) => {
@@ -87,8 +89,8 @@ connection.on("readyRacer", (userId, avatorUrl, message) => {
         moveRunner(userId, distant)
     } else {
         listRunner.add(userId);
-        console.log("readyRacer SetRacer", userId, avatorUrl, message);
-        setRacer(userId, avatorUrl, distant);
+        console.log("readyRacer SetRacer", userId, avatorUrl, message, englishName);
+        setRacer(userId, avatorUrl, distant, englishName);
     }
 })
 
@@ -105,7 +107,7 @@ function getRacerTop() {
     return top + trackTop;
 }
 
-function setRacer(name, avatorUrl, position) {
+function setRacer(name, avatorUrl, position, englishName) {
     //if (listRunner.has(userId)) {
     //    return;
     //}
@@ -115,7 +117,7 @@ function setRacer(name, avatorUrl, position) {
     let track = $('div.track');
     let top = getRacerTop();
     let strRunner = ` <div id="${parseName(name)}" class="runner">
-            <div class="nickName">${name}</div>
+            <div class="nickName">${englishName}</div>
             <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
             <image class="running-head" src="${avatorUrl}"></image>
             <div class="info"></div>
@@ -137,7 +139,37 @@ function moveRunner(name, distant) {
     //position = position.replace('px', '');
     console.log(position);
     if (position > finishLinePos) {
+        console.log('listFinish', listFinish.size);
         listFinish.add(name);
+        if (listFinish.size >= 10 || listFinish.size == listRunner.size) {
+            $('finishGame').show();
+            if (listFinish.size >= 10) {
+                runner.css("display", "none");
+            }
+            if (!reportSend) {
+                let resultUrl = apiRace + "/result";
+                let listData = Array.from(listFinish)
+
+                data = {
+                    Value: JSON.stringify(listData)
+                };
+                console.log('send report', data);
+                reportSend = true;
+
+                // $.ajax({
+                //     url: resultUrl,
+                //     type: "POST",
+                //     data: data,
+                //     contentType: "application/json",
+                //     dataType: "json",
+                //     success: resp => {
+                //         console.log(resp);
+                //     }
+                // });
+            }
+            // return;
+        }
+        runner.removeClass("stage3");
         runner.addClass('finishRun');
         runner.css("top", (listFinish.size) * 50 + 'px')
         runner.css("left", '100px');
@@ -147,8 +179,23 @@ function moveRunner(name, distant) {
             .catch(err => console.error(err));
     } else {
         position = position + parseInt(distant);
+        let transformText = `translateX(${position}px)`;
+        if (position > finishLinePos - 300 * 2) {
+            runner.addClass("stage1");
+            transformText += ' scale(1.2)';
+        }
+        if (position > finishLinePos - 200 * 2) {
+            runner.removeClass("stage1");
+            runner.addClass("stage2");
+            transformText += ' scale(1.4)';
+        }
+        if (position > finishLinePos - 100 * 2) {
+            runner.removeClass("stage2");
+            runner.addClass("stage3");
+            transformText += ' scale(1.6)';
+        }
         runner.data('currentLocation', position);
-        runner.css('transform', `translateX(${position}px)`);
+        runner.css('transform', transformText);
         //runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
     }
 }

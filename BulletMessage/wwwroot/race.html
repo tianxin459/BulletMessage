@@ -29,7 +29,8 @@
             left: 90px;
         }
         
-        .showStart {
+        .showStart,
+        .finishGame {
             position: fixed;
             top: 40%;
             left: 40%;
@@ -39,6 +40,10 @@
             color: gold;
             /* border: 2px solid white;
             box-shadow: 0 0 0 2px black; */
+        }
+        
+        .finishGame {
+            display: none;
         }
         
         .c1,
@@ -70,6 +75,21 @@
             display: block;
         }
         
+        .stage1 {
+            /* border: 2px solid gold; */
+            transform: scale(1.2);
+        }
+        
+        .stage2 {
+            /* border: 2px solid blue; */
+            transform: scale(1.4);
+        }
+        
+        .stage3 {
+            /* border: 2px solid red; */
+            transform: scale(1.6);
+        }
+        
         .finishRun {
             /* border: 2px solid gold; */
             display: flex;
@@ -96,11 +116,15 @@
         #audioBg {
             display: none;
         }
+        
+        .controlbar {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
-    <div>
+    <div class="controlbar">
         race
         <div>
             <input type="text" id="userId" />
@@ -128,11 +152,18 @@
         <div class="c3">1</div>
         <div class="c4">GO!</div>
     </div>
+
+    <div class="finishGame">
+        Finish!
+    </div>
+
     <div class="track">
         <div class="startLine"></div>
         <div class="finishLine"></div>
     </div>
-    <div class="resultDisplay"></div>
+    <div class="resultDisplay">
+        <div class="ranking"></div>
+    </div>
 </body>
 
 </html>
@@ -140,6 +171,7 @@
 <script src="lib/globalConfig.js"></script>
 <script src="lib/race.js"></script>
 <script>
+    let raceStarted = false;
     $('document').ready(() => {
         $('#btnStartRace').click(() => {
             startRace();
@@ -160,6 +192,8 @@
 
     startRace = () => {
         console.log('startRace');
+        if (raceStarted) return;
+        raceStarted = true;
         $('.showStart').addClass('show');
         let countI = 1;
         let si = setInterval(() => {

@@ -14,5 +14,7 @@ namespace BulletMessage.Contract.Request
         public string AvatorUrl { get; set; }
         [DataMember(Name = "message")]
         public string Message { get; set; }
+        [DataMember(Name = "englishName")]
+        public string EnglishName { get; set; }
     }
 }
