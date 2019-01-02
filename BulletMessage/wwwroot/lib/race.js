@@ -142,30 +142,31 @@ function moveRunner(name, distant) {
         console.log('listFinish', listFinish.size);
         listFinish.add(name);
         if (listFinish.size >= 10 || listFinish.size == listRunner.size) {
-            $('finishGame').show();
+            $('.finishGame').show();
             if (listFinish.size >= 10) {
                 runner.css("display", "none");
             }
             if (!reportSend) {
                 let resultUrl = apiRace + "/result";
                 let listData = Array.from(listFinish)
-
+                let resultStr = JSON.stringify(listData);
+                // resultStr = resultStr.replace('"', '\"');
                 data = {
-                    Value: JSON.stringify(listData)
+                    Value: resultStr
                 };
                 console.log('send report', data);
                 reportSend = true;
 
-                // $.ajax({
-                //     url: resultUrl,
-                //     type: "POST",
-                //     data: data,
-                //     contentType: "application/json",
-                //     dataType: "json",
-                //     success: resp => {
-                //         console.log(resp);
-                //     }
-                // });
+                $.ajax({
+                    url: resultUrl,
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: resp => {
+                        console.log(resp);
+                    }
+                });
             }
             // return;
         }

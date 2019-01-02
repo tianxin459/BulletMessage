@@ -89,6 +89,15 @@ namespace BulletMessage.Controllers
             return UserList;
         }
 
+
+        [HttpGet]
+        [Route("wxlogin/{jscode}")]
+        public IActionResult Login(string jscode)
+        {
+            // using(var client = new HttpClient)
+            return Ok();
+        }
+
         [HttpGet]
         [Route("getUserList")]
         public IActionResult GetUserList()

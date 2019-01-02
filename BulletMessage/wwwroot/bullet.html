@@ -12,6 +12,15 @@
             border: 1px solid black;
             box-shadow: 0 0 0 1px white;
         }
+        
+        .logo {
+            z-index: 1000;
+            position: absolute;
+            top: 70px;
+            left: 70px;
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
 
@@ -20,6 +29,7 @@
         <p id="msg" class="msg"></p>
     </div>
     <div class="container">
+        <img class="logo" src="static/img/GD-logo.png"></img>
         <img class="background" src="static/img/background/bg1.png"></img>
         <!--https://www.w3schools.com/html/mov_bbb.mp4-->
         <!--<div class="fullscreen-bg">
@@ -32,6 +42,7 @@
             <img class="bulletImg" src="/Uploads/Images/181122024940880.png"></img>
         </div> -->
     </div>
+    <!-- <div class="bullet">testest</div> -->
     <!-- <div>
         <div class="form-group">
             <input type="text" id="dynamic-label-input" placeholder="Enter some text">
@@ -69,6 +80,12 @@
 </script>
 <script>
     let messageList = new Array();
+    let top_up = 70;
+    let top_down = 190;
+
+    function randomFrom(lowerValue, upperValue) {
+        return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
+    }
 
     function show(msg) {
         $('#msg').text(msg);
@@ -167,8 +184,8 @@
             p.append(txt);
             // p.text(text);
             console.log(window.innerHeight);
-            let top = (Math.random() * 1000) % (window.innerHeight / 8); //upper half screen
-            let speed = Math.random() * 10;
+            let top = randomFrom(top_up, top_down); // (Math.random() * 1000) % (window.innerHeight / 8); //upper half screen
+            let speed = randomFrom(1, 10); //Math.random() * 10;
             p.css('top', top + 'px');
             p.css('left', window.innerWidth + 'px');
             p.data('currentLocation', 0)
