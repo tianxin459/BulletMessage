@@ -174,13 +174,13 @@ function moveRunner(name, distant) {
         runner.addClass('finishRun');
         runner.css("top", (listFinish.size) * 50 + 'px')
         runner.css("left", '100px');
-        runner.css('transform', `translateX(0)`);
+        runner.css('transform', `translateX(0) translateZ(0)`);
         console.log(`${name} finish run`);
         connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
             .catch(err => console.error(err));
     } else {
         position = position + parseInt(distant);
-        let transformText = `translateX(${position}px)`;
+        let transformText = `translateX(${position}px) translateZ(${position}px)`;
         if (position > finishLinePos - 300 * 2) {
             runner.addClass("stage1");
             transformText += ' scale(1.2)';
@@ -188,12 +188,12 @@ function moveRunner(name, distant) {
         if (position > finishLinePos - 200 * 2) {
             runner.removeClass("stage1");
             runner.addClass("stage2");
-            transformText += ' scale(1.4)';
+            transformText += ' scale(1.3)';
         }
         if (position > finishLinePos - 100 * 2) {
             runner.removeClass("stage2");
             runner.addClass("stage3");
-            transformText += ' scale(1.6)';
+            transformText += ' scale(1.4)';
         }
         runner.data('currentLocation', position);
         runner.css('transform', transformText);

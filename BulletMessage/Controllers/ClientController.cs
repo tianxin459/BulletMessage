@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BulletMessage.Contract.Request;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,7 @@ namespace BulletMessage.Controllers
     {
         private readonly IHubContext<ClientHub> _hubContext;
         private readonly ILogger<ClientController> _logger;
+        private HttpClient _httpClient;
 
         public static List<User> UserList = null;
 
@@ -92,10 +94,33 @@ namespace BulletMessage.Controllers
 
         [HttpGet]
         [Route("wxlogin/{jscode}")]
-        public IActionResult Login(string jscode)
+        public async Task<IActionResult> Login(string jscode)
         {
-            // using(var client = new HttpClient)
-            return Ok();
+            var url = string.Format("https://api.weixin.qq.com/sns/jscode2session?appid=wx542fb51443cdffdb&secret=c8dc3a878a9ab54a149b945777326b94&js_code={0}&grant_type=authorization_code", jscode);
+            var responseCode = "";
+            // dynamic respObj = new ExpendoObject();
+            var respStr = "";
+            try
+            {
+                if (_httpClient == null) _httpClient = new HttpClient();
+                var resp = await _httpClient.GetAsync(url);
+                respStr = resp.Content.ReadAsStringAsync().Result;
+                dynamic respObj = JsonConvert.DeserializeObject(respStr);
+                // var respObj = JObject
+                // return Ok(respObj.openid);
+                if (respObj.openid == null)
+                    responseCode = respObj.errmsg;
+                else
+                    responseCode = respObj.openid;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, respStr);
+                dynamic respObj = JsonConvert.DeserializeObject(respStr);
+                responseCode = respObj.errmsg;
+            }
+
+            return Ok(responseCode);
         }
 
         [HttpGet]

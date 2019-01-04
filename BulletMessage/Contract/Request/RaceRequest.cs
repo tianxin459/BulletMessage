@@ -16,5 +16,9 @@ namespace BulletMessage.Contract.Request
         public string Message { get; set; }
         [DataMember(Name = "englishName")]
         public string EnglishName { get; set; }
+
+        [DataMember(Name = "gender")]
+        public int Gender { get; set; }
+
     }
 }

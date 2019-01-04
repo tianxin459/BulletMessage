@@ -21,6 +21,7 @@
 .runner {
     position: absolute;
     transition: all linear 0.1s;
+    transform: translateZ(0);
 }
 
 .runner .running-head {
@@ -37,7 +38,6 @@
 
 .runner .running-body {
     position: absolute;
-    transform: translateZ(0);
     top: 33px;
     left: -5px;
     width: 50px;
