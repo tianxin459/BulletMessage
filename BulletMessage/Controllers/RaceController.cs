@@ -36,7 +36,7 @@ namespace BulletMessage.Controllers
             int.TryParse(request.Message, out step);
             if (step != 0 && request.Gender == 2)
             {
-                request.Message = (step * 1.2).ToString();
+                request.Message = (step * 1).ToString();
             }
             _hubContext.Clients.All.SendAsync("setRacer", request.UserId, request.AvatorUrl, request.Message, request.EnglishName);
             return Ok(new { Success = true });

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using BulletMessage.Contract.Model;
+using System.Text.RegularExpressions;
 
 namespace BulletMessage.Controllers
 {
@@ -30,6 +31,8 @@ namespace BulletMessage.Controllers
         private IHostingEnvironment _environment;
 
         public static List<Message> MessageHistory;
+
+        private int _messageSize = 50;
 
         public BulletController(IHubContext<BulletHub> hubContext, IHubContext<ClientHub> clientContext, ILogger<BulletController> logger, IHostingEnvironment hostingEnvironment)
         {
@@ -60,10 +63,15 @@ namespace BulletMessage.Controllers
             MessageHistory.Add(new Message()
             {
                 NickName = request.nickName,
+                EnglishName = request.englishName,
                 Msg = request.Message,
                 AvatarUrl = request.Id,
                 TimeStamp = DateTime.Now
             });
+            if (MessageHistory.Count() > _messageSize)
+            {
+                MessageHistory.RemoveAt(0);
+            }
             return Ok(new { success = true });
         }
 
@@ -82,6 +90,10 @@ namespace BulletMessage.Controllers
         [Route("messageHistory")]
         public IActionResult GetMessageHistory()
         {
+            if (MessageHistory.Count() > _messageSize)
+            {
+                MessageHistory = MessageHistory.OrderBy(m => m.TimeStamp).Take(30).ToList();
+            }
             return Ok(MessageHistory);
         }
 
@@ -93,14 +105,29 @@ namespace BulletMessage.Controllers
             var filePath = "/Uploads/Images/";
             DirectoryInfo dir = new DirectoryInfo(webRootPath + filePath);
 
-            var files = dir.GetFiles();
+            // //判断后缀是否是图片
+            // const string fileFilt = ".gif|.jpg|.php|.jsp|.jpeg|.png|......";
+            // if (fileExtension == null)
+            // {
+            //     return Ok(new { isSucceed = false, resultMsg = "no extension" });
+            // }
+            // if (fileFilt.IndexOf(fileExtension.ToLower(), StringComparison.Ordinal) <= -1)
+            // {
+            //     return Ok(new { isSucceed = false, resultMsg = "no picture" });
+            // }
+
+            Regex regPic = new Regex(@".*\.(jpg|jpeg|png|gif)$");
+            var files = dir.GetFiles()?.Where(f => regPic.IsMatch(f.Name.ToLower()))
+            .OrderBy(f1 => f1.Name.Count())
+            .ThenBy(f2 => f2.Name)
+            .ToList();
 
             List<FileInfo> list = new List<FileInfo>(files);
-            list.Sort(new Comparison<FileInfo>(delegate (FileInfo a, FileInfo b)
-            {
-                return b.CreationTime.CompareTo(a.CreationTime);
+            // list.Sort(new Comparison<FileInfo>(delegate (FileInfo a, FileInfo b)
+            // {
+            //     return b.CreationTime.CompareTo(a.CreationTime);
 
-            }));
+            // }));
 
             var fileList = list.Select(f => f.Name).ToList();
             return Ok(fileList);
@@ -125,16 +152,6 @@ namespace BulletMessage.Controllers
                 _logger.LogError(e.Message);
                 throw e;
             }
-            // var files = dir.GetFiles();
-
-            // List<FileInfo> list = new List<FileInfo>(files);
-            // list.Sort(new Comparison<FileInfo>(delegate (FileInfo a, FileInfo b)
-            // {
-            //     return b.CreationTime.CompareTo(a.CreationTime);
-
-            // }));
-
-            // var fileList = list.Select(f => f.Name).ToList();
             return Ok("file delete" + targetFilePath);
         }
 
@@ -145,6 +162,7 @@ namespace BulletMessage.Controllers
             var uploadfile = Request.Form.Files[0];
             var nickName = Request.Form["nickName"].ToString();
             var englishName = Request.Form["englishName"].ToString();
+            var openId = Request.Form["openid"].ToString();
             var avatarUrl = Request.Form["avatarUrl"].ToString();
             _logger.LogDebug($"UploadFile=>{nickName}=>{avatarUrl}");
 
@@ -189,7 +207,7 @@ namespace BulletMessage.Controllers
                 avatarUrlShort = avatarUrlShort.Replace("\\132", "");
                 avatarUrlShort = avatarUrlShort.Replace("/132", "");
                 _logger.LogInformation("short cut=>" + avatarUrlShort);
-                var fileName = nickName + "_" + strDateTime + "_" + avatarUrlShort;
+                var fileName = englishName + "-_-" + strDateTime + "-_-" + avatarUrlShort;
                 // _logger.LogInformation(fileName);
                 var savePath = webRootPath + filePath + fileName + fileExtension;//".png";
                 using (FileStream stream = new FileStream(savePath, FileMode.Create))
@@ -197,23 +215,90 @@ namespace BulletMessage.Controllers
                     await uploadfile.CopyToAsync(stream);
                 }
                 var prefix = "img=>";
-                await _hubContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, prefix + strDateTime + ".png");
+                await _hubContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, prefix + fileName + fileExtension);
 
                 var message = "img=>" + fileName + fileExtension;
-                await _clientContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, message, nickName);//send message to live chat room
+                await _clientContext.Clients.All.SendAsync("ReceiveMessage", avatarUrl, message, englishName);//send message to live chat room
                 MessageHistory.Add(new Message()
                 {
-                    NickName = nickName,
+                    NickName = englishName,
+                    EnglishName = englishName,
                     Msg = message,
                     AvatarUrl = avatarUrl,
                     TimeStamp = DateTime.Now
                 });
+                if (MessageHistory.Count() > _messageSize)
+                {
+                    MessageHistory.RemoveAt(0);
+                }
             }
 
             return Ok(new { isSucceed = true, resultMsg = "upload success" });
             // return Ok("Ok");
         }
 
+
+        [HttpPost]
+        [Route("uploadbg")]
+        public async Task<IActionResult> uploadBgFile()
+        {
+            try
+            {
+                var uploadfile = Request.Form.Files[0];
+                var nickName = Request.Form["nickName"].ToString();
+                var englishName = Request.Form["englishName"].ToString();
+                var openId = Request.Form["openid"].ToString();
+                var avatarUrl = Request.Form["avatarUrl"].ToString();
+                _logger.LogDebug($"UploadBgFile=>{nickName}=>{avatarUrl}");
+
+                var now = DateTime.Now;
+                var webRootPath = _environment.WebRootPath;
+                var filePath = webRootPath + "/static/img/background/bg1.png";
+
+                // if (!Directory.Exists(webRootPath + filePath))
+                // {
+                //     Directory.CreateDirectory(webRootPath + filePath);
+                // }
+
+                if (uploadfile != null)
+                {
+                    //delete the file first
+                    System.IO.File.Delete(filePath);
+                    //文件后缀
+                    var fileExtension = Path.GetExtension(uploadfile.FileName);
+
+                    //判断后缀是否是图片
+                    const string fileFilt = ".gif|.jpg|.php|.jsp|.jpeg|.png|......";
+                    if (fileExtension == null)
+                    {
+                        return Ok(new { isSucceed = false, resultMsg = "no extension" });
+                    }
+                    if (fileFilt.IndexOf(fileExtension.ToLower(), StringComparison.Ordinal) <= -1)
+                    {
+                        return Ok(new { isSucceed = false, resultMsg = "no picture" });
+                    }
+
+                    //判断文件大小    
+                    long length = uploadfile.Length;
+                    if (length > 1024 * 1024 * 10) //2M
+                    {
+                        return Ok(new { isSucceed = false, resultMsg = "file exceed 5M" });
+                    }
+                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await uploadfile.CopyToAsync(stream);
+                    }
+                }
+                // return Ok("Ok");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return Ok(new { isSucceed = true, resultMsg = "upload failure" });
+            }
+
+            return Ok(new { isSucceed = true, resultMsg = "upload success" });
+        }
 
 
     }

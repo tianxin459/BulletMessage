@@ -20,6 +20,7 @@
             left: 70px;
             width: 100px;
             height: 100px;
+            display: none;
         }
     </style>
 </head>
@@ -81,7 +82,7 @@
 <script>
     let messageList = new Array();
     let top_up = 70;
-    let top_down = 190;
+    let top_down = 590;
 
     function randomFrom(lowerValue, upperValue) {
         return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
@@ -108,16 +109,13 @@
         ele.css('transform', `translateX(${direction}${lp}px)`);
     }
     addImageFly = (userInfo, imgFile) => {
-
-        // not show the image
-        return;
         let imgUrl = "./Uploads/Images/"
         console.log(imgFile);
         let p = $('<div class="bullet"></div>');
         let img = $(`<img class="bulletImg" src="${imgUrl + imgFile}"></img>`);
         p.append(img);
-        let top = (Math.random() * 2000) % (window.innerHeight / 8);
-        let speed = Math.random() * 10;
+        let top = randomFrom(top_up, top_down);
+        let speed = randomFrom(1, 10);
         // p.css('top', '100' + 'px');
         // p.css('left', '100' + 'px');
         p.css('top', top + 'px');
@@ -132,8 +130,8 @@
         let p = $('<p class="bullet"></p>');
         p.text(text);
         console.log(window.innerHeight);
-        let top = (Math.random() * 1000) % (window.innerHeight / 8);
-        let speed = Math.random() * 10;
+        let top = randomFrom(top_up, top_down);
+        let speed = randomFrom(1, 10);
         p.css('top', top + 'px');
         p.data('currentLocation', 0)
         p.css('left', window.innerWidth + 'px');

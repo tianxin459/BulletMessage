@@ -97,8 +97,14 @@ function getRacerTop() {
 }
 
 function setRacer(name, avatorUrl, position, englishName) {
+    //if (listRunner.has(userId)) {
+    //    return;
+    //}
+    //listRunner.add(userId);
+    // avatorUrl = 'https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg'
     position = startLinePos - 40;
     let track = $('div.track');
+    let top = getRacerTop();
     let strRunner = ` <div id="${parseName(name)}" class="runner">
             <div class="nickName">${englishName}</div>
             <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
@@ -106,32 +112,10 @@ function setRacer(name, avatorUrl, position, englishName) {
             <div class="info"></div>
         </div>`;
     let runner = $(strRunner);
-
-    //if race already start then ramdom set the position;
-    if (raceStart) {
-        let top = getRacerTop();
-        runner.css('top', top + 'px');
-    }
-    // runner.css('top', top + 'px');
+    runner.css('top', top + 'px');
     runner.data('currentLocation', 0);
     runner.css(css_direction, position + 'px');
     track.append(runner);
-
-
-    // Uniform distribution runners
-    // uniform only when race not start yet
-    if (!raceStart) {
-        let runnerTop = 0;
-        let runnerNum = listRunner.size;
-        let trackHeight = ($('.track')[0].clientHeight - 100);
-        if (runnerNum <= 0) runnerNum = 1;
-        runnerNum = runnerNum + 1;
-        let evenTop = Math.floor(trackHeight / runnerNum);
-        for (let a of $(".runner")) {
-            runnerTop = runnerTop + evenTop;
-            $(a).css('top', runnerTop + 'px');
-        }
-    }
 }
 
 function moveRunner(name, distant) {

@@ -8,8 +8,12 @@ namespace BulletMessage.Contract.Model
 {
     public class Message
     {
+        [DataMember(Name = "openid")]
+        public string OpenId { get; set; }
         [DataMember(Name = "nickName")]
         public string NickName { get; set; }
+        [DataMember(Name = "englishName")]
+        public string EnglishName { get; set; }
         [DataMember(Name = "message")]
         public string Msg { get; set; }
         [DataMember(Name = "avatarUrl")]
