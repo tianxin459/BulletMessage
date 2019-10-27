@@ -183,6 +183,14 @@
 
     let raceStarted = false;
 
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(urlRace, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .build();
+
     $('document').ready(() => {
         connection
             .start()
@@ -208,14 +216,6 @@
             e.preventDefault();
         })
     });
-
-
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl(urlRace, {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
-        })
-        .build();
 
     var listRunner = new Set();
     var listFinish = new Set();
@@ -417,7 +417,7 @@
             $('.showStart > div').removeClass('aniBig');
             if ($('.showStart > .c' + countI).length === 0) {
                 isRacing = true;
-                // $('#audioBg')[0].play();//ellis audio
+                $('#audioBg')[0].play(); //ellis audio
                 clearInterval(si);
                 console.log('gogogo')
 

@@ -50,7 +50,6 @@ namespace BulletMessage.Controllers
                 _logger.LogError(path + " not exists");
                 return new List<User>();
             }
-            string line;
 
             if (UserList == null) UserList = new List<User>();
             var outputStr = "";
@@ -221,5 +220,17 @@ namespace BulletMessage.Controllers
             }
             return Ok(new { Success = true });
         }
+
+
+        #region Rger
+        [HttpGet]
+        [Route("onviewuser/{actID}")]
+        public IActionResult GetOnViewUser(string actID)
+        {
+            var act = ClientHub.ActivityList.Where(a => a.ActId == actID.Trim())?.FirstOrDefault();
+            return Ok(act?.OnViewClientList);
+        }
+
+        #endregion Reger
     }
 }

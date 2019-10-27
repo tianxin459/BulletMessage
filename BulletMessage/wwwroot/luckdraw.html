@@ -56,8 +56,9 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
+    const urlCom = URLBASE + "/com";
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl(url, {
+        .withUrl(urlCom, {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets
         })
@@ -96,7 +97,9 @@
     let direction = "-"
 
     function move(ele, speed, i) {
+        //var lp = ele.css('left');
         var lp = ele.data('currentLocation');
+        //console.log(ele.data('currentLocation'));
         lp = lp + speed;
         if (lp > (window.innerWidth + 500)) {
             console.log(ele.text() + ' removed');

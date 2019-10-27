@@ -9,15 +9,24 @@ namespace BulletMessage.Hubs
 {
     public class ClientInfo
     {
+        public string ActId { get; set; }
         public string UserId { get; set; }
         public string ConnectionId { get; set; }
         public string AvatorUrl { get; set; }
     }
+    public class ActInfo
+    {
+        public string ActId { get; set; }
+        public List<ClientInfo> OnViewClientList { get; set; } = new List<ClientInfo>();
+    }
+
+
 
 
     public class ClientHub : Hub
     {
         public static List<ClientInfo> ClientList { get; set; } = new List<ClientInfo>();
+        public static List<ActInfo> ActivityList { get; set; } = new List<ActInfo>();
 
         public static string GetConnectionID(string userId)
         {
@@ -43,26 +52,27 @@ namespace BulletMessage.Hubs
         public override async Task OnDisconnectedAsync(Exception ex)
         {
             ClientList = ClientList.Where(c => c.ConnectionId != Context.ConnectionId).ToList();
-            await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId} left");
+            var client = ClientList.FirstOrDefault() ?? new ClientInfo();
+            await Clients.All.SendAsync("ReceiveMessage", $"{Context.ConnectionId}-{client.ActId}-{client.UserId}-left");
         }
 
 
-        public Task Register(string userid, string avatorUrl)
+        public Task Register(string userID, string avatorUrl)
         {
-            if (ClientList.Any(c => c.UserId == userid))
+            if (ClientList.Any(c => c.UserId == userID))
             {
-                ClientList.Where(c => c.UserId == userid).FirstOrDefault().ConnectionId = Context.ConnectionId;
+                ClientList.Where(c => c.UserId == userID).FirstOrDefault().ConnectionId = Context.ConnectionId;
             }
             else
             {
                 ClientList.Add(new ClientInfo()
                 {
-                    UserId = userid,
+                    UserId = userID,
                     AvatorUrl = avatorUrl,
                     ConnectionId = Context.ConnectionId
                 });
             }
-            return Clients.Client(Context.ConnectionId).SendAsync("onRegister", $"{Context.ConnectionId}: {userid}");
+            return Clients.Client(Context.ConnectionId).SendAsync("onRegister", $"{Context.ConnectionId}: {userID}");
         }
 
 
@@ -83,5 +93,74 @@ namespace BulletMessage.Hubs
                 await Clients.Client(connectionId)?.SendAsync("ReceiveMessage", userID, msg);
             }
         }
+
+
+        #region Rger
+        public async Task SendToAll(string userID, string msg)
+        {
+            _logger.LogDebug($"SendMessage {userID}=>{msg}");
+            await Clients.All.SendAsync("ReceiveMessage", userID, msg);
+        }
+        public async Task SendRgerMessage(string actID, string userID, string avatorUrl)
+        {
+            _logger.LogDebug($"SendMessage {userID}=>{avatorUrl}");
+            await Clients.All.SendAsync("ReceiveMessage", actID, userID, avatorUrl);
+        }
+
+        public async Task SendRgerMessageQuit(string actID, string userID, string avatorUrl)
+        {
+            _logger.LogDebug($"SendMessage Quit {userID}=>{avatorUrl}");
+            await Clients.All.SendAsync("ReceiveMessageQuit", actID, userID, avatorUrl);
+        }
+
+        public Task RegisterRger(string actID, string userID, string avatorUrl)
+        {
+            if (ClientList.Any(c => c.UserId == userID))
+            {
+                ClientList.Where(c => c.UserId == userID).FirstOrDefault().ConnectionId = Context.ConnectionId;
+                ClientList.Where(c => c.UserId == userID).FirstOrDefault().ActId = actID;
+            }
+            else
+            {
+                ClientList.Add(new ClientInfo()
+                {
+                    ActId = actID,
+                    UserId = userID,
+                    AvatorUrl = avatorUrl,
+                    ConnectionId = Context.ConnectionId
+                });
+            }
+
+
+            var act = ActivityList.Where(a => a.ActId == actID)?.FirstOrDefault();
+            // clear the act list
+            ActivityList
+                .ForEach(a => a.OnViewClientList = a.OnViewClientList.Where(c => c.UserId != userID)
+                ?.ToList());
+
+            var clientInfo = new ClientInfo()
+            {
+                ActId = actID,
+                UserId = userID,
+                AvatorUrl = avatorUrl,
+            };
+            if (act != null)
+            {
+                act.OnViewClientList.Add(clientInfo);
+            }
+            else
+            {
+                ActivityList.Add(new ActInfo()
+                {
+                    ActId = actID,
+                    OnViewClientList = new List<ClientInfo>() { clientInfo }
+                });
+            }
+
+            return Clients.All.SendAsync("onRegister", $"{actID}-{userID}-{avatorUrl}");
+            // return Clients.Client(Context.ConnectionId).SendAsync("onRegister", $"{actID}-{userID}-{avatorUrl}");
+        }
+        #endregion Rger
+
     }
 }
