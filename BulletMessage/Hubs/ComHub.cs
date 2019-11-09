@@ -91,10 +91,19 @@ namespace BulletMessage.Hubs
         /// <returns></returns>
         public async Task SendMessage(string user, string message)
         {
-
             await Clients.All.SendAsync("ReceiveMessage", user, message);
             //await Clients.All.SendAsync("ReceiveMessage", Context.ConnectionId, message);
+        }
 
+        /// <summary>
+        /// 向所有人推送消息
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task SendCommand(string user, string cmd)
+        {
+            await Clients.All.SendAsync("Command", user, cmd);
         }
     }
 }

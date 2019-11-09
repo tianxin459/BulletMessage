@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NLog.Extensions.Logging;
 
 namespace BulletMessage
@@ -37,7 +39,18 @@ namespace BulletMessage
                                     .AllowAnyHeader()
                                     .AllowAnyMethod());
             });
-            services.AddSignalR();
+            services.AddSignalR(options =>
+            {
+                // Faster pings for testing
+                options.KeepAliveInterval = TimeSpan.FromSeconds(5);
+            }).AddJsonProtocol(options =>
+            {
+                //options.PayloadSerializerSettings.Converters.Add(JsonConver);
+                //the next settings are important in order to serialize and deserialize date times as is and not convert time zones
+                options.PayloadSerializerSettings.Converters.Add(new IsoDateTimeConverter());
+                options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Unspecified;
+                options.PayloadSerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
+            });
             services.AddSingleton<IServiceProvider, ServiceProvider>();
 
             services.AddMvc(config=> {
@@ -56,6 +69,7 @@ namespace BulletMessage
                 routes.MapHub<BulletHub>("/chat");
                 routes.MapHub<RaceHub>("/race");
                 routes.MapHub<ClientHub>("/client");
+                routes.MapHub<ComHub>("/remote");
             });
             app.UseStaticFiles();
             //app.UseExceptionHandler(options => {

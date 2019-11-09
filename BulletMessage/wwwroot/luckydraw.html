@@ -5,58 +5,94 @@
     <meta charset="utf-8" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/global.css">
+    <link rel="stylesheet" type="text/css" href="luckydraw.css">
+    <link rel="stylesheet" type="text/css" href="node_modules/animate.css/animate.min.css">
     <title>LiveChat</title>
-    <style>
-        .bulletImg {
-            height: 30vh;
-            border: 1px solid black;
-            box-shadow: 0 0 0 1px white;
-        }
-        
-        .logo {
-            z-index: 1000;
-            position: absolute;
-            top: 70px;
-            left: 70px;
-            width: 100px;
-            height: 100px;
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="message">
-        <p id="msg" class="msg"></p>
+    <div class="control">
+        <button id="btnTest">Test</button>
+        <button id="btnShowTitle">showText</button>
+        <button id="btnHideTitle">hideText</button>
+    </div>
+    <div class="curtain">
+        <div class="curtain-left"></div>
+        <div class="curtain-right"></div>
+         <img class="curtain-front" src="static/img/background/curtain-front.png"></img> 
+        <!--<img class="curtain-front" src="static/img/background/bg1.jpg">--></img>
+        <div class="curtain-display">
+            <div class="curtain-display-text prize-title">1</div>
+        </div>
     </div>
     <div class="container">
         <img class="logo" src="static/img/GD-logo.png"></img>
-        <img class="background" src="static/img/background/bg1.png"></img>
-        <!--https://www.w3schools.com/html/mov_bbb.mp4-->
-        <!--<div class="fullscreen-bg">
-        <video class="video" width="400" autoplay controls>
-            <source src="static/vedio/mov_bbb.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-        </video>
-    </div>-->
-        <!-- <div class="masktext bullet">
-            <img class="bulletImg" src="/Uploads/Images/181122024940880.png"></img>
-        </div> -->
+        <img class="background" src="static/img/background/bg1.jpg"></img>
+        
     </div>
-    <!-- <div class="bullet">testest</div> -->
-    <!-- <div>
-        <div class="form-group">
-            <input type="text" id="dynamic-label-input" placeholder="Enter some text">
-            <label for="dynamic-label-input">Enter some text</label>
-        </div>
-    </div> -->
 </body>
 
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
-    const urlCom = URLBASE + "/com";
+
+let curtainOn = true;
+
+function toggleCurtain() {
+        if (curtainOn) {
+            $('.curtain-left').addClass('move-left');
+            $('.curtain-right').addClass('move-right');
+        }
+        else {
+            $('.curtain-left').removeClass('move-left');
+            $('.curtain-right').removeClass('move-right');
+        }
+        curtainOn = !curtainOn;
+    }
+
+
+function showTitle(text){
+        $(".prize-title").text(text);
+        $(".prize-title").addClass('show-prize-title');
+}
+
+
+
+
+let command={
+    startstop:()=>toggleCurtain(),
+    showprizetitle:(text)=>{
+        $(".prize-title").text(text);
+        $(".prize-title").removeClass('show-prize-title');
+        $(".prize-title").removeClass('hide-prize-title');
+        $(".prize-title").addClass('show-prize-title');
+    },
+    hideprizetitle:()=>{
+        $(".prize-title").removeClass('show-prize-title');
+        $(".prize-title").removeClass('hide-prize-title');
+        $(".prize-title").addClass('hide-prize-title');
+    }
+}
+</script>
+<script type="text/javascript">
+    $(document).ready(() => {
+        $('#btnTest').click(() => {
+            toggleCurtain();
+        });
+
+        $('#btnShowTitle').click(()=>{
+            command["showprizetitle"]('prize 1');
+        });
+        
+        $('#btnHideTitle').click(()=>{
+            command["hideprizetitle"]();
+        });
+    });
+
+
+    const urlCom = URLBASE + "/remote";
+    const cmdPrefix = "cmd#@$";
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(urlCom, {
             skipNegotiation: true,
@@ -64,14 +100,22 @@
         })
         .build();
 
+    connection.on("Command", (user, message) => {
+            console.log(message);
+            let cmdstr = message.replace(cmdPrefix,'');
+            let cmdfun = cmdstr.split(':')[0];
+            let cmdarg = cmdstr.split(':')[1]||'';
+            if(!command[cmdfun]) console.warn("no command:"+cmdfun);
+            else command[cmdfun](cmdarg);
+        });
+
     connection.on("ReceiveMessage", (user, message) => {
-        console.log(`${user}: ${message}`);
         // addMsg(`${user}: ${message}`);
         let prefix = "img=>"
         if (!message) return;
         if (user == 'img' || message.indexOf(prefix) != -1) {
             addImageFly(user, message.replace(prefix, ''))
-        } else {
+        }else {
             addMsgWithAvator(user, message);
         }
     });

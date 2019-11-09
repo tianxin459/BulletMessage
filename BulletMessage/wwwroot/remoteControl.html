@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div class="container">
+        <div class="row"> Remote</div>
+        <div class="row">
+            <input type="button" id="btnStage1" value="Prize 1" />
+            <input type="button" id="btnStage2" value="Prize 2" />
+            <input type="button" id="btnStage3" value="Prize 3" />
+            <input type="button" id="btnStartStop" value="Start/Stop" />
+        </div>
+        <!--<div class="row">
+            <div class="col-6">&nbsp;</div>
+            <div class="col-6">
+                User..........<input type="text" id="userInput" />
+                <br />
+                Message...<input type="text" id="messageInput" />
+                <input type="button" id="sendButton" value="Send Message" />
+            </div>
+        </div>-->
+        <div class="row">
+            <div class="col-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">&nbsp;</div>
+            <div class="col-6">
+                <ul id="messagesList"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    console.log('test');
+</script>
+<script src="lib/signalr.js"></script>
+<script src="lib/globalConfig.js"></script>
+<script type="text/javascript">
+    const urlCom = URLBASE + "/remote";
+    const connection = new signalR.HubConnectionBuilder().withUrl(urlCom).build();
+    const cmdPrefix = "cmd#@$";
+    const cmdUser = "webCaller";
+    connection.on("Command", (user, message) => {
+        const encodedMsg = user + " cmd " + message;
+        const li = document.createElement("li");
+        li.textContent = encodedMsg;
+        document.getElementById("messagesList").appendChild(li);
+    });
+
+
+    for (var bi = 1; bi <= 5; bi++) {
+        (i => {
+            if (document.getElementById("btnStage" + i) == null) return;
+            document.getElementById("btnStage" + i).addEventListener("click", event => {
+                const cmd = cmdPrefix + "stage" + i;
+                connection.invoke("SendCommand", cmdUser, cmd).catch(err => console.error(err.toString()));
+                event.preventDefault();
+            });
+        })(bi)
+    }
+
+
+    document.getElementById("btnStartStop").addEventListener("click", event => {
+        const cmd = cmdPrefix + "startstop";
+        connection.invoke("SendCommand", cmdUser, cmd).catch(err => console.error(err.toString()));
+        event.preventDefault();
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+</script>
