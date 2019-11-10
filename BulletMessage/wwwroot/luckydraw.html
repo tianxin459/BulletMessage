@@ -3,32 +3,49 @@
 
 <head>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/global.css">
     <link rel="stylesheet" type="text/css" href="luckydraw.css">
     <link rel="stylesheet" type="text/css" href="node_modules/animate.css/animate.min.css">
-    <title>LiveChat</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+
+
+    <!-- <link rel="stylesheet" type="text/css" href="node_modules/jquery-slotmachine/dist/jquery.slotmachine.css" /> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/slotmachine.min.js"></script>
+    <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/jquery.slotmachine.min.js"></script>
+    <title>LuckyDraw</title>
 </head>
 
 <body>
     <div class="control">
-        <button id="btnTest">Test</button>
+        <button id="btnTest">test</button>
+        <button id="btnOpenClose">open/close</button>
+        <button id="btnDraw">LuckyDraw</button>
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
     </div>
     <div class="curtain">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
-         <img class="curtain-front" src="static/img/background/curtain-front.png"></img> 
-        <!--<img class="curtain-front" src="static/img/background/bg1.jpg">--></img>
+        <img class="curtain-front" src="static/img/background/curtain-front.png"></img>
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
     </div>
     <div class="container">
-        <img class="logo" src="static/img/GD-logo.png"></img>
-        <img class="background" src="static/img/background/bg1.jpg"></img>
-        
+        <!-- <img class="logo" src="static/img/GD-logo.png"></img> -->
+        <!-- <img class="background" src="static/img/background/bg1.jpg"></img> -->
+        <div class="prize-contrainer">
+            <img class="prize-img" src="./Uploads/prize/1.jpg">
+        </div>
+        <div id="machine">
+            <div class="item0">gogogo</div>
+            <div class="item1">222</div>
+            <div class="item2">222</div>
+            <div class="item3">222</div>
+            <!-- <div>London</div>
+                    <div>New York</div> -->
+        </div>
     </div>
 </body>
 
@@ -36,15 +53,13 @@
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
 <script type="text/javascript">
+    let curtainOn = true;
 
-let curtainOn = true;
-
-function toggleCurtain() {
+    function toggleCurtain() {
         if (curtainOn) {
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
-        }
-        else {
+        } else {
             $('.curtain-left').removeClass('move-left');
             $('.curtain-right').removeClass('move-right');
         }
@@ -52,40 +67,40 @@ function toggleCurtain() {
     }
 
 
-function showTitle(text){
+    function showTitle(text) {
         $(".prize-title").text(text);
         $(".prize-title").addClass('show-prize-title');
-}
-
-
-
-
-let command={
-    startstop:()=>toggleCurtain(),
-    showprizetitle:(text)=>{
-        $(".prize-title").text(text);
-        $(".prize-title").removeClass('show-prize-title');
-        $(".prize-title").removeClass('hide-prize-title');
-        $(".prize-title").addClass('show-prize-title');
-    },
-    hideprizetitle:()=>{
-        $(".prize-title").removeClass('show-prize-title');
-        $(".prize-title").removeClass('hide-prize-title');
-        $(".prize-title").addClass('hide-prize-title');
     }
-}
+
+
+
+
+    let command = {
+        startstop: () => toggleCurtain(),
+        showprizetitle: (text) => {
+            $(".prize-title").text(text);
+            $(".prize-title").removeClass('show-prize-title');
+            $(".prize-title").removeClass('hide-prize-title');
+            $(".prize-title").addClass('show-prize-title');
+        },
+        hideprizetitle: () => {
+            $(".prize-title").removeClass('show-prize-title');
+            $(".prize-title").removeClass('hide-prize-title');
+            $(".prize-title").addClass('hide-prize-title');
+        }
+    }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
-        $('#btnTest').click(() => {
+        $('#btnOpenClose').click(() => {
             toggleCurtain();
         });
 
-        $('#btnShowTitle').click(()=>{
+        $('#btnShowTitle').click(() => {
             command["showprizetitle"]('prize 1');
         });
-        
-        $('#btnHideTitle').click(()=>{
+
+        $('#btnHideTitle').click(() => {
             command["hideprizetitle"]();
         });
     });
@@ -101,13 +116,13 @@ let command={
         .build();
 
     connection.on("Command", (user, message) => {
-            console.log(message);
-            let cmdstr = message.replace(cmdPrefix,'');
-            let cmdfun = cmdstr.split(':')[0];
-            let cmdarg = cmdstr.split(':')[1]||'';
-            if(!command[cmdfun]) console.warn("no command:"+cmdfun);
-            else command[cmdfun](cmdarg);
-        });
+        console.log(message);
+        let cmdstr = message.replace(cmdPrefix, '');
+        let cmdfun = cmdstr.split(':')[0];
+        let cmdarg = cmdstr.split(':')[1] || '';
+        if (!command[cmdfun]) console.warn("no command:" + cmdfun);
+        else command[cmdfun](cmdarg);
+    });
 
     connection.on("ReceiveMessage", (user, message) => {
         // addMsg(`${user}: ${message}`);
@@ -115,7 +130,7 @@ let command={
         if (!message) return;
         if (user == 'img' || message.indexOf(prefix) != -1) {
             addImageFly(user, message.replace(prefix, ''))
-        }else {
+        } else {
             addMsgWithAvator(user, message);
         }
     });
@@ -241,4 +256,54 @@ let command={
     $(document).ready(() => {
         connection.start().catch(err => console.error(err.toString()));
     })
+</script>
+
+<script type="text/javascript">
+    let counting = false;
+    let iroller;
+    let slotMachine;
+    let valList = [];
+    $(document).ready(() => {
+        slotMachine = $('#machine').slotMachine({
+            active: 0,
+            delay: 450,
+            // auto: 1500,
+            // randomize() {
+            //     return this.nextIndex;
+            // }
+        });
+
+        $('#btnDraw').click(e => {
+            counting = !counting;
+            if (counting) {
+                iroller = setInterval(() => {
+                    // let rd = getRandomText();
+                    valList.length = 0;
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    $('.item0').text(valList[0]);
+                    $('.item1').text(valList[1]);
+                    $('.item2').text(valList[2]);
+                    $('.item3').text(valList[3]);
+                }, 10);
+                slotMachine.shuffle(9999999);
+                $("#machine .slotMachineContainer").addClass("blur");
+            } else {
+                clearInterval(iroller);
+                $("#machine .slotMachineContainer").removeClass("blur");
+                slotMachine.stop();
+                console.info(slotMachine.active, valList[slotMachine.active]);
+            }
+        })
+    });
+
+    getRandomText = () => {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 5; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
+    }
 </script>
