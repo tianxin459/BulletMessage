@@ -73,25 +73,56 @@
     }
 
 
-
+    function draw(){
+        counting = !counting;
+            if (counting) {
+                iroller = setInterval(() => {
+                    // let rd = getRandomText();
+                    valList.length = 0;
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    valList.push(getRandomText() + ' ' + getRandomText());
+                    $('.item0').text(valList[0]);
+                    $('.item1').text(valList[1]);
+                    $('.item2').text(valList[2]);
+                    $('.item3').text(valList[3]);
+                }, 10);
+                slotMachine.shuffle(9999999);
+                $("#machine .slotMachineContainer").addClass("blur");
+            } else {
+                clearInterval(iroller);
+                $("#machine .slotMachineContainer").removeClass("blur");
+                slotMachine.stop();
+                console.info(slotMachine.active, valList[slotMachine.active]);
+            }
+        };
 
     let command = {
+        draw:()=>draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
             $(".prize-title").text(text);
             $(".prize-title").removeClass('show-prize-title');
             $(".prize-title").removeClass('hide-prize-title');
             $(".prize-title").addClass('show-prize-title');
+            // setTimeout(command['hideprizetitle'](), 6000);
         },
         hideprizetitle: () => {
             $(".prize-title").removeClass('show-prize-title');
             $(".prize-title").removeClass('hide-prize-title');
             $(".prize-title").addClass('hide-prize-title');
+        },
+        refreshprizeimg: (id) => {
+            $(".prize-img").attr("src",`./Uploads/prize/${id}.jpg`);
         }
     }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
+        $('#btnTest').click(()=>{
+            command["refreshprizeimg"](2);
+        });
         $('#btnOpenClose').click(() => {
             toggleCurtain();
         });
@@ -116,7 +147,7 @@
         .build();
 
     connection.on("Command", (user, message) => {
-        console.log(message);
+        console.log('Command==>', message);
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
@@ -274,28 +305,7 @@
         });
 
         $('#btnDraw').click(e => {
-            counting = !counting;
-            if (counting) {
-                iroller = setInterval(() => {
-                    // let rd = getRandomText();
-                    valList.length = 0;
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    $('.item0').text(valList[0]);
-                    $('.item1').text(valList[1]);
-                    $('.item2').text(valList[2]);
-                    $('.item3').text(valList[3]);
-                }, 10);
-                slotMachine.shuffle(9999999);
-                $("#machine .slotMachineContainer").addClass("blur");
-            } else {
-                clearInterval(iroller);
-                $("#machine .slotMachineContainer").removeClass("blur");
-                slotMachine.stop();
-                console.info(slotMachine.active, valList[slotMachine.active]);
-            }
+            draw();
         })
     });
 

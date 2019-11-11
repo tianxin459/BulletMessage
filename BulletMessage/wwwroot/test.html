@@ -1,54 +1,490 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE HTML>
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style>
+    <title>Canvas Interactive Text Particles</title>
+    <style type="text/css">
         body {
-            background: tomato;
-            height: 100vh;
-            /* background: black; */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0px;
         }
-        
-        .cone {
-            width: 0px;
-            height: 0;
-            border-left: 70px solid transparent;
-            border-right: 70px solid transparent;
-            /* border-top: 100px solid red; */
-            border-bottom: 200px solid rgba(255, 255, 255, 0.87);
-            border-radius: 50%;
-            box-shadow: 120px 80px 40px 20px #0ff;
-        }
-        
-        .prize-img-container {
-            border: 2px solid green;
-            width: 300px;
-            height: 300px;
-            background: url(./Uploads/prize/1.jpg) no-repeat;
-            background-size: cover;
-            box-shadow: inset 0px 0px 2px black;
-            border-radius: 10px;
-        }
-        
-        .prize-img {
-            width: 300px;
-            border-radius: 10px;
+
+        .control {
+            top: 1px;
+            position: fixed;
+            z-index: 1000;
         }
     </style>
-</head>
 
-<body>
-    <!-- <div class="cone"></div> -->
-    <div class="prize-img-container">
-        <!-- <img class="prize-img" src="Uploads/prize/1.jpg"><img> -->
-    </div>
-</body>
+    <body data-rsssl=1>
 
-</html>
+        <canvas id="canvas"></canvas>
+        <div class="control">
+            <button id="btnTest">test</button>
+            <button id="btnOpenClose">open/close</button>
+            <button id="btnDraw">LuckyDraw</button>
+            <button id="btnShowTitle">showText</button>
+            <button id="btnHideTitle">hideText</button>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    </body>
+
+    <!--<script type="text/javascript">
+        function Banner() {
+            var textUp = false;
+            var keyword = "Test Text";
+            var canvas;
+            var context;
+
+            var bgCanvas;
+            var bgContext;
+
+            var denseness = 10;
+
+            //Each particle/icon
+            var parts = [];
+
+            var mouse = { x: -100, y: -100 };
+            var mouseOnScreen = false;
+
+            var itercount = 0;
+            var itertot = 40;
+
+            this.initialize = function (canvas_id) {
+                canvas = document.getElementById(canvas_id);
+                context = canvas.getContext('2d');
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                bgCanvas = document.createElement('canvas');
+                bgContext = bgCanvas.getContext('2d');
+
+                bgCanvas.width = window.innerWidth;
+                bgCanvas.height = window.innerHeight;
+
+                //canvas.addEventListener('mousemove', MouseMove, false);
+                //canvas.addEventListener('mouseout', MouseOut, false);
+
+                start();
+            }
+
+            var start = function () {
+
+                //bgContext.fillStyle = "#000000";
+                bgContext.fillStyle = "#222";
+                bgContext.font = '300px impact';
+                bgContext.fillText(keyword, 85, 275);
+                //bgContext.fillStyle = 'blue';
+                //bgContext.fillRect(10, 10, 100, 100);
+                //bgContext.fill();
+                clear();
+                getCoords();
+            }
+
+            var getCoords = function () {
+                var imageData, pixel, height, width;
+
+                imageData = bgContext.getImageData(0, 0, canvas.width, canvas.height);
+
+                // quickly iterate over all pixels - leaving density gaps
+                for (height = 0; height < bgCanvas.height; height += denseness) {
+                    for (width = 0; width < bgCanvas.width; width += denseness) {
+                        pixel = imageData.data[((width + (height * bgCanvas.width)) * 4) - 1];
+                        //Pixel is black from being drawn on.
+                        if (pixel == 255) {
+                            drawCircle(width, height);
+                        }
+                    }
+                }
+                //update()
+                //setInterval(update, 40);
+                setInterval(updateFree, 40);
+            }
+
+            var drawCircle = function (x, y) {
+
+                var startx = (Math.random() * canvas.width);
+                var starty = (Math.random() * canvas.height);
+
+                var velx = (x - startx) / itertot;
+                var vely = (y - starty) / itertot;
+
+                parts.push(
+                    {
+                        c: '#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16),
+                        x: x, //goal position
+                        y: y,
+                        x2: startx, //start position
+                        y2: starty,
+                        r: true, //Released (to fly free!)
+                        v: { x: velx, y: vely }
+                    }
+                )
+            }
+
+            var update = function () {
+                var i, dx, dy, sqrDist, scale;
+                itercount++;
+                clear();
+                for (i = 0; i < parts.length; i++) {
+
+                    //If the dot has been released
+                    if (parts[i].r == true) {
+                        //Fly into infinity!!
+                        parts[i].x2 += parts[i].v.x;
+                        parts[i].y2 += parts[i].v.y;
+                        //check if they are out of screen... and kill
+                    }
+                    if (itercount == itertot) {
+                        parts[i].v = { x: (Math.random() * 6) * 2 - 6, y: (Math.random() * 6) * 2 - 6 };
+                        parts[i].r = false;
+                    }
+
+
+                    //Look into using svg, so there is no mouse tracking.
+                    //Find distance from mouse/draw!
+                    dx = parts[i].x - mouse.x;
+                    dy = parts[i].y - mouse.y;
+                    sqrDist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (sqrDist < 20) {
+                        parts[i].r = true;
+                    }
+
+                    //Draw the circle
+                    context.fillStyle = parts[i].c;
+                    context.beginPath();
+                    context.arc(parts[i].x2, parts[i].y2, 4, 0, Math.PI * 2, true);
+                    context.closePath();
+                    context.fill();
+
+                }
+            }
+
+
+            var updateFree = function () {
+                var i, dx, dy, sqrDist, scale;
+                itercount++;
+                clear();
+                for (i = 0; i < parts.length; i++) {
+
+                    //If the dot has been released
+                    //if (parts[i].r == true) {
+                    //    //Fly into infinity!!
+                    //    parts[i].x2 += parts[i].v.x;
+                    //    parts[i].y2 += parts[i].v.y;
+                    //    //check if they are out of screen... and kill
+                    //}
+                    if (itercount == itertot) {
+                        parts[i].v = { x: (Math.random() * 6) * 2 - 6, y: (Math.random() * 6) * 2 - 6 };
+                        //parts[i].r = false;
+                    }
+
+                    let randomX = Math.floor((Math.random() - 0.5) * 10);
+                    let randomY = Math.floor((Math.random() - 0.5) * 10);
+
+                    parts[i].v = { x: randomY, y: randomY };
+                    parts[i].x2 += parts[i].v.x;
+                    parts[i].y2 += parts[i].v.y;
+
+                    //Look into using svg, so there is no mouse tracking.
+                    //Find distance from mouse/draw!
+                    //dx = parts[i].x - mouse.x;
+                    //dy = parts[i].y - mouse.y;
+                    //sqrDist = Math.sqrt(dx * dx + dy * dy);
+
+                    //if (sqrDist < 20) {
+                    //    parts[i].r = true;
+                    //}
+
+                    //Draw the circle
+                    context.fillStyle = parts[i].c;
+                    context.beginPath();
+                    context.arc(parts[i].x2, parts[i].y2, 4, 0, Math.PI * 2, true);
+                    context.closePath();
+                    context.fill();
+
+                }
+            }
+
+            var MouseMove = function (e) {
+                if (e.layerX || e.layerX == 0) {
+                    //Reset particle positions
+                    mouseOnScreen = true;
+
+
+                    mouse.x = e.layerX - canvas.offsetLeft;
+                    mouse.y = e.layerY - canvas.offsetTop;
+                }
+            }
+
+            var MouseOut = function (e) {
+                mouseOnScreen = false;
+                mouse.x = -100;
+                mouse.y = -100;
+            }
+
+            //Clear the on screen canvas
+            var clear = function () {
+                context.fillStyle = 'silver';
+                context.beginPath();
+                context.rect(0, 0, canvas.width, canvas.height);
+                context.closePath();
+                context.fill();
+            }
+        }
+
+        //var banner = new Banner();
+        //banner.initialize("canvas");
+
+    </script>-->
+
+    <script>
+        let textUp = false;
+        let initSwitch = false;
+        let keyword = "Test Text";
+        let canvas;
+        let context;
+        let fontStr = '100px impact';
+
+        let bgCanvas;
+        let bgContext;
+
+        let denseness = 3;
+        let dotSize = 2;
+
+        //Each particle/icon
+        let parts = [];
+
+        let mouse = { x: -100, y: -100 };
+        let mouseOnScreen = false;
+
+        let itercount = 0;
+        let itertot = 40;
+
+        let intervalId;
+
+        var initialize = function (canvas_id) {
+            canvas = document.getElementById(canvas_id);
+            context = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            bgCanvas = document.createElement('canvas');
+            bgContext = bgCanvas.getContext('2d');
+
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+
+            //canvas.addEventListener('mousemove', MouseMove, false);
+            //canvas.addEventListener('mouseout', MouseOut, false);
+
+            //start(keyword);
+            //intervalId = setInterval(startLoop,100);
+            startLoop();
+        }
+
+        startLoop = () => {
+            let txt = getRandomText();
+            setText(keyword);
+        }
+
+        
+        getRandomText = () => {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        }
+        var setText = function (text) {
+
+            //bgContext.fillStyle = "#000000";
+            bgContext.clearRect(0, 0, canvas.width, canvas.height);
+            bgContext.fillStyle = "#222";
+            bgContext.font = fontStr;
+            bgContext.fillText(text, 85, 275);
+            //bgContext.fillStyle = 'blue';
+            //bgContext.fillRect(10, 10, 100, 100);
+            //bgContext.fill();
+            clear();
+            getCoords(false);
+        }
+
+        var start = function (text) {
+            parts.length = 0;
+            itercount = 0;
+            console.log('parts===>', parts);
+            //bgContext.fillStyle = "#000000";
+            bgContext.clearRect(0, 0, canvas.width, canvas.height);
+            bgContext.fillStyle = "#222";
+            bgContext.font = fontStr;
+            let textInfo = bgContext.measureText(text);
+            let textLeft = (canvas.width - textInfo.width) / 2;
+            let textTop = (canvas.height - 200);
+            console.log(textLeft, textTop, textInfo);
+            bgContext.fillText(text, textLeft, textTop);
+            //bgContext.fillStyle = 'blue';
+            //bgContext.fillRect(10, 10, 100, 100);
+            //bgContext.fill();
+            clear();
+            getCoords(true);
+        }
+
+        var getCoords = function (drawText) {
+            var imageData, pixel, height, width;
+
+            imageData = bgContext.getImageData(0, 0, canvas.width, canvas.height);
+
+            // quickly iterate over all pixels - leaving density gaps
+            for (height = 0; height < bgCanvas.height; height += denseness) {
+                for (width = 0; width < bgCanvas.width; width += denseness) {
+                    pixel = imageData.data[((width + (height * bgCanvas.width)) * 4) - 1];
+                    //Pixel is black from being drawn on.
+                    if (pixel == 255) {
+                        drawCircle(width, height);
+                    }
+                }
+            }
+            if(drawText)
+                intervalId = setInterval(update, 100);
+            else
+                intervalId = setInterval(updateFree, 100);
+            //update()
+            //update();
+            //if (draw)
+            //    setInterval(update, 40);
+            //else update();
+            //setInterval(updateFree, 40);
+            //setInterval(redraw, 40);
+        }
+
+        var redraw = function () {
+            if (textUp) {
+                //if (initSwitch) {
+                //    initSwitch = false;
+                //    console.table(parts);
+                //    parts.forEach(p => {
+                //        let velx = (p.x - p.x2) / itertot;
+                //        let vely = (p.y - p.x2) / itertot;
+                //        p.v = { x: velx, y: vely };
+                //    });
+                //}
+                update();
+            }
+            else updateFree();
+            updateFree();
+        }
+
+        var drawCircle = function (x, y) {
+            var startx = (Math.random() * canvas.width);
+            var starty = (Math.random() * canvas.height);
+
+            var velx = (x - startx) / itertot;
+            var vely = (y - starty) / itertot;
+
+            parts.push(
+                {
+                    c: '#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16),
+                    x: x, //goal position
+                    y: y,
+                    x2: startx, //start position
+                    y2: starty,
+                    r: true, //Released (to fly free!)
+                    v: { x: velx, y: vely }
+                }
+            )
+        }
+
+        var update = function () {
+            var i, dx, dy, sqrDist, scale;
+            itercount++;
+            clear();
+            for (i = 0; i < parts.length; i++) {
+
+                //If the dot has been released
+                if (parts[i].r == true) {
+                    //Fly into infinity!!
+                    parts[i].x2 += parts[i].v.x;
+                    parts[i].y2 += parts[i].v.y;
+                    //check if they are out of screen... and kill
+                }
+                if (itercount == itertot) {
+                    parts[i].v = { x: (Math.random() * 6) * 2 - 6, y: (Math.random() * 6) * 2 - 6 };
+                    parts[i].r = false;
+                }
+
+
+                //Look into using svg, so there is no mouse tracking.
+                //Find distance from mouse/draw!
+                dx = parts[i].x - mouse.x;
+                dy = parts[i].y - mouse.y;
+                sqrDist = Math.sqrt(dx * dx + dy * dy);
+
+                if (sqrDist < 20) {
+                    parts[i].r = true;
+                }
+
+                //Draw the circle
+                context.fillStyle = parts[i].c;
+                context.beginPath();
+                context.arc(parts[i].x2, parts[i].y2, dotSize, 0, Math.PI * 2, true);
+                context.closePath();
+                context.fill();
+
+            }
+        }
+
+
+        var updateFree = function () {
+
+            var i, dx, dy, sqrDist, scale;
+            //itercount++;
+            clear();
+            for (i = 0; i < parts.length; i++) {
+
+                let randomX = Math.floor((Math.random() - 0.5) * 10);
+                let randomY = Math.floor((Math.random() - 0.5) * 10);
+
+                //parts[i].v = { x: randomY, y: randomY };
+                //parts[i].x2 += parts[i].v.x;
+                //parts[i].y2 += parts[i].v.y;
+
+                context.fillStyle = parts[i].c;
+                context.beginPath();
+                context.arc(parts[i].x2+randomX, parts[i].y2+randomY, dotSize, 0, Math.PI * 2, true);
+                context.closePath();
+                context.fill();
+
+            }
+        }
+
+        //Clear the on screen canvas
+        var clear = function () {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            //context.fillStyle = 'silver';
+            context.fillStyle = 'rgba(0, 0, 0, 0)';
+            context.beginPath();
+            context.rect(0, 0, canvas.width, canvas.height);
+            context.closePath();
+            context.fill();
+        }
+    </script>
+
+    <script>
+        $(document).ready(() => {
+            $('#btnDraw').click(() => {
+                textUp = !textUp;
+                clearInterval(intervalId);
+                start(getRandomText());
+                //if (textUp) start('ellis');
+                //else startLoop();
+                //initSwitch = true;
+                //console.log(textUp);
+            });
+            initialize("canvas");
+        });
+    </script>

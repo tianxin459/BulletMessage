@@ -104,14 +104,14 @@
   box-shadow: 2px 2px 2px black;
 }
 #machine {
-  overflow: hidden;
-  transition: all 0.1s;
-  height: 60px;
-  font-size: 40px;
-  border: 2px solid silver;
-  margin-top: 20px;
-  width: 400px;
-  text-align: center;
-  color: yellow;
-  text-shadow: 3px -2px 1px black;
+    overflow: hidden;
+    transition: all 0.1s;
+    height: 2.5ex;
+    font-size: 8.5ex;
+    border: 2px solid silver;
+    margin-top: 20px;
+    width: 400px;
+    text-align: center;
+    color: yellow;
+    text-shadow: 3px -2px 1px black;
 }

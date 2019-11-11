@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "animate.css": "^3.7.2",
     "jquery-slotmachine": "^4.0.1"
   }
 }
