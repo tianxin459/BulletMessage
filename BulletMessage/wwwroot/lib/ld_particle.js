@@ -3,7 +3,7 @@ let initSwitch = false;
 let keyword = "Test Text";
 let canvas;
 let context;
-let fontStr = '100px impact';
+let fontStr = '100px sans-serif';
 
 let bgCanvas;
 let bgContext;
@@ -14,7 +14,10 @@ let dotSize = 3;
 //Each particle/icon
 let parts = [];
 
-let mouse = { x: -100, y: -100 };
+let mouse = {
+    x: -100,
+    y: -100
+};
 let mouseOnScreen = false;
 
 let itercount = 0;
@@ -22,7 +25,7 @@ let itertot = 40;
 
 let intervalId;
 
-var initialize = function (canvas_id) {
+var initialize = function(canvas_id) {
     itercount = 0;
     canvas = document.getElementById(canvas_id);
     // canvas.empty();
@@ -63,7 +66,7 @@ getRandomText = () => {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     return text;
 }
-var setText = function (text) {
+var setText = function(text) {
     bgContext.clearRect(0, 0, canvas.width, canvas.height);
     bgContext.fillStyle = "#222";
     bgContext.font = fontStr;
@@ -72,7 +75,7 @@ var setText = function (text) {
     getCoords(false);
 }
 
-var start = function (text) {
+var start = function(text) {
     parts.length = 0;
     itercount = 0;
     console.log('parts===>', parts);
@@ -81,7 +84,7 @@ var start = function (text) {
     bgContext.fillStyle = "#222";
     bgContext.font = fontStr;
     let textInfo = bgContext.measureText(text);
-    let textLeft = (canvas.width - textInfo.width)/2;
+    let textLeft = (canvas.width - textInfo.width) / 2;
     let textTop = (canvas.height);
     console.log(textLeft, textTop, textInfo);
     bgContext.fillText(text, textLeft, textTop);
@@ -89,7 +92,7 @@ var start = function (text) {
     getCoords(true);
 }
 
-var getCoords = function (drawText) {
+var getCoords = function(drawText) {
     var imageData, pixel, height, width;
 
     imageData = bgContext.getImageData(0, 0, canvas.width, canvas.height);
@@ -110,39 +113,39 @@ var getCoords = function (drawText) {
         intervalId = setInterval(updateFree, 100);
 }
 
-var stopCtx = function () {
+var stopCtx = function() {
     clearInterval(intervalId);
 }
 
-var redraw = function () {
+var redraw = function() {
     if (textUp) {
         update();
-    }
-    else updateFree();
+    } else updateFree();
     updateFree();
 }
 
-var drawCircle = function (x, y) {
+var drawCircle = function(x, y) {
     var startx = (Math.random() * canvas.width);
     var starty = (Math.random() * canvas.height);
 
     var velx = (x - startx) / itertot;
     var vely = (y - starty) / itertot;
 
-    parts.push(
-        {
-            c: '#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16),
-            x: x, //goal position
-            y: y,
-            x2: startx, //start position
-            y2: starty,
-            r: true, //Released (to fly free!)
-            v: { x: velx, y: vely }
+    parts.push({
+        c: '#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16),
+        x: x, //goal position
+        y: y,
+        x2: startx, //start position
+        y2: starty,
+        r: true, //Released (to fly free!)
+        v: {
+            x: velx,
+            y: vely
         }
-    )
+    })
 }
 
-var update = function () {
+var update = function() {
     var i, dx, dy, sqrDist, scale;
     itercount++;
     clear();
@@ -156,7 +159,10 @@ var update = function () {
             //check if they are out of screen... and kill
         }
         if (itercount == itertot) {
-            parts[i].v = { x: (Math.random() * 6) * 2 - 6, y: (Math.random() * 6) * 2 - 6 };
+            parts[i].v = {
+                x: (Math.random() * 6) * 2 - 6,
+                y: (Math.random() * 6) * 2 - 6
+            };
             parts[i].r = false;
         }
 
@@ -182,7 +188,7 @@ var update = function () {
 }
 
 
-var updateFree = function () {
+var updateFree = function() {
 
     var i, dx, dy, sqrDist, scale;
     //itercount++;
@@ -206,7 +212,7 @@ var updateFree = function () {
 }
 
 //Clear the on screen canvas
-var clear = function () {
+var clear = function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     //context.fillStyle = 'silver';
     context.fillStyle = 'rgba(0, 0, 0, 0)';

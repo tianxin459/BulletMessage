@@ -15,6 +15,12 @@
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/jquery.slotmachine.min.js"></script>
     <script type="text/javascript" src="./lib/ld_particle.js"></script>
     <title>LuckyDraw</title>
+    <style>
+        .container {
+            background: url("./static/img/background/bg3.jpg");
+            background-size: 100% 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -44,6 +50,12 @@
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
+<script src="lib/common.js"></script>
+<script>
+    $(document).ready(() => {
+        makesureNameList();
+    });
+</script>
 <script type="text/javascript">
     let curtainOn = true;
 
@@ -67,20 +79,20 @@
     function getLuckyDrawWinner() {
         return getRandomText();
     }
-    
 
-    function draw(){
+
+    function draw() {
         counting = !counting;
-            if (counting) {
-                initialize("canvas");
-            } else {
-                stopCtx();
-                start(getLuckyDrawWinner());
-            }
-        };
+        if (counting) {
+            initialize("canvas");
+        } else {
+            stopCtx();
+            start(getWinnerName());
+        }
+    };
 
     let command = {
-        draw:()=>draw(),
+        draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
             $(".prize-title").text(text);
@@ -95,13 +107,13 @@
             $(".prize-title").addClass('hide-prize-title');
         },
         refreshprizeimg: (id) => {
-            $(".prize-img").attr("src",`./Uploads/prize/${id}.jpg`);
+            $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
         }
     }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
-        $('#btnTest').click(()=>{
+        $('#btnTest').click(() => {
             command["refreshprizeimg"](2);
         });
         $('#btnOpenClose').click(() => {

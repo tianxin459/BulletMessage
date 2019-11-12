@@ -15,6 +15,9 @@
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/slotmachine.min.js"></script>
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/jquery.slotmachine.min.js"></script>
     <title>LuckyDraw</title>
+    <style>
+
+    </style>
 </head>
 
 <body>
@@ -44,18 +47,37 @@
             <!-- <img id="box2" src="./static/img/box2.png"> -->
             <img id="marioJump" src="./static/img/mario-jump.png">
             <img id="marioRun" src="./static/img/mario-run.png">
+            <div id="ground"></div>
         </div>
     </div>
+
+
+    <audio id="audioStart" controls preload="auto">
+        <source src="./resource/mario-start.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioCoin" controls preload="auto">
+        <source src="http://ellist.cn/bulletmessage/static/coin2.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 </body>
 
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
+<script src="lib/common.js"></script>
+<script>
+    $(document).ready(() => {
+        makesureNameList();
+    });
+</script>
 <script type="text/javascript">
     let curtainOn = true;
 
     function toggleCurtain() {
         if (curtainOn) {
+
+            $('#audioStart')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
         } else {
@@ -77,7 +99,7 @@
     let boxText = $('#boxText');
     let winnerContainer = $('.winner-container');
     let prizeContainer = $('.prize-contrainer');
-    
+
 
     function initScene() {
         marioJ.hide();
@@ -86,6 +108,7 @@
         marioJ.removeClass('jumpUp');
         box1.removeClass('pumpUp');
         boxText.removeClass('jumpUpText');
+        $('#audioCoin')[0].pause();
     }
 
     let timmer;
@@ -100,27 +123,30 @@
         box1.addClass('pumpUp');
         boxText.addClass('jumpUpText');
         prizeContainer.addClass('move-aside');
+        $('#audioCoin')[0].play();
         prizeCount = 1;
-        let winner = prizeCount + '-' + getRandomText();
+        let winner = prizeCount + '-' + getWinnerName();
         addWinner(winner);
         timmer = setInterval(() => {
             prizeCount++;
-            let winner = prizeCount + '-' + getRandomText();
+            $('#audioCoin')[0].currentTime = 0;
+            $('#audioCoin')[0].play();
+            let winner = prizeCount + '-' + getWinnerName();
             addWinner(winner);
-            if(prizeCount == prizeTotal) {
+            if (prizeCount == prizeTotal) {
                 clearInterval(timmer);
                 //need to hold a little bit till animation finish up;
-                setTimeout(initScene,500);
+                setTimeout(initScene, 1000);
                 // initScene();
                 console.log(winnerList);
             }
-        }, 500);
+        }, 1000);
     }
 
-    function addWinner(winner){
-            boxText.text(winner);
-            winnerList.push(winner);
-            winnerContainer.append(`<p>${winner}</p>`);
+    function addWinner(winner) {
+        boxText.text(winner);
+        winnerList.push(winner);
+        winnerContainer.append(`<p>${winner}</p>`);
     }
 
 
@@ -130,10 +156,20 @@
         marioR.addClass('runUp');
     }
 
+    function draw() {
+        counting = !counting;
+        if (counting) {
+            winnerList.length = 0;
+            winnerContainer.empty();
+            marioRun();
+        } else {
+            marioJump();
+        }
+    }
 
-    
 
     let command = {
+        draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
             $(".prize-title").text(text);
@@ -337,14 +373,7 @@
         });
 
         $('#btnDraw').click(e => {
-            counting = !counting;
-            if (counting) {
-                winnerList.length = 0;
-                winnerContainer.empty();
-                marioRun();
-            } else {
-                marioJump();
-            }
+            draw();
         })
     });
 

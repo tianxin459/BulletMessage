@@ -50,6 +50,12 @@
 </html>
 <script src="lib/signalr.js"></script>
 <script src="lib/globalConfig.js"></script>
+<script src="lib/common.js"></script>
+<script>
+    $(document).ready(() => {
+        makesureNameList();
+    });
+</script>
 <script type="text/javascript">
     let curtainOn = true;
 
@@ -71,33 +77,33 @@
     }
 
 
-    function draw(){
+    function draw() {
         counting = !counting;
-            if (counting) {
-                iroller = setInterval(() => {
-                    // let rd = getRandomText();
-                    valList.length = 0;
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    $('.item0').text(valList[0]);
-                    $('.item1').text(valList[1]);
-                    $('.item2').text(valList[2]);
-                    $('.item3').text(valList[3]);
-                }, 10);
-                slotMachine.shuffle(9999999);
-                $("#machine .slotMachineContainer").addClass("blur");
-            } else {
-                clearInterval(iroller);
-                $("#machine .slotMachineContainer").removeClass("blur");
-                slotMachine.stop();
-                console.info(slotMachine.active, valList[slotMachine.active]);
-            }
-        };
+        if (counting) {
+            iroller = setInterval(() => {
+                // let rd = getRandomText();
+                valList.length = 0;
+                valList.push(getWinnerName());
+                valList.push(getWinnerName());
+                valList.push(getWinnerName());
+                valList.push(getWinnerName());
+                $('.item0').text(valList[0]);
+                $('.item1').text(valList[1]);
+                $('.item2').text(valList[2]);
+                $('.item3').text(valList[3]);
+            }, 10);
+            slotMachine.shuffle(9999999);
+            $("#machine .slotMachineContainer").addClass("blur");
+        } else {
+            clearInterval(iroller);
+            $("#machine .slotMachineContainer").removeClass("blur");
+            slotMachine.stop();
+            console.info(slotMachine.active, valList[slotMachine.active]);
+        }
+    };
 
     let command = {
-        draw:()=>draw(),
+        draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
             $(".prize-title").text(text);
@@ -112,13 +118,13 @@
             $(".prize-title").addClass('hide-prize-title');
         },
         refreshprizeimg: (id) => {
-            $(".prize-img").attr("src",`./Uploads/prize/${id}.jpg`);
+            $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
         }
     }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
-        $('#btnTest').click(()=>{
+        $('#btnTest').click(() => {
             command["refreshprizeimg"](2);
         });
         $('#btnOpenClose').click(() => {
@@ -306,9 +312,9 @@
             draw();
         })
     });
-    
+
     function getLuckyDrawWinner() {
-        return getRandomText();
+        return getWinnerName();
     }
 
     getRandomText = () => {
