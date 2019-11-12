@@ -1,0 +1,148 @@
+.scene {
+    width: 800px;
+    height: 200px;
+    border: 2px solid orange;
+    position: relative;
+
+    #boxText {
+        top: 0;
+        // left: 35%;
+        position: absolute;
+        width: 800px;
+        height: 30px;
+        font-size: 25px;
+        text-align: center;
+        opacity: 0;
+        color: yellow;
+        text-shadow: 3px -2px 1px black;
+    }
+
+    #box1,
+    #box2,
+    #marioJump,
+    #marioRun {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        // transition: all 0.5s;
+    }
+
+    #box1 {
+        top: 0px;
+        left: 45%;
+    }
+
+    #marioJump {
+        bottom: 0px;
+        left: 45%;
+    }
+
+    #marioRun {
+        bottom: 0px;
+        left: 45%;
+    }
+
+    .jumpUp {
+        animation: aniJump 0.5s ease infinite;
+    }
+
+    .jumpUpText {
+        animation: aniJumpText 0.5s ease infinite;
+    }
+
+    .pumpUp {
+        animation: aniPumpUp 0.5s linear infinite;
+    }
+
+    .runUp {
+        animation: aniRun 2s linear infinite;
+    }
+
+
+    @keyframes aniJump {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-100px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+
+    }
+
+    @keyframes aniJumpText {
+        0% {
+            opacity: 0;
+            transform: translateY(0);
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        70% {
+            opacity: 1;
+            transform: translateY(-50px);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-60px);
+        }
+
+    }
+
+
+    @keyframes aniRun {
+        0% {
+            transform: translateX(0) scaleX(1);
+        }
+
+        24% {
+            transform: translateX(99px) scaleX(1);
+        }
+
+        25% {
+            transform: translateX(100px) scaleX(-1);
+        }
+
+        74% {
+            transform: translateX(-99px) scaleX(-1);
+        }
+
+        75% {
+            transform: translateX(-100px) scaleX(1);
+        }
+
+        100% {
+            transform: translateX(0) scaleX(1);
+        }
+
+    }
+
+    @keyframes aniPumpUp {
+        0% {
+            transform: translateY(0);
+        }
+
+        45% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+
+        55% {
+            transform: translateY(0px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+}

@@ -115,3 +115,11 @@
     color: yellow;
     text-shadow: 3px -2px 1px black;
 }
+.winner-container {
+  position: absolute;
+  top: 10%;
+  left: 40%;
+  z-index: 2;
+  color: yellow;
+  text-shadow: 3px -2px 1px black;
+}

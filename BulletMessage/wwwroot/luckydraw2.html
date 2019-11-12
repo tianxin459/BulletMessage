@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" href="lib/global.css">
     <link rel="stylesheet" type="text/css" href="luckydraw.css">
+    <link rel="stylesheet" type="text/css" href="luckydraw-mario.css">
     <link rel="stylesheet" type="text/css" href="node_modules/animate.css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
 
@@ -24,25 +25,25 @@
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
     </div>
-    <div class="curtain">
+    <!-- <div class="curtain">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
         <img class="curtain-front" src="static/img/background/curtain-front.png"></img>
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
-    </div>
+    </div> -->
     <div class="container">
+        <div class="winner-container"></div>
         <div class="prize-contrainer">
             <img class="prize-img" src="./Uploads/prize/1.jpg">
         </div>
-        <div id="machine">
-            <div class="item0">gogogo</div>
-            <div class="item1">222</div>
-            <div class="item2">222</div>
-            <div class="item3">222</div>
-            <!-- <div>London</div>
-                    <div>New York</div> -->
+        <div class="scene">
+            <div id="boxText"></div>
+            <img id="box1" src="./static/img/box1.png">
+            <!-- <img id="box2" src="./static/img/box2.png"> -->
+            <img id="marioJump" src="./static/img/mario-jump.png">
+            <img id="marioRun" src="./static/img/mario-run.png">
         </div>
     </div>
 </body>
@@ -71,55 +72,85 @@
     }
 
 
-    function draw(){
-        counting = !counting;
-            if (counting) {
-                iroller = setInterval(() => {
-                    // let rd = getRandomText();
-                    valList.length = 0;
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    valList.push(getRandomText() + ' ' + getRandomText());
-                    $('.item0').text(valList[0]);
-                    $('.item1').text(valList[1]);
-                    $('.item2').text(valList[2]);
-                    $('.item3').text(valList[3]);
-                }, 10);
-                slotMachine.shuffle(9999999);
-                $("#machine .slotMachineContainer").addClass("blur");
-            } else {
-                clearInterval(iroller);
-                $("#machine .slotMachineContainer").removeClass("blur");
-                slotMachine.stop();
-                console.info(slotMachine.active, valList[slotMachine.active]);
-            }
-        };
+
 
     let command = {
-        draw:()=>draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
             $(".prize-title").text(text);
             $(".prize-title").removeClass('show-prize-title');
             $(".prize-title").removeClass('hide-prize-title');
             $(".prize-title").addClass('show-prize-title');
-            // setTimeout(command['hideprizetitle'](), 6000);
         },
         hideprizetitle: () => {
             $(".prize-title").removeClass('show-prize-title');
             $(".prize-title").removeClass('hide-prize-title');
             $(".prize-title").addClass('hide-prize-title');
-        },
-        refreshprizeimg: (id) => {
-            $(".prize-img").attr("src",`./Uploads/prize/${id}.jpg`);
         }
+    }
+
+    let marioJ = $('#marioJump');
+    let marioR = $('#marioRun');
+    let box1 = $('#box1');
+    let boxText = $('#boxText');
+    let winnerContainer = $('.winner-container');
+
+    function initScene() {
+        marioJ.hide();
+        marioR.show();
+        marioR.removeClass('runUp');
+        marioJ.removeClass('jumpUp');
+        box1.removeClass('pumpUp');
+        boxText.removeClass('jumpUpText');
+    }
+
+    let timmer;
+    let prizeTotal = 5;
+    let prizeCount = 0;
+    let winnerList = [];
+
+    function marioJump() {
+        marioR.hide();
+        marioJ.show();
+        marioJ.addClass('jumpUp');
+        box1.addClass('pumpUp');
+        boxText.addClass('jumpUpText');
+        prizeCount = 1;
+        let winner = prizeCount + '-' + getRandomText();
+        addWinner(winner);
+        timmer = setInterval(() => {
+            prizeCount++;
+            let winner = prizeCount + '-' + getRandomText();
+            addWinner(winner);
+            if(prizeCount == prizeTotal) {
+                clearInterval(timmer);
+                //need to hold a little bit till animation finish up;
+                setTimeout(initScene,500);
+                // initScene();
+                console.log(winnerList);
+            }
+        }, 500);
+    }
+
+    function addWinner(winner){
+            boxText.text(winner);
+            winnerList.push(winner);
+            winnerContainer.append(`<p>${winner}</p>`);
+    }
+
+
+    function marioRun() {
+        marioJ.hide();
+        marioR.show();
+        marioR.addClass('runUp');
     }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
-        $('#btnTest').click(()=>{
-            command["refreshprizeimg"](2);
+        initScene();
+        $('#btnTest').click(() => {
+            marioRun();
+            // marioJump();
         });
         $('#btnOpenClose').click(() => {
             toggleCurtain();
@@ -145,7 +176,7 @@
         .build();
 
     connection.on("Command", (user, message) => {
-        console.log('Command==>', message);
+        console.log(message);
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
@@ -303,7 +334,14 @@
         });
 
         $('#btnDraw').click(e => {
-            draw();
+            counting = !counting;
+            if (counting) {
+                winnerList.length = 0;
+                winnerContainer.empty();
+                marioRun();
+            } else {
+                marioJump();
+            }
         })
     });
 
