@@ -13,6 +13,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/slotmachine.min.js"></script>
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/jquery.slotmachine.min.js"></script>
+    <script type="text/javascript" src="./lib/ld_particle.js"></script>
     <title>LuckyDraw</title>
 </head>
 
@@ -36,14 +37,7 @@
         <div class="prize-contrainer">
             <img class="prize-img" src="./Uploads/prize/1.jpg">
         </div>
-        <div id="machine">
-            <div class="item0">gogogo</div>
-            <div class="item1">222</div>
-            <div class="item2">222</div>
-            <div class="item3">222</div>
-            <!-- <div>London</div>
-                    <div>New York</div> -->
-        </div>
+        <canvas id="canvas"></canvas>
     </div>
 </body>
 
@@ -70,29 +64,18 @@
         $(".prize-title").addClass('show-prize-title');
     }
 
+    function getLuckyDrawWinner() {
+        return getRandomText();
+    }
+    
 
     function draw(){
         counting = !counting;
             if (counting) {
-                iroller = setInterval(() => {
-                    // let rd = getRandomText();
-                    valList.length = 0;
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    valList.push(getLuckyDrawWinner());
-                    $('.item0').text(valList[0]);
-                    $('.item1').text(valList[1]);
-                    $('.item2').text(valList[2]);
-                    $('.item3').text(valList[3]);
-                }, 10);
-                slotMachine.shuffle(9999999);
-                $("#machine .slotMachineContainer").addClass("blur");
+                initialize("canvas");
             } else {
-                clearInterval(iroller);
-                $("#machine .slotMachineContainer").removeClass("blur");
-                slotMachine.stop();
-                console.info(slotMachine.active, valList[slotMachine.active]);
+                stopCtx();
+                start(getLuckyDrawWinner());
             }
         };
 
@@ -306,10 +289,6 @@
             draw();
         })
     });
-    
-    function getLuckyDrawWinner() {
-        return getRandomText();
-    }
 
     getRandomText = () => {
         var text = "";

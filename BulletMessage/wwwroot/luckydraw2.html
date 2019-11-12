@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" href="lib/global.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" type="text/css" href="luckydraw.css">
     <link rel="stylesheet" type="text/css" href="luckydraw-mario.css">
     <link rel="stylesheet" type="text/css" href="node_modules/animate.css/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="static/style.css">
 
 
     <!-- <link rel="stylesheet" type="text/css" href="node_modules/jquery-slotmachine/dist/jquery.slotmachine.css" /> -->
@@ -25,14 +25,14 @@
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
     </div>
-    <!-- <div class="curtain">
+    <div class="curtain">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
         <img class="curtain-front" src="static/img/background/curtain-front.png"></img>
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
-    </div> -->
+    </div>
     <div class="container">
         <div class="winner-container"></div>
         <div class="prize-contrainer">
@@ -71,29 +71,13 @@
         $(".prize-title").addClass('show-prize-title');
     }
 
-
-
-
-    let command = {
-        startstop: () => toggleCurtain(),
-        showprizetitle: (text) => {
-            $(".prize-title").text(text);
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('show-prize-title');
-        },
-        hideprizetitle: () => {
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('hide-prize-title');
-        }
-    }
-
     let marioJ = $('#marioJump');
     let marioR = $('#marioRun');
     let box1 = $('#box1');
     let boxText = $('#boxText');
     let winnerContainer = $('.winner-container');
+    let prizeContainer = $('.prize-contrainer');
+    
 
     function initScene() {
         marioJ.hide();
@@ -115,6 +99,7 @@
         marioJ.addClass('jumpUp');
         box1.addClass('pumpUp');
         boxText.addClass('jumpUpText');
+        prizeContainer.addClass('move-aside');
         prizeCount = 1;
         let winner = prizeCount + '-' + getRandomText();
         addWinner(winner);
@@ -143,6 +128,24 @@
         marioJ.hide();
         marioR.show();
         marioR.addClass('runUp');
+    }
+
+
+    
+
+    let command = {
+        startstop: () => toggleCurtain(),
+        showprizetitle: (text) => {
+            $(".prize-title").text(text);
+            $(".prize-title").removeClass('show-prize-title');
+            $(".prize-title").removeClass('hide-prize-title');
+            $(".prize-title").addClass('show-prize-title');
+        },
+        hideprizetitle: () => {
+            $(".prize-title").removeClass('show-prize-title');
+            $(".prize-title").removeClass('hide-prize-title');
+            $(".prize-title").addClass('hide-prize-title');
+        }
     }
 </script>
 <script type="text/javascript">

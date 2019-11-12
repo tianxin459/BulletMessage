@@ -1,3 +1,7 @@
+body {
+  height: 100%;
+  margin: 0;
+}
 .container {
   display: flex;
   flex-direction: column;
@@ -10,6 +14,7 @@
   transform-style: preserve-3d;
   perspective: 800px;
   perspective-origin: center;
+  padding: 0;
 }
 .container .blur {
   filter: blur(5px);
@@ -93,7 +98,9 @@
 }
 .prize-contrainer {
   width: 200px;
-  height: 300px;
+  height: 250px;
+  transition: 1s all;
+  transform: translateX(0) rotateY(0deg);
   position: relative;
 }
 .prize-contrainer .prize-img {
@@ -103,21 +110,28 @@
   border-radius: 5px;
   box-shadow: 2px 2px 2px black;
 }
+.move-aside {
+  transform: translateX(60%) rotateY(-35deg);
+}
+#canvas {
+  position: absolute;
+  width: 80%;
+}
 #machine {
-    overflow: hidden;
-    transition: all 0.1s;
-    height: 2.5ex;
-    font-size: 8.5ex;
-    border: 2px solid silver;
-    margin-top: 20px;
-    width: 400px;
-    text-align: center;
-    color: yellow;
-    text-shadow: 3px -2px 1px black;
+  overflow: hidden;
+  transition: all 0.1s;
+  height: 55px;
+  font-size: 40px;
+  border: 2px solid silver;
+  margin-top: 20px;
+  width: 400px;
+  text-align: center;
+  color: yellow;
+  text-shadow: 3px -2px 1px black;
 }
 .winner-container {
   position: absolute;
-  top: 10%;
+  top: 15%;
   left: 40%;
   z-index: 2;
   color: yellow;
