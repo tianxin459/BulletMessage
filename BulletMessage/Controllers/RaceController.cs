@@ -32,6 +32,13 @@ namespace BulletMessage.Controllers
         public IActionResult Run(RaceRequest request)
         {
             _logger.LogInformation(JsonConvert.SerializeObject(request));
+            var re = Request;
+            var headers = re.Headers;
+
+            if (headers.Contains("eventId"))
+            {
+                string eventId = headers.GetValues("eventId").First();
+            }
             var step = 0;
             int.TryParse(request.Message, out step);
             if (step != 0 && request.Gender == 2)

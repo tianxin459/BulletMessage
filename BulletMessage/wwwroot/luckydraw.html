@@ -45,6 +45,19 @@
                     <div>New York</div> -->
         </div>
     </div>
+
+    <audio id="audioBg" controls preload="auto" loop>
+        <source src="./static//music/bg1.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioRolling" controls preload="auto" loop>
+        <source src="./static//music/slotmachinerolling.m4a" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioWinning" controls preload="auto">
+        <source src="./static//music/winning2.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 </body>
 
 </html>
@@ -61,9 +74,11 @@
 
     function toggleCurtain() {
         if (curtainOn) {
+            playAudioBg();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
         } else {
+            stopAudioBg();
             $('.curtain-left').removeClass('move-left');
             $('.curtain-right').removeClass('move-right');
         }
@@ -76,10 +91,18 @@
         $(".prize-title").addClass('show-prize-title');
     }
 
+    function playAudioBg() {
+        $('#audioBg')[0].play();
+    }
+
+    function stopAudioBg() {
+        $('#audioBg')[0].pause();
+    }
 
     function draw() {
         counting = !counting;
         if (counting) {
+            stopAudioBg();
             iroller = setInterval(() => {
                 // let rd = getRandomText();
                 valList.length = 0;
@@ -94,10 +117,14 @@
             }, 10);
             slotMachine.shuffle(9999999);
             $("#machine .slotMachineContainer").addClass("blur");
+            $("#audioRolling")[0].play();
         } else {
             clearInterval(iroller);
             $("#machine .slotMachineContainer").removeClass("blur");
             slotMachine.stop();
+            $("#audioRolling")[0].pause();
+            $('#audioWinning')[0].play();
+            setTimeout(playAudioBg(), 4000);
             console.info(slotMachine.active, valList[slotMachine.active]);
         }
     };
