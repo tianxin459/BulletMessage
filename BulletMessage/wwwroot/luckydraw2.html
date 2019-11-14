@@ -80,19 +80,14 @@
             $('#audioStart')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
+            $('.curtain-front').addClass('move-up');
         } else {
             $('.curtain-left').removeClass('move-left');
             $('.curtain-right').removeClass('move-right');
+            $('.curtain-front').removeClass('move-up');
         }
         curtainOn = !curtainOn;
     }
-
-
-    function showTitle(text) {
-        $(".prize-title").text(text);
-        $(".prize-title").addClass('show-prize-title');
-    }
-
     let marioJ = $('#marioJump');
     let marioR = $('#marioRun');
     let box1 = $('#box1');
@@ -126,22 +121,25 @@
         $('#audioCoin')[0].play();
         prizeCount = 1;
         let winner = getWinner();
+        setNameSelected(winner.userid, true, prizeText);
         addWinner(winner);
         timmer = setInterval(() => {
             prizeCount++;
             $('#audioCoin')[0].currentTime = 0;
             $('#audioCoin')[0].play();
             let winner = getWinner();
+            setNameSelected(winner.userid, true, prizeText);
             addWinner(winner);
             if (prizeCount == prizeTotal) {
                 clearInterval(timmer);
                 //need to hold a little bit till animation finish up;
-                winnerList.forEach(w => {
-                    console.log(w);
-                    setNameSelected(w.UserID,true);
-                });
+                // winnerList.forEach(w => {
+                //     console.log(w);
+                //     setNameSelected(w.userid, true, prizeText);
+                // });
+                saveWinner(winnerList, prizeText);
                 console.log(getNameList());
-                setTimeout(initScene, 1000);
+                setTimeout(initScene, 300);
                 // initScene();
                 console.log(winnerList);
             }
@@ -149,9 +147,9 @@
     }
 
     function addWinner(winner) {
-        boxText.text(winner.Name);
+        boxText.text(winner.name);
         winnerList.push(winner);
-        winnerContainer.append(`<p>${winner.Name}</p>`);
+        winnerContainer.append(`<div class="winnerName">${winner.name}</div>`);
     }
 
 
@@ -174,21 +172,41 @@
 
 
     let command = {
-        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
-        draw: () => draw(),
-        startstop: () => toggleCurtain(),
-        showprizetitle: (text) => {
-            $(".prize-title").text(text);
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('show-prize-title');
-        },
-        hideprizetitle: () => {
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('hide-prize-title');
+            refreshnamelist: () => loadNameList(() => console.log('refresh list')),
+            draw: () => draw(),
+            startstop: () => toggleCurtain(),
+            showprizetitle: (text) => {
+                console.log(text);
+                showTitle(text);
+                // prizeText = text;
+                // $(".prize-title").text(text);
+                // $(".prize-title").removeClass('show-prize-title');
+                // $(".prize-title").removeClass('hide-prize-title');
+                // $(".prize-title").addClass('show-prize-title');
+                // setTimeout(command['hideprizetitle'](), 6000);
+            },
+            hideprizetitle: () => {
+                $(".prize-title").removeClass('show-prize-title');
+                $(".prize-title").removeClass('hide-prize-title');
+                $(".prize-title").addClass('hide-prize-title');
+            },
+            refreshprizeimg: (id) => {
+                $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+            }
         }
-    }
+        // let command = {
+        //     refreshnamelist: () => loadNameList(() => console.log('refresh list')),
+        //     draw: () => draw(),
+        //     startstop: () => toggleCurtain(),
+        //     showprizetitle: (text) => {
+        //         showTitle(text);
+        //     },
+        //     hideprizetitle: () => {
+        //         $(".prize-title").removeClass('show-prize-title');
+        //         $(".prize-title").removeClass('hide-prize-title');
+        //         $(".prize-title").addClass('hide-prize-title');
+        //     }
+        // }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
@@ -202,7 +220,7 @@
         });
 
         $('#btnShowTitle').click(() => {
-            command["showprizetitle"]('prize 1');
+            command["showprizetitle"]('prize 3');
         });
 
         $('#btnHideTitle').click(() => {

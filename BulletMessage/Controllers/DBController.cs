@@ -24,17 +24,54 @@ namespace BulletMessage.Controllers
             _logger = logger;
         }
 
+
+
         [HttpGet]
-        [Route("getWinners")]
-        public IActionResult GetWinners()
+        [Route("ping")]
+        public IActionResult Ping()
+        {
+            return Ok(DateTime.Now.ToString());
+        }
+
+
+        [HttpDelete]
+        [Route("Winners")]
+        public IActionResult clearAllWinners()
         {
             var dbName = "LuckyDrawWinners";
             List<WinnerUser> result = new List<WinnerUser>();
             using (var db = new LiteDatabase(_pathDB))
             {
                 result = db.GetCollection<WinnerUser>(dbName).FindAll().ToList();
+                foreach(var r in result)
+                {
+                    db.GetCollection<WinnerUser>(dbName).Delete(r.UserID);
+                }
             }
             return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route("Winners")]
+        public IActionResult GetWinners()
+        {
+            _logger.LogInformation("get Winners");
+            try
+            {
+                var dbName = "LuckyDrawWinners";
+                List<WinnerUser> result = new List<WinnerUser>();
+                using (var db = new LiteDatabase(_pathDB))
+                {
+                    result = db.GetCollection<WinnerUser>(dbName).FindAll().ToList();
+                }
+                return Ok(result);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw e;
+            }
         }
 
 

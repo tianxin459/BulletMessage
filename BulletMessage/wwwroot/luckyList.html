@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="lib/jquery.tabledit.min.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
+    <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
+    <title>LuckyList</title>
+</head>
+
+<body>
+    <table id="table">
+        <thead>
+            <tr>
+                <th data-field="userid">ID</th>
+                <th data-field="department">Department</th>
+                <th data-field="name">Name</th>
+                <th data-field="prize">Price</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+
+</html>
+<script src="lib/globalConfig.js"></script>
+<script src="lib/common.js"></script>
+<script>
+    $(document).ready(() => {});
+
+    var $table = $('#table');
+    $(function() {
+        let data = getNameList().filter(x => x.selected);
+        console.table(data);
+
+        $table.bootstrapTable({
+            data: data
+        })
+    })
+</script>
+
+<script>
+</script>

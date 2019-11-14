@@ -86,12 +86,6 @@
         curtainOn = !curtainOn;
     }
 
-
-    function showTitle(text) {
-        $(".prize-title").text(text);
-        $(".prize-title").addClass('show-prize-title');
-    }
-
     function playAudioBg() {
         $('#audioBg')[0].play();
     }
@@ -111,10 +105,10 @@
                 valList.push(getWinner());
                 valList.push(getWinner());
                 valList.push(getWinner());
-                $('.item0').text(valList[0].Name);
-                $('.item1').text(valList[1].Name);
-                $('.item2').text(valList[2].Name);
-                $('.item3').text(valList[3].Name);
+                $('.item0').text(valList[0].name);
+                $('.item1').text(valList[1].name);
+                $('.item2').text(valList[2].name);
+                $('.item3').text(valList[3].name);
             }, 10);
             slotMachine.shuffle(9999999);
             $("#machine .slotMachineContainer").addClass("blur");
@@ -126,20 +120,24 @@
             $("#audioRolling")[0].pause();
             $('#audioWinning')[0].play();
             setTimeout(playAudioBg(), 4000);
-            setNameSelected(valList[slotMachine.active].UserID,true);
+            setNameSelected(valList[slotMachine.active].userid, true, prizeText);
+            // valList[slotMachine.active].prize = prizeText;
+            saveWinner([valList[slotMachine.active]], prizeText);
             console.info(slotMachine.active, valList[slotMachine.active]);
         }
     };
 
     let command = {
-        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
+        refreshnamelist: () => loadNameList(() => console.log('refresh list')),
         draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
-            $(".prize-title").text(text);
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('show-prize-title');
+            showTitle(text);
+            // prizeText = text;
+            // $(".prize-title").text(text);
+            // $(".prize-title").removeClass('show-prize-title');
+            // $(".prize-title").removeClass('hide-prize-title');
+            // $(".prize-title").addClass('show-prize-title');
             // setTimeout(command['hideprizetitle'](), 6000);
         },
         hideprizetitle: () => {
@@ -157,11 +155,11 @@
         $('#btnTest').click(() => {
             command["refreshprizeimg"](2);
         });
-        
+
         $('#btnRefresh').click(() => {
-            loadNameList(()=>console.log('refresh list'));
+            loadNameList(() => console.log('refresh list'));
         });
-        
+
         $('#btnOpenClose').click(() => {
             toggleCurtain();
         });

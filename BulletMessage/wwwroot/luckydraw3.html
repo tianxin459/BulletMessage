@@ -71,11 +71,6 @@
     }
 
 
-    function showTitle(text) {
-        $(".prize-title").text(text);
-        $(".prize-title").addClass('show-prize-title');
-    }
-
     function getLuckyDrawWinner() {
         return getRandomText();
     }
@@ -88,32 +83,55 @@
         } else {
             stopCtx();
             let winner = getWinner();
-            start(winner.Name);
-            setNameSelected(winner.UserID,true);
+            start(winner.name);
+            setNameSelected(winner.userid, true, prizeText);
+            saveWinner([winner], prizeText);
             console.log(getNameList());
         }
     };
 
     let command = {
-        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
-        draw: () => draw(),
-        startstop: () => toggleCurtain(),
-        showprizetitle: (text) => {
-            $(".prize-title").text(text);
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('show-prize-title');
-            // setTimeout(command['hideprizetitle'](), 6000);
-        },
-        hideprizetitle: () => {
-            $(".prize-title").removeClass('show-prize-title');
-            $(".prize-title").removeClass('hide-prize-title');
-            $(".prize-title").addClass('hide-prize-title');
-        },
-        refreshprizeimg: (id) => {
-            $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+            refreshnamelist: () => loadNameList(() => console.log('refresh list')),
+            draw: () => draw(),
+            startstop: () => toggleCurtain(),
+            showprizetitle: (text) => {
+                showTitle(text);
+                // prizeText = text;
+                // $(".prize-title").text(text);
+                // $(".prize-title").removeClass('show-prize-title');
+                // $(".prize-title").removeClass('hide-prize-title');
+                // $(".prize-title").addClass('show-prize-title');
+                // setTimeout(command['hideprizetitle'](), 6000);
+            },
+            hideprizetitle: () => {
+                $(".prize-title").removeClass('show-prize-title');
+                $(".prize-title").removeClass('hide-prize-title');
+                $(".prize-title").addClass('hide-prize-title');
+            },
+            refreshprizeimg: (id) => {
+                $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+            }
         }
-    }
+        // let command = {
+        //     refreshnamelist: () => loadNameList(() => console.log('refresh list')),
+        //     draw: () => draw(),
+        //     startstop: () => toggleCurtain(),
+        //     showprizetitle: (text) => {
+        //         $(".prize-title").text(text);
+        //         $(".prize-title").removeClass('show-prize-title');
+        //         $(".prize-title").removeClass('hide-prize-title');
+        //         $(".prize-title").addClass('show-prize-title');
+        //         // setTimeout(command['hideprizetitle'](), 6000);
+        //     },
+        //     hideprizetitle: () => {
+        //         $(".prize-title").removeClass('show-prize-title');
+        //         $(".prize-title").removeClass('hide-prize-title');
+        //         $(".prize-title").addClass('hide-prize-title');
+        //     },
+        //     refreshprizeimg: (id) => {
+        //         $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+        //     }
+        // }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
