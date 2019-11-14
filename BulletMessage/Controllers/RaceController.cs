@@ -29,11 +29,11 @@ namespace BulletMessage.Controllers
 
         [HttpPost]
         [Route("rungroup")]
-        public IActionResult Run(RaceRequest request)
+        public IActionResult RunGroup(RaceRequest request)
         {
             _logger.LogInformation(JsonConvert.SerializeObject(request));
             HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
-            HttpContext.Request.Headers.TryGetValue("eventId", out var headerGroupId);
+            HttpContext.Request.Headers.TryGetValue("groupid", out var headerGroupId);
             var eventId = headerEventId.ToString();
             var groupId = headerGroupId.ToString();
             var step = 0;

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace BulletMessage.Contract.Model
@@ -12,5 +14,17 @@ namespace BulletMessage.Contract.Model
         public string AvatarUrl { get; set; }
         public string Email { get; set; }
         public string Model { get; set; }
+    }
+    public class WinnerUser:User
+    {
+        [BsonId]
+        [DataMember(Name = "userid")]
+        public string UserID { get; set; }
+        [DataMember(Name = "prize")]
+        public string Prize { get; set; }
+        [DataMember(Name = "department")]
+        public string Department { get; set; }
+        [DataMember(Name = "eventid")]
+        public string EventId { get; set; }
     }
 }

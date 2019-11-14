@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Git\Deployment\wmtan</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="wwwroot/bullet.html">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/bulletVedio.html">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/bulletVedio2.html">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/client.html">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/index.html">
+      <publishTime>11/07/2019 09:54:06</publishTime>
+    </File>
+    <File Include="wwwroot/lib/global.css">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/globalConfig.js">
+      <publishTime>11/07/2019 13:03:07</publishTime>
+    </File>
+    <File Include="wwwroot/lib/green-light.jpg">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/race.1.js">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/race.css">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/race.js">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/signalr.js">
+      <publishTime>11/01/2019 10:17:41</publishTime>
+    </File>
+    <File Include="wwwroot/lib/signalr.js.map">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/signalr.min.js">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/lib/signalr.min.js.map">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/luckydraw.css">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/luckydraw.html">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/luckydraw.less">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/package-lock.json">
+      <publishTime>11/07/2019 21:55:23</publishTime>
+    </File>
+    <File Include="wwwroot/package.json">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/qrcode.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/race.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/race2.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/race3.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/remoteControl.html">
+      <publishTime>11/07/2019 10:10:30</publishTime>
+    </File>
+    <File Include="wwwroot/remoteControl.less">
+      <publishTime>11/06/2019 16:53:07</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/bg1.jpg">
+      <publishTime>11/05/2019 15:53:27</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/bg1.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/bg2.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/curtain-front.png">
+      <publishTime>11/05/2019 17:59:07</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/curtain.jpg">
+      <publishTime>11/05/2019 15:56:29</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/curtain2.jpg">
+      <publishTime>11/05/2019 16:08:37</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/race_track.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/background/realistic-red-curtain-background_1284-1168.jpg">
+      <publishTime>11/05/2019 17:45:04</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/cheers.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/clapping.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/GD-Logo.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/horn.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/like.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/loading.gif">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/logo.png">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/money.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/qr-code.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/running1.gif">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/runway.jpg">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/img/star.png">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/music/12 Bar BOT.m4a">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/music/12 Bar BOT.mp3">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/music/12_bar_bot_funfair_remix.mp3">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/music/ASTROnomical.m4a">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/music/ASTROnomical.mp3">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/static/vedio/mov_bbb.mp4">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/test.html">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/Uploads/Images/181122024940880.png">
+      <publishTime>10/29/2019 17:42:52</publishTime>
+    </File>
+    <File Include="wwwroot/Uploads/prize/1.jpg">
+      <publishTime>11/11/2019 09:46:09</publishTime>
+    </File>
+    <File Include="wwwroot/ws.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+    <File Include="wwwroot/ws2.html">
+      <publishTime>10/29/2019 17:43:05</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

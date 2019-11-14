@@ -222,6 +222,38 @@ namespace BulletMessage.Controllers
         }
 
 
+
+        [HttpPost]
+        [Route("saveFile")]
+        public IActionResult SaveFile(SaveFileRequest request)
+        {
+            _logger.LogError(request.Content);
+            var strDateTime = DateTime.Now.ToString("yyMMddhhmmssfff"); //取得时间字符串
+            var path = Directory.GetCurrentDirectory() + @"\" + request.FileName;
+            using (FileStream fs = new FileStream(path, FileMode.Create))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                try
+                {
+                    sw.Write(request.Content);
+                    // sw.WriteLine(request.NickName + "\t" + request.EnglisthName + "\t" + request.AvatarUrl + "\t" + request.Email + "\t" + request.Model);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    throw e;
+                }
+                finally
+                {
+                    sw.Flush();
+                    sw.Close();
+                    fs.Close();
+                }
+            }
+            return Ok(new { Success = true });
+        }
+
+
         #region Rger
         [HttpGet]
         [Route("onviewuser/{actID}")]
