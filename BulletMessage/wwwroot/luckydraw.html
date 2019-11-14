@@ -23,6 +23,7 @@
         <button id="btnDraw">LuckyDraw</button>
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
+        <button id="btnRefresh">Reload NameList</button>
     </div>
     <div class="curtain">
         <div class="curtain-left"></div>
@@ -83,14 +84,14 @@
             iroller = setInterval(() => {
                 // let rd = getRandomText();
                 valList.length = 0;
-                valList.push(getWinnerName());
-                valList.push(getWinnerName());
-                valList.push(getWinnerName());
-                valList.push(getWinnerName());
-                $('.item0').text(valList[0]);
-                $('.item1').text(valList[1]);
-                $('.item2').text(valList[2]);
-                $('.item3').text(valList[3]);
+                valList.push(getWinner());
+                valList.push(getWinner());
+                valList.push(getWinner());
+                valList.push(getWinner());
+                $('.item0').text(valList[0].Name);
+                $('.item1').text(valList[1].Name);
+                $('.item2').text(valList[2].Name);
+                $('.item3').text(valList[3].Name);
             }, 10);
             slotMachine.shuffle(9999999);
             $("#machine .slotMachineContainer").addClass("blur");
@@ -98,11 +99,13 @@
             clearInterval(iroller);
             $("#machine .slotMachineContainer").removeClass("blur");
             slotMachine.stop();
+            setNameSelected(valList[slotMachine.active].UserID,true);
             console.info(slotMachine.active, valList[slotMachine.active]);
         }
     };
 
     let command = {
+        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
         draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
@@ -127,6 +130,11 @@
         $('#btnTest').click(() => {
             command["refreshprizeimg"](2);
         });
+        
+        $('#btnRefresh').click(() => {
+            loadNameList(()=>console.log('refresh list'));
+        });
+        
         $('#btnOpenClose').click(() => {
             toggleCurtain();
         });

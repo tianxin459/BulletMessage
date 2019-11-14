@@ -53,11 +53,11 @@
 
 
     <audio id="audioStart" controls preload="auto">
-        <source src="./resource/mario-start.mp3" type="audio/mp3">
+        <source src="./static/music/mario-start.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
     <audio id="audioCoin" controls preload="auto">
-        <source src="http://ellist.cn/bulletmessage/static/coin2.mp3" type="audio/mp3">
+        <source src="./static/music/coin.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 </body>
@@ -112,7 +112,7 @@
     }
 
     let timmer;
-    let prizeTotal = 5;
+    let prizeTotal = 15;
     let prizeCount = 0;
     let winnerList = [];
 
@@ -125,17 +125,22 @@
         prizeContainer.addClass('move-aside');
         $('#audioCoin')[0].play();
         prizeCount = 1;
-        let winner = prizeCount + '-' + getWinnerName();
+        let winner = getWinner();
         addWinner(winner);
         timmer = setInterval(() => {
             prizeCount++;
             $('#audioCoin')[0].currentTime = 0;
             $('#audioCoin')[0].play();
-            let winner = prizeCount + '-' + getWinnerName();
+            let winner = getWinner();
             addWinner(winner);
             if (prizeCount == prizeTotal) {
                 clearInterval(timmer);
                 //need to hold a little bit till animation finish up;
+                winnerList.forEach(w => {
+                    console.log(w);
+                    setNameSelected(w.UserID,true);
+                });
+                console.log(getNameList());
                 setTimeout(initScene, 1000);
                 // initScene();
                 console.log(winnerList);
@@ -144,9 +149,9 @@
     }
 
     function addWinner(winner) {
-        boxText.text(winner);
+        boxText.text(winner.Name);
         winnerList.push(winner);
-        winnerContainer.append(`<p>${winner}</p>`);
+        winnerContainer.append(`<p>${winner.Name}</p>`);
     }
 
 
@@ -169,6 +174,7 @@
 
 
     let command = {
+        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
         draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {

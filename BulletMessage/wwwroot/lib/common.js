@@ -16,6 +16,10 @@ function loadNameList(cb) {
         });
 }
 
+function saveNameList(nameList) {
+    localStorage.setItem(key_nameList, JSON.stringify(nameList));
+}
+
 function setNameList(nameList) {
     localStorage.setItem(key_nameList, JSON.stringify(nameList));
 }
@@ -23,6 +27,14 @@ function setNameList(nameList) {
 function getNameList() {
     let resp = localStorage.getItem(key_nameList);
     return JSON.parse(resp);
+}
+
+function setNameSelected(userID,flag) {
+    let nameList = getNameList();
+    let selectedName = nameList
+        .filter(x => x.UserID == userID)
+        .forEach(x => x.selected = flag);
+    saveNameList(nameList);
 }
 
 
@@ -37,12 +49,15 @@ function getLuckyDraw() {
     let seed = Math.floor(Math.random() * 1000000);
     let allCount = nameListFree.length;
     let index = seed % allCount;
-    return nameList[index];
+    let chosen = nameListFree[index];
+    return chosen;
 }
 
 
 function getWinnerName() {
-    return getWinner().Name;
+    let winner = getWinner();
+    console.log(winner);
+    return winner.Name;//`${winner.Name} + ${winner.Department}`;
 }
 
 function getWinner() {

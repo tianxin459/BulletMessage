@@ -87,11 +87,15 @@
             initialize("canvas");
         } else {
             stopCtx();
-            start(getWinnerName());
+            let winner = getWinner();
+            start(winner.Name);
+            setNameSelected(winner.UserID,true);
+            console.log(getNameList());
         }
     };
 
     let command = {
+        refreshnamelist:()=>loadNameList(()=>console.log('refresh list')),
         draw: () => draw(),
         startstop: () => toggleCurtain(),
         showprizetitle: (text) => {
