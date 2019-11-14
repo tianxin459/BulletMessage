@@ -28,10 +28,33 @@ namespace BulletMessage.Controllers
         }
 
         [HttpPost]
+        [Route("rungroup")]
+        public IActionResult Run(RaceRequest request)
+        {
+            _logger.LogInformation(JsonConvert.SerializeObject(request));
+            HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
+            HttpContext.Request.Headers.TryGetValue("eventId", out var headerGroupId);
+            var eventId = headerEventId.ToString();
+            var groupId = headerGroupId.ToString();
+            var step = 0;
+            int.TryParse(request.Message, out step);
+            if (step != 0 && request.Gender == 2)
+            {
+                request.Message = (step * 1).ToString();
+            }
+            _hubContext.Clients.All.SendAsync("setRacer", groupId, request.AvatorUrl, request.Message, request.EnglishName);
+            return Ok(new { Success = true });
+        }
+
+        [HttpPost]
         [Route("run")]
         public IActionResult Run(RaceRequest request)
         {
             _logger.LogInformation(JsonConvert.SerializeObject(request));
+            HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
+            HttpContext.Request.Headers.TryGetValue("eventId", out var headerGroupId);
+            var eventId = headerEventId.ToString();
+            var groupId = headerGroupId.ToString();
             var step = 0;
             int.TryParse(request.Message, out step);
             if (step != 0 && request.Gender == 2)

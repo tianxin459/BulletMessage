@@ -8,8 +8,8 @@ let fontStr = '100px sans-serif';
 let bgCanvas;
 let bgContext;
 
-let denseness = 4;
-let dotSize = 3;
+let denseness = 7;
+let dotSize = 5;
 
 //Each particle/icon
 let parts = [];
@@ -40,6 +40,8 @@ var initialize = function(canvas_id) {
 
     bgCanvas.width = window.innerWidth;
     bgCanvas.height = window.innerHeight;
+    clear();
+    parts.length = 0;
 
     //canvas.addEventListener('mousemove', MouseMove, false);
     //canvas.addEventListener('mouseout', MouseOut, false);
@@ -55,6 +57,7 @@ startLoop = () => {
 }
 
 clearAll = () => {
+    console.log('clear');
     clear();
 }
 
@@ -118,6 +121,7 @@ var stopCtx = function() {
 }
 
 var redraw = function() {
+    if (itercount > (itertot + 10)) return;
     if (textUp) {
         update();
     } else updateFree();
@@ -164,6 +168,7 @@ var update = function() {
                 y: (Math.random() * 6) * 2 - 6
             };
             parts[i].r = false;
+            stopCtx();
         }
 
 
@@ -183,7 +188,6 @@ var update = function() {
         context.arc(parts[i].x2, parts[i].y2, dotSize, 0, Math.PI * 2, true);
         context.closePath();
         context.fill();
-
     }
 }
 

@@ -1,0 +1,434 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/race.css">
+    <title>race</title>
+    <style>
+        body {
+            height: 100vh;
+        }
+        
+        .track {
+            background: url("static/img/background/race_track.png") no-repeat;
+            background-size: 100% 100%;
+        }
+        
+        .startLine,
+        .finishLine {
+            width: 1px;
+            /* border: 2px solid white; */
+            position: absolute;
+            border-left: 5px solid white;
+            height: 100%;
+        }
+        
+        .startLine {
+            left: 90px;
+        }
+        
+        .showStart,
+        .finishGame {
+            position: fixed;
+            top: 40%;
+            left: 40%;
+            font-weight: bolder;
+            font-size: 100px;
+            display: none;
+            color: gold;
+            /* border: 2px solid white;
+            box-shadow: 0 0 0 2px black; */
+        }
+        
+        .finishGame {
+            display: none;
+        }
+        
+        .c1,
+        .c2,
+        .c3,
+        .c4,
+        .c5,
+        .c6,
+        .cf {
+            display: none;
+            transition: all 1s;
+        }
+        
+        @keyframes toBig {
+            from {
+                transform: scale(1, 1)
+            }
+            to {
+                transform: scale(2, 2)
+            }
+        }
+        
+        .aniBig {
+            animation: toBig 1s;
+            display: block;
+        }
+        
+        .show {
+            display: block;
+        }
+        
+        .stage1 {
+            /* border: 2px solid gold; */
+            transform: scale(1.2);
+        }
+        
+        .stage2 {
+            /* border: 2px solid blue; */
+            transform: scale(1.4);
+        }
+        
+        .stage3 {
+            /* border: 2px solid red; */
+            transform: scale(1.6);
+        }
+        
+        .finishRun {
+            /* border: 2px solid gold; */
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: flex-end;
+        }
+        
+        .finishRun>.nickName {
+            align-self: center;
+            color: white;
+            font-weight: bolder;
+            margin: 0 5px;
+        }
+        
+        .finishRun>.running-body {
+            display: none;
+        }
+        
+        .finishRun>.running-head {
+            display: block;
+            position: static;
+        }
+        
+        #audioBg {
+            display: none;
+        }
+        
+        .controlbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controlbar">
+        race
+        <div>
+            <input type="text" id="userId" />
+            <input type="text" id="msg" />
+            <button id="btnSubmit">Submit</button>
+            <button id="btnStartRace">StartRace</button>
+            <button id="btnFinish">finishRace</button>
+        </div>
+        <div>
+            <audio id="audioBg" controls loop>
+                <source src="static/music/12_bar_bot_funfair_remix.mp3" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        <!-- <div id="ee" class="runner finishRun">
+            <div class="nickName">ellis</div>
+            <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
+            <image class="running-head" src="https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg"></image>
+            <div class="info"></div>
+        </div>  -->
+    </div>
+    <div class="showStart">
+        <div class="c1">3</div>
+        <div class="c2">2</div>
+        <div class="c3">1</div>
+        <div class="c4">GO!</div>
+    </div>
+
+    <div class="finishGame">
+        Finish!
+    </div>
+
+    <div class="track">
+        <div class="startLine"></div>
+        <div class="finishLine"></div>
+    </div>
+    <div class="resultDisplay">
+        <div class="ranking"></div>
+    </div>
+</body>
+
+</html>
+<script src="lib/signalr.js"></script>
+<script src="lib/globalConfig.js"></script>
+<!-- <script src="lib/race.js"></script> -->
+<script>
+    //--------------------------------------------------------------------------
+    // var urlRace = "/race";
+    //var urlRace = "https://ellist.cn/bulletmessage/race";
+    let isRacing = false;
+    let trackTop = 0;
+    let trackBottom = 0;
+    let finishLinePos, startLinePos, finishDistant;
+    let reportSend = false;
+    let racerList = [];
+
+    let raceStarted = false;
+
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(urlRace, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+        })
+        .build();
+
+    $('document').ready(() => {
+        connection
+            .start()
+            .catch(err => {
+                console.error(err);
+            })
+
+        // track size
+        trackTop = $('.track').position().top
+        trackBottom = $('.track').position().top + $('.track').height()
+        finishLinePos = window.innerWidth - 100;
+        startLinePos = $('.startLine').position().left;
+        finishDistant = finishLinePos - startLinePos;
+        $('.finishLine').css("left", finishLinePos + 'px');
+        console.log(finishLinePos);
+
+        $('#btnSubmit').click(e => {
+            let userId = $('#userId').val();
+            let msg = $('#msg').val();
+
+            connection.invoke("SendMessage", userId, msg)
+                .catch(err => console.error(err));
+            e.preventDefault();
+        })
+    });
+
+    var listRunner = new Set();
+    var listFinish = new Set();
+
+    connection.on("ReceiveMessage", (userId, message) => {
+        console.log("ReceiveMessage", userId, message);
+        let distant = parseInt(message, 10)
+        if (!!distant) {
+            moveRunner(userId, distant);
+            //setRacer(userId, 'ddd', 10);
+        }
+    })
+
+
+    connection.on("beginRace", (message) => {
+        console.log("beginRace", message);
+        // isRacing = true;
+        startRace();
+    })
+
+    connection.on("SetRacer", (userId, avatorUrl, message, englishName) => {
+        let distant = parseInt(message, 10)
+        if (listRunner.has(userId)) {
+            console.log("moveRacer", userId, message);
+            moveRunner(userId, distant)
+        } else {
+            listRunner.add(userId);
+            console.log("SetRacer", userId, avatorUrl, message, englishName);
+            setRacer(userId, avatorUrl, distant, englishName);
+        }
+    })
+    connection.on("readyRacer", (userId, avatorUrl, message) => {
+        let distant = parseInt(message, 10)
+        if (listRunner.has(userId)) {
+            console.log("readyRacer moveRacer", userId, message);
+            moveRunner(userId, distant)
+        } else {
+            listRunner.add(userId);
+            console.log("readyRacer SetRacer", userId, avatorUrl, message, englishName);
+            setRacer(userId, avatorUrl, distant, englishName);
+        }
+    })
+
+    function parseName(name) {
+        return name.replace(' ', '_');
+    }
+
+    const css_direction = 'left';
+
+
+    function getRacerTop() {
+        let trackHeight = ($('.track')[0].clientHeight - 90);
+        let top = (Math.random() * 1000) % trackHeight;
+        return top + trackTop;
+    }
+
+    function setRacer(name, avatorUrl, position, englishName) {
+        position = startLinePos - 40;
+        let track = $('div.track');
+        let strRunner =
+            ` <div id="${parseName(name)}" class="runner">
+            <div class="nickName">${englishName}</div>
+            <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
+            <image class="running-head" src="${avatorUrl}"></image>
+            <div class="info"></div>
+        </div>`;
+        let runner = $(strRunner);
+
+        //if race already start then ramdom set the position;
+        if (raceStarted) {
+            let top = getRacerTop();
+            runner.css('top', top + 'px');
+        }
+        // runner.css('top', top + 'px');
+        runner.data('currentLocation', 0);
+        runner.css(css_direction, position + 'px');
+        track.append(runner);
+
+
+        // Uniform distribution runners
+        // uniform only when race not start yet
+        if (!raceStarted) {
+            let runnerTop = 0;
+            let runnerNum = listRunner.size;
+            let trackHeight = ($('.track')[0].clientHeight - 90);
+            if (runnerNum <= 0) runnerNum = 1;
+            runnerNum = runnerNum + 1;
+            let evenTop = Math.floor((trackHeight / runnerNum) * 10) / 10;
+            for (let a of $(".runner")) {
+                runnerTop = runnerTop + evenTop;
+                $(a).css('top', runnerTop + 'px');
+            }
+        }
+    }
+
+    function moveRunner(name, distant) {
+        if (!distant) distant = 10;
+        if (!isRacing) return; // if not racing then do not move the player
+        if (listFinish.has(name)) return;
+        let runner = $('#' + parseName(name));
+        //let position = runner.css(css_direction);
+        let position = runner.data('currentLocation');
+        //position = position.replace('px', '');
+        // console.log(position);
+        if (position > finishDistant) {
+            console.log('listFinish', listFinish.size);
+            listFinish.add(name);
+
+            runner.removeClass("stage3");
+            runner.addClass('finishRun');
+            runner.css("top", (listFinish.size) * 50 + 'px')
+            runner.css("left", '200px');
+            runner.css('transform', `translateX(0) translateZ(0)`);
+            runner.find('.info').text(listFinish.size);
+            console.log(`${name} finish run`);
+            connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
+                .catch(err => console.error(err));
+
+            if (listFinish.size > 10 || listFinish.size == listRunner.size) {
+                $('.finishGame').show();
+                if (listFinish.size >= 10) {
+                    runner.css("display", "none");
+                }
+                if (!reportSend) {
+                    let resultUrl = apiRace + "/result";
+                    let listData = Array.from(listFinish)
+                    let resultStr = JSON.stringify(listData);
+                    // resultStr = resultStr.replace('"', '\"');
+                    data = {
+                        Value: resultStr
+                    };
+                    console.log('send report', data);
+                    reportSend = true;
+
+                    $.ajax({
+                        url: resultUrl,
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: resp => {
+                            console.log(resp);
+                        }
+                    });
+                }
+                // return;
+            }
+        } else {
+            position = position + parseInt(distant);
+            let transformText = `translateX(${position}px) translateZ(${position}px)`;
+            if (position > finishLinePos - 300 * 2) {
+                runner.addClass("stage1");
+                transformText += ' scale(1.2)';
+            }
+            if (position > finishLinePos - 200 * 2) {
+                runner.removeClass("stage1");
+                runner.addClass("stage2");
+                transformText += ' scale(1.3)';
+            }
+            if (position > finishLinePos - 100 * 2) {
+                runner.removeClass("stage2");
+                runner.addClass("stage3");
+                transformText += ' scale(1.4)';
+            }
+            runner.data('currentLocation', position);
+            runner.css('transform', transformText);
+            //runner.css(css_direction, (parseInt(position) + parseInt(distant)) + 'px');
+        }
+    }
+    //--------------------------------------------------------------------------
+
+
+    $('document').ready(() => {
+        $('#btnStartRace').click(() => {
+            startRace();
+        });
+
+        $('#btnFinish').click(() => {
+            endRace();
+        });
+    });
+
+    endRace = () => {
+        let userId = $('#userId').val();
+        let txt = 'finish at 1';
+        console.log("FinishRun", userId);
+        connection.invoke("FinishRun", userId, txt)
+            .catch(err => console.error(err));
+    }
+
+    startRace = () => {
+        console.log('startRace');
+        if (raceStarted) return;
+        raceStarted = true;
+        $('.showStart').addClass('show');
+        let countI = 1;
+        let si = setInterval(() => {
+            console.log('countI', countI);
+            $('.showStart > div').removeClass('aniBig');
+            if ($('.showStart > .c' + countI).length === 0) {
+                isRacing = true;
+                $('#audioBg')[0].play(); //ellis audio
+                clearInterval(si);
+                console.log('gogogo')
+
+                connection.invoke("SendMessageAll", 'GoGoGo')
+                    .catch(err => console.error(err));
+            }
+
+            let cd = $('.showStart > .c' + countI);
+            cd.addClass('aniBig');
+            countI++;
+        }, 1000)
+
+    }
+</script>
