@@ -185,13 +185,16 @@
 
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl(urlRace, {
+        .withUrl(urlRace+"?eventid=100", {
             skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
+            transport: signalR.HttpTransportType.WebSockets,
+            headers: [{"eventid":"dddd"}]
         })
         .build();
 
     $('document').ready(() => {
+        //connection.Headers.Add("eventid", "testEventid");
+        connection.qs = { "eventid" : 'tokenValue' };
         connection
             .start()
             .catch(err => {

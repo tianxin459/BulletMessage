@@ -27,6 +27,8 @@
         <button id="btnDraw">LuckyDraw</button>
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
+        <button id="btnRefresh">Reload NameList</button>
+        <button id="btnReload">ReloadPage</button>
     </div>
     <div class="curtain">
         <div class="curtain-left"></div>
@@ -39,7 +41,7 @@
     <div class="container">
         <div class="winner-container"></div>
         <div class="prize-contrainer">
-            <img class="prize-img" src="./Uploads/prize/1.jpg">
+            <img class="prize-img" src="./Uploads/prize/0.jpg">
         </div>
         <div class="scene">
             <div id="boxText"></div>
@@ -87,6 +89,14 @@
             $('.curtain-front').removeClass('move-up');
         }
         curtainOn = !curtainOn;
+    }
+
+    function closeCurtain() {
+        // stopAudioBg();
+        $('.curtain-left').removeClass('move-left');
+        $('.curtain-right').removeClass('move-right');
+        $('.curtain-front').removeClass('move-up');
+        curtainOn = false;
     }
     let marioJ = $('#marioJump');
     let marioR = $('#marioRun');
@@ -172,26 +182,24 @@
 
 
     let command = {
+            reload: () => location.reload(),
             refreshnamelist: () => loadNameList(() => console.log('refresh list')),
             draw: () => draw(),
             startstop: () => toggleCurtain(),
             showprizetitle: (text) => {
                 console.log(text);
                 showTitle(text);
-                // prizeText = text;
-                // $(".prize-title").text(text);
-                // $(".prize-title").removeClass('show-prize-title');
-                // $(".prize-title").removeClass('hide-prize-title');
-                // $(".prize-title").addClass('show-prize-title');
-                // setTimeout(command['hideprizetitle'](), 6000);
             },
-            hideprizetitle: () => {
-                $(".prize-title").removeClass('show-prize-title');
-                $(".prize-title").removeClass('hide-prize-title');
-                $(".prize-title").addClass('hide-prize-title');
-            },
+            hideprizetitle: () => hideTitle(),
             refreshprizeimg: (id) => {
                 $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+            },
+            switchtoprize: (id, count) => {
+                if (count) prizeTotal = count;
+                closeCurtain();
+                setTimeout(() => {
+                    $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+                }, 1000);
             }
         }
         // let command = {
@@ -212,9 +220,15 @@
     $(document).ready(() => {
         initScene();
         $('#btnTest').click(() => {
-            marioRun();
+            command["switchtoprize"](2, 5);
+
             // marioJump();
         });
+
+        $('#btnReload').click(() => {
+            command["reload"]()
+        });
+
         $('#btnOpenClose').click(() => {
             toggleCurtain();
         });

@@ -24,6 +24,7 @@
         <button id="btnShowTitle">showText</button>
         <button id="btnHideTitle">hideText</button>
         <button id="btnRefresh">Reload NameList</button>
+        <button id="btnReload">ReloadPage</button>
     </div>
     <div class="curtain">
         <div class="curtain-left"></div>
@@ -73,7 +74,8 @@
 <script type="text/javascript">
     let curtainOn = true;
 
-    function toggleCurtain() {
+
+    function toggleCurtain(curtainOnFlag) {
         if (curtainOn) {
             playAudioBg();
             $('.curtain-left').addClass('move-left');
@@ -118,7 +120,6 @@
             $("#machine .slotMachineContainer").removeClass("blur");
             slotMachine.stop();
             $("#audioRolling")[0].pause();
-            $('#audioWinning')[0].play();
             setTimeout(playAudioBg(), 4000);
             setNameSelected(valList[slotMachine.active].userid, true, prizeText);
             // valList[slotMachine.active].prize = prizeText;
@@ -128,6 +129,7 @@
     };
 
     let command = {
+        reload: () => location.reload(),
         refreshnamelist: () => loadNameList(() => console.log('refresh list')),
         draw: () => draw(),
         startstop: () => toggleCurtain(),
@@ -157,8 +159,13 @@
         });
 
         $('#btnRefresh').click(() => {
-            loadNameList(() => console.log('refresh list'));
+            command["refreshnamelist"]()
         });
+
+        $('#btnReload').click(() => {
+            command["reload"]()
+        });
+
 
         $('#btnOpenClose').click(() => {
             toggleCurtain();

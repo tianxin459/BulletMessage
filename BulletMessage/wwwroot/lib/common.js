@@ -11,6 +11,12 @@ function showTitle(text) {
     // setTimeout(command['hideprizetitle'](), 6000);
 }
 
+function hideTitle() {
+    $(".prize-title").removeClass('show-prize-title');
+    $(".prize-title").removeClass('hide-prize-title');
+    $(".prize-title").addClass('hide-prize-title');
+}
+
 function makesureNameList(cb) {
     if (localStorage.getItem(key_nameList) == null) {
         loadNameList(cb);

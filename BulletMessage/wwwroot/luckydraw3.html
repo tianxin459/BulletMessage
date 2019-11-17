@@ -45,6 +45,19 @@
         </div>
         <canvas id="canvas"></canvas>
     </div>
+
+    <audio id="audioBg" controls preload="auto">
+        <source src="./static//music/open3.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioRolling" controls preload="auto" loop>
+        <source src="./static//music/bg3.m4a" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioWinning" controls preload="auto">
+        <source src="./static//music/winning3.m4a" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 </body>
 
 </html>
@@ -61,6 +74,8 @@
 
     function toggleCurtain() {
         if (curtainOn) {
+
+            $('#audioBg')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
         } else {
@@ -79,6 +94,7 @@
     function draw() {
         counting = !counting;
         if (counting) {
+            $('#audioRolling')[0].play();
             initialize("canvas");
         } else {
             stopCtx();
@@ -86,22 +102,19 @@
             start(winner.name);
             setNameSelected(winner.userid, true, prizeText);
             saveWinner([winner], prizeText);
+            $('#audioRolling')[0].pause();
+            $('#audioWinning')[0].play();
             console.log(getNameList());
         }
     };
 
     let command = {
+            reload: () => location.reload(),
             refreshnamelist: () => loadNameList(() => console.log('refresh list')),
             draw: () => draw(),
             startstop: () => toggleCurtain(),
             showprizetitle: (text) => {
                 showTitle(text);
-                // prizeText = text;
-                // $(".prize-title").text(text);
-                // $(".prize-title").removeClass('show-prize-title');
-                // $(".prize-title").removeClass('hide-prize-title');
-                // $(".prize-title").addClass('show-prize-title');
-                // setTimeout(command['hideprizetitle'](), 6000);
             },
             hideprizetitle: () => {
                 $(".prize-title").removeClass('show-prize-title');
