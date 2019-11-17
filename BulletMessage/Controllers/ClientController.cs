@@ -12,6 +12,8 @@ using BulletMessage.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BulletMessage.Contract.Model;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BulletMessage.Controllers
 {
@@ -21,14 +23,18 @@ namespace BulletMessage.Controllers
     {
         private readonly IHubContext<ClientHub> _hubContext;
         private readonly ILogger<ClientController> _logger;
+        private readonly IConfiguration _configuration;
         private HttpClient _httpClient;
+        private IMemoryCache _cache;
 
         public static List<User> UserList = null;
 
-        public ClientController(IHubContext<ClientHub> hubContext, ILogger<ClientController> logger)
+        public ClientController(IMemoryCache cache, IConfiguration configuration, IHubContext<ClientHub> hubContext, ILogger<ClientController> logger)
         {
             _hubContext = hubContext;
+            _configuration = configuration;
             _logger = logger;
+            _cache = cache;
             if (UserList == null)
                 UserList = readUserListFromStorage();
         }
@@ -92,10 +98,89 @@ namespace BulletMessage.Controllers
 
 
         [HttpGet]
+        [Route("qyaccesstoken")]
+        public async Task<string> GetQYAccessToken()
+        {
+            string accessToken;
+            if(_cache.TryGetValue(Common.CK_QYACCESSTOKEN,out accessToken))
+            {
+                return accessToken;
+            }
+            else
+            {
+
+                var corpid = _configuration.GetValue<string>("wx:corpid");
+                var corpsec = _configuration.GetValue<string>("wx:corpsec");
+                var url = string.Format("https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={0}&corpsecret={1}", corpid, corpsec);
+                var responseCode = "";
+                // dynamic respObj = new ExpendoObject();
+                var respStr = "";
+                try
+                {
+                    if (_httpClient == null) _httpClient = new HttpClient();
+                    var resp = await _httpClient.GetAsync(url);
+                    respStr = resp.Content.ReadAsStringAsync().Result;
+                    dynamic respObj = JsonConvert.DeserializeObject(respStr);
+                    if (respObj.access_token == null)
+                        accessToken = "error";
+                    else
+                    {
+                        accessToken = respObj.access_token;
+                        var expTime = DateTime.Now.AddSeconds(6000);
+                        _cache.Set<string>(Common.CK_QYACCESSTOKEN, accessToken, expTime);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, respStr);
+                    dynamic respObj = JsonConvert.DeserializeObject(respStr);
+                    responseCode = respObj.errmsg;
+                }
+            }
+            return accessToken;
+        }
+
+        [HttpGet]
+        [Route("wxqylogin/{jscode}")]
+        public async Task<IActionResult> QYLogin(string jscode)
+        {
+            var accessToken = await GetQYAccessToken();
+            var url = string.Format("https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?access_token={1}&js_code={0}&grant_type=authorization_code", jscode, accessToken);
+            var response = "";
+            // dynamic respObj = new ExpendoObject();
+            var respStr = "";
+            try
+            {
+                if (_httpClient == null) _httpClient = new HttpClient();
+                var resp = await _httpClient.GetAsync(url);
+                respStr = resp.Content.ReadAsStringAsync().Result;
+                dynamic respObj = JsonConvert.DeserializeObject<dynamic>(respStr);
+                // var respObj = JObject
+                // return Ok(respObj.openid);
+                if (respObj.userid == null)
+                    response = respObj.errmsg;
+                else
+                    response = respObj.userid;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, respStr);
+                dynamic respObj = JsonConvert.DeserializeObject(respStr);
+                response = respObj.errmsg;
+            }
+
+            return Ok(response);
+        }
+
+
+
+        [HttpGet]
         [Route("wxlogin/{jscode}")]
         public async Task<IActionResult> Login(string jscode)
         {
-            var url = string.Format("https://api.weixin.qq.com/sns/jscode2session?appid=wx542fb51443cdffdb&secret=c8dc3a878a9ab54a149b945777326b94&js_code={0}&grant_type=authorization_code", jscode);
+            var appid = _configuration.GetValue<string>("wx:appid");
+            var appsec = _configuration.GetValue<string>("wx:appsec");
+            var url = string.Format("https://api.weixin.qq.com/sns/jscode2session?appid={1}&secret={2}&js_code={0}&grant_type=authorization_code", jscode,appid,appsec);
             var responseCode = "";
             // dynamic respObj = new ExpendoObject();
             var respStr = "";

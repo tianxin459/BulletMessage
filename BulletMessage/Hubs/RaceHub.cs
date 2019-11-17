@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,23 @@ namespace BulletMessage.Hubs
         //private static IHubCallerClients Hub { get; set; }
         private ILogger<RaceHub> _logger;
         private readonly IHubContext<ClientHub> _clientHub;
+        private readonly IMemoryCache _cache;
 
-        public RaceHub(ILogger<RaceHub> logger, IHubContext<ClientHub> clientHub)
+        public RaceHub(IMemoryCache cache, ILogger<RaceHub> logger, IHubContext<ClientHub> clientHub)
         {
             _logger = logger;
             _clientHub = clientHub;
+            _cache = cache;
         }
 
         public override async Task OnConnectedAsync()
         {
+            var eventid = Context.GetHttpContext().Request.Query["eventid"].FirstOrDefault<string>()??"100";
+            //var events = _cache.GetOrCreate<List<string>>(Common.CK_EVENTS)
+            //_cache.Set<string>('');
             await Clients.All.SendAsync("onConnect", $"{Context.ConnectionId} joined");
         }
-
+        
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await Clients.All.SendAsync("onDisconnect", $"{Context.ConnectionId} left");

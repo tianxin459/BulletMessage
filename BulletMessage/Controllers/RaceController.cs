@@ -33,7 +33,7 @@ namespace BulletMessage.Controllers
         {
             _logger.LogInformation(JsonConvert.SerializeObject(request));
             HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
-            HttpContext.Request.Headers.TryGetValue("groupid", out var headerGroupId);
+            HttpContext.Request.Headers.TryGetValue("groupId", out var headerGroupId);
             var eventId = headerEventId.ToString();
             var groupId = headerGroupId.ToString();
             var step = 0;
@@ -52,7 +52,27 @@ namespace BulletMessage.Controllers
         {
             _logger.LogInformation(JsonConvert.SerializeObject(request));
             HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
-            HttpContext.Request.Headers.TryGetValue("eventId", out var headerGroupId);
+            HttpContext.Request.Headers.TryGetValue("groupId", out var headerGroupId);
+            var eventId = headerEventId.ToString();
+            var groupId = headerGroupId.ToString();
+            var step = 0;
+            int.TryParse(request.Message, out step);
+            if (step != 0 && request.Gender == 2)
+            {
+                request.Message = (step * 1).ToString();
+            }
+            _hubContext.Clients.All.SendAsync("setRacer", request.UserId, request.AvatorUrl, request.Message, request.EnglishName);
+            return Ok(new { Success = true });
+        }
+
+
+        [HttpPost]
+        [Route("runevent")]
+        public IActionResult RunForEvent(RaceRequest request)
+        {
+            _logger.LogInformation(JsonConvert.SerializeObject(request));
+            HttpContext.Request.Headers.TryGetValue("eventId", out var headerEventId);
+            HttpContext.Request.Headers.TryGetValue("groupId", out var headerGroupId);
             var eventId = headerEventId.ToString();
             var groupId = headerGroupId.ToString();
             var step = 0;

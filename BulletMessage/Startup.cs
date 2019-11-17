@@ -39,6 +39,7 @@ namespace BulletMessage
                                     .AllowAnyHeader()
                                     .AllowAnyMethod());
             });
+            services.AddMemoryCache();
             services.AddSignalR(options =>
             {
                 // Faster pings for testing
