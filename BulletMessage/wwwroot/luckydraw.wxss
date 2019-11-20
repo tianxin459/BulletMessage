@@ -103,14 +103,13 @@ body {
   animation: rollOut 0.5s ease forwards;
 }
 .prize-contrainer {
-  width: 350px;
-  height: 450px;
-  transition: 0.5s all;
+  width: 200px;
+  height: 250px;
+  transition: 1s all;
   transform: translateX(0) rotateY(0deg);
   position: relative;
 }
 .prize-contrainer .prize-img {
-  transition: 0.5s all;
   height: 100%;
   width: 100%;
   border: 2px solid silver;
@@ -164,23 +163,20 @@ body {
   perspective: 800px;
   perspective-origin: center;
   padding: 0;
-  transition: 0.5s all;
 }
 .container2 .blur {
   filter: blur(5px);
 }
 .container2 .winner-container2 {
   display: flex;
-  max-width: 100px;
-  justify-content: center;
   flex-direction: column;
   z-index: 2;
   color: yellow;
   text-shadow: 3px -2px 1px black;
   font-size: 25px;
-  margin-left: 50px;
+  margin-left: 20px;
   height: 70%;
-}
-.container2 .winner-container2 .name {
-  white-space: nowrap;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: repeat(15, 1fr);
 }

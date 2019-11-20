@@ -10,8 +10,7 @@
 
 
     <!-- <link rel="stylesheet" type="text/css" href="node_modules/jquery-slotmachine/dist/jquery.slotmachine.css" /> -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
-    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/slotmachine.min.js"></script>
     <script type="text/javascript" src="./node_modules/jquery-slotmachine/dist/jquery.slotmachine.min.js"></script>
     <title>LuckyDraw</title>
@@ -27,27 +26,26 @@
         <button id="btnRefresh">Reload NameList</button>
         <button id="btnReload">ReloadPage</button>
     </div>
-    <!-- <div class="curtain">
+    <div class="curtain">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
         <img class="curtain-front" src="static/img/background/curtain-front.png"></img>
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
-    </div> -->
-    <div class="container2">
+    </div>
+    <div class="container">
         <div class="prize-contrainer">
             <img class="prize-img" src="./Uploads/prize/1.jpg">
         </div>
-        <div class="winner-container2">
-
-        </div>
-        <!-- <div id="machine">
+        <div id="machine">
             <div class="item0">gogogo</div>
             <div class="item1">222</div>
             <div class="item2">222</div>
             <div class="item3">222</div>
-        </div> -->
+            <!-- <div>London</div>
+                    <div>New York</div> -->
+        </div>
     </div>
 
     <audio id="audioBg" controls preload="auto" loop>
@@ -75,8 +73,7 @@
 </script>
 <script type="text/javascript">
     let curtainOn = true;
-    let prizeTotal = 15;
-    let prizeCount = 0;
+
 
     function toggleCurtain(curtainOnFlag) {
         if (curtainOn) {
@@ -99,52 +96,39 @@
         $('#audioBg')[0].pause();
     }
 
-    function initList(count) {
-        for (let i = 0; i < prizeTotal; i++) {
-            let n = $(`<div class="name item${i}">???????</div>`);
-            $('.winner-container2').append(n);
-        }
-    }
-
-    function ramdonList() {
-        valList.length = 0;
-        for (let i = 0; i < prizeTotal; i++) {
-            let nameObj = getWinner()
-            valList.push(nameObj);
-            $(`.item${i}`).text(nameObj.name);
-        }
-    }
-
     function draw() {
         counting = !counting;
         if (counting) {
             stopAudioBg();
             iroller = setInterval(() => {
-                ramdonList();
                 // let rd = getRandomText();
-                // valList.length = 0;
-                // valList.push(getWinner());
-                // valList.push(getWinner());
-                // valList.push(getWinner());
-                // valList.push(getWinner());
+                valList.length = 0;
+                valList.push(getWinner());
+                valList.push(getWinner());
+                valList.push(getWinner());
+                valList.push(getWinner());
+                $('.item0').text(valList[0].name);
+                $('.item1').text(valList[1].name);
+                $('.item2').text(valList[2].name);
+                $('.item3').text(valList[3].name);
             }, 10);
+            slotMachine.shuffle(9999999);
+            $("#machine .slotMachineContainer").addClass("blur");
             $("#audioRolling")[0].play();
         } else {
             clearInterval(iroller);
+            $("#machine .slotMachineContainer").removeClass("blur");
+            slotMachine.stop();
             $("#audioRolling")[0].pause();
             setTimeout(playAudioBg(), 4000);
-            valList.forEach(w => {
-                console.log(w.userid);
-            });
-            // setNameSelected(valList[slotMachine.active].userid, true, prizeText);
+            setNameSelected(valList[slotMachine.active].userid, true, prizeText);
             // valList[slotMachine.active].prize = prizeText;
-            saveWinner(valList, prizeText);
+            saveWinner([valList[slotMachine.active]], prizeText);
             console.info(slotMachine.active, valList[slotMachine.active]);
         }
     };
 
     let command = {
-        init: (total) => initList(total),
         reload: () => location.reload(),
         refreshnamelist: () => loadNameList(() => console.log('refresh list')),
         draw: () => draw(),
@@ -165,22 +149,13 @@
         },
         refreshprizeimg: (id) => {
             $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
-        },
-        switchtoprize: (id, count) => {
-            if (count) prizeTotal = count;
-            initList();
-            closeCurtain();
-            setTimeout(() => {
-                $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
-            }, 1000);
         }
     }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
         $('#btnTest').click(() => {
-            command["switchtoprize"](2, 5);
-            // ramdonList();
+            command["refreshprizeimg"](2);
         });
 
         $('#btnRefresh').click(() => {

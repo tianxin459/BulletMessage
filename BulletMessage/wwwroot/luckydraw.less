@@ -153,14 +153,15 @@ body {
 }
 
 .prize-contrainer {
-    width: 200px;
-    height: 250px;
-    transition: 1s all;
+    width: 350px;
+    height: 450px;
+    transition: 0.5s all;
     transform: translateX(0) rotateY(0deg);
     position: relative;
     // transform: rotateY(30deg) translate(-50px, 10px);
 
     .prize-img {
+        transition: 0.5s all;
         height: 100%;
         width: 100%;
         border: 2px solid @color1;
@@ -178,7 +179,6 @@ body {
     position: absolute;
     width: 80%;
 }
-
 
 #machine {
     overflow: hidden;
@@ -209,4 +209,42 @@ body {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: repeat(15, 1fr);
+}
+
+.container2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: url("static/img/background/bg1.jpg");
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    transform-style: preserve-3d;
+    perspective: 800px;
+    perspective-origin: center;
+    padding: 0;
+
+    transition: 0.5s all;
+
+    .blur {
+        filter: blur(5px);
+    }
+
+    .winner-container2 {
+        display: flex;
+        max-width: 100px;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 2;
+        color: yellow;
+        text-shadow: 3px -2px 1px black;
+        font-size: 25px;
+        margin-left: 50px;
+        height: 70%;
+
+        .name {
+            white-space: nowrap;
+        }
+    }
 }
