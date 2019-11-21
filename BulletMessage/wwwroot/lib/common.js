@@ -103,6 +103,15 @@ function getWinner() {
     return getLuckyDraw();
 }
 
+function notifyUser(userid,message) {
+    let debug=true;
+    // debug = (location.search.indexOf('debug=true')>-1)
+    if(debug)userid = 'e0t00nk';
+    let notifyUrl = `https://extgst.walmart.com/WeChatSSO/wechat/sendmessage?corpId=ww2736b20d7a3be388&corpSecret=5qrZWBSWFW4CTpexor_NDkRkYBRvrqZ_iSvBg_Dj-ds&appid=1000141&userid=${userid}&message=${message}`
+        $.get(notifyUrl, function(data, status){
+            console.log('notify user',userid,message)
+        });
+}
 
 //----------------------Command------------------------
 

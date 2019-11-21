@@ -27,14 +27,14 @@
         <button id="btnRefresh">Reload NameList</button>
         <button id="btnReload">ReloadPage</button>
     </div>
-    <!-- <div class="curtain">
+    <div class="curtain">
         <div class="curtain-left"></div>
         <div class="curtain-right"></div>
         <img class="curtain-front" src="static/img/background/curtain-front.png"></img>
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
-    </div> -->
+    </div> 
     <div class="container2">
         <div class="prize-contrainer">
             <img class="prize-img" src="./Uploads/prize/1.jpg">
@@ -50,6 +50,10 @@
         </div> -->
     </div>
 
+    <audio id="audioStart" controls preload="auto">
+        <source src="./static/music/mario-start.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
     <audio id="audioBg" controls preload="auto" loop>
         <source src="./static//music/bg1.mp3" type="audio/mp3">
         Your browser does not support the audio element.
@@ -77,20 +81,28 @@
     let curtainOn = true;
     let prizeTotal = 15;
     let prizeCount = 0;
-
-    function toggleCurtain(curtainOnFlag) {
+    function toggleCurtain() {
         if (curtainOn) {
-            playAudioBg();
+
+            $('#audioStart')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
+            $('.curtain-front').addClass('move-up');
         } else {
-            stopAudioBg();
             $('.curtain-left').removeClass('move-left');
             $('.curtain-right').removeClass('move-right');
+            $('.curtain-front').removeClass('move-up');
         }
         curtainOn = !curtainOn;
     }
 
+    function closeCurtain() {
+        // stopAudioBg();
+        $('.curtain-left').removeClass('move-left');
+        $('.curtain-right').removeClass('move-right');
+        $('.curtain-front').removeClass('move-up');
+        curtainOn = true;
+    }
     function playAudioBg() {
         $('#audioBg')[0].play();
     }
@@ -100,9 +112,11 @@
     }
 
     function initList(count) {
+        let container = $('.winner-container2');
+        container.empty();
         for (let i = 0; i < prizeTotal; i++) {
             let n = $(`<div class="name item${i}">???????</div>`);
-            $('.winner-container2').append(n);
+            container.append(n);
         }
     }
 
@@ -111,9 +125,10 @@
         for (let i = 0; i < prizeTotal; i++) {
             let nameObj = getWinner()
             valList.push(nameObj);
-            $(`.item${i}`).text(nameObj.name);
+            $(`.item${i}`).text(`${nameObj.name} (${nameObj.department})`);
         }
     }
+
 
     function draw() {
         counting = !counting;
@@ -135,6 +150,7 @@
             setTimeout(playAudioBg(), 4000);
             valList.forEach(w => {
                 console.log(w.userid);
+                notifyUser(w.userid,`Congratulations ${w.name}! you got the prize ${prizeText}`);
             });
             // setNameSelected(valList[slotMachine.active].userid, true, prizeText);
             // valList[slotMachine.active].prize = prizeText;
@@ -168,6 +184,7 @@
         },
         switchtoprize: (id, count) => {
             if (count) prizeTotal = count;
+            console.log('prizeTotal',prizeTotal);
             initList();
             closeCurtain();
             setTimeout(() => {
@@ -179,7 +196,8 @@
 <script type="text/javascript">
     $(document).ready(() => {
         $('#btnTest').click(() => {
-            command["switchtoprize"](2, 5);
+                notifyUser('w.userid',`Congratulations! you got the prize ${prizeText}`);
+            //command["switchtoprize"](2, 5);
             // ramdonList();
         });
 
@@ -214,16 +232,25 @@
             transport: signalR.HttpTransportType.WebSockets
         })
         .build();
-
+    
     connection.on("Command", (user, message) => {
-        console.log('Command==>', message);
+        console.log(message);
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
-        if (!command[cmdfun]) console.warn("no command:" + cmdfun);
-        else command[cmdfun](cmdarg);
+        let cmdarg2 = cmdstr.split(':')[2] || '';
+        console.log('Command===>',cmdfun, cmdarg, cmdarg2);
+        if (!command[cmdfun]) {
+            console.warn("no command:" + cmdfun);
+            return;
+        }
+        if (cmdarg2) {
+            command[cmdfun](cmdarg, cmdarg2);
+        }
+        else {
+            command[cmdfun](cmdarg);
+        }
     });
-
     connection.on("ReceiveMessage", (user, message) => {
         // addMsg(`${user}: ${message}`);
         let prefix = "img=>"
