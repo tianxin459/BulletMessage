@@ -199,8 +199,8 @@ var updateFree = function() {
     clear();
     for (i = 0; i < parts.length; i++) {
 
-        let randomX = Math.floor((Math.random() - 0.5) * 10);
-        let randomY = Math.floor((Math.random() - 0.5) * 10);
+        let randomX = Math.floor((Math.random() - 0.5) * 100);
+        let randomY = Math.floor((Math.random() - 0.5) * 100);
 
         //parts[i].v = { x: randomY, y: randomY };
         //parts[i].x2 += parts[i].v.x;

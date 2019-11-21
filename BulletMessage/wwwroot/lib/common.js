@@ -60,6 +60,7 @@ function setNameSelected(userID, flag, prize) {
 function saveWinner(winnerList, prize) {
     let saveWinnerUrl = URLBASE + "/api/DB/saveWinners";
     winnerList.forEach(w => w.prize = prize);
+    winnerList.forEach(w => w.englishName = w.name);
     data = {
         winners: winnerList
     }

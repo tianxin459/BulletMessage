@@ -55,7 +55,7 @@ namespace BulletMessage
             services.AddSingleton<IServiceProvider, ServiceProvider>();
 
             services.AddMvc(config=> {
-                config.Filters.Add(typeof(GlobalExceptionFilter));
+                //config.Filters.Add(typeof(GlobalExceptionFilter));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -73,19 +73,6 @@ namespace BulletMessage
                 routes.MapHub<ComHub>("/remote");
             });
             app.UseStaticFiles();
-            //app.UseExceptionHandler(options => {
-            //    options.Run(
-            //        async context => {
-            //            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            //            context.Response.ContentType = "text/html";
-            //            var ex = context.Features.Get<IExceptionHandlerFeature>();
-            //            if (ex != null)
-            //            {
-            //                var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
-            //                await context.Response.WriteAsync(err).ConfigureAwait(false);
-            //            }
-            //        })
-            //});
 
             //app.UseMvc();
 
@@ -98,6 +85,26 @@ namespace BulletMessage
                 app.UseHsts();
             }
             app.UseWebSockets();
+            app.UseExceptionHandler(options =>
+            {
+                options.Run(
+                    async context =>
+                    {
+                        var logger = loggerFactory.CreateLogger("errorLogger");
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        context.Response.ContentType = "text/json";
+
+                        var ex = context.Features.Get<IExceptionHandlerFeature>();
+                        if (ex != null)
+                        {
+                            var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
+                            logger.LogError(err);
+                            var errObj =new  { error=ex.Error.Message, stack = ex.Error.StackTrace };
+                            var errStr = JsonConvert.SerializeObject(errObj);
+                            await context.Response.WriteAsync(errStr).ConfigureAwait(false);
+                        }
+                    });
+            });
 
             //app.UseHttpsRedirection();
             app.UseMvc();

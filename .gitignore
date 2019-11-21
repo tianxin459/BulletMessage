@@ -55,3 +55,4 @@ node_modules/
 bin/
 obj/
 .DS_Store
+/.vs/BulletMessage/v16

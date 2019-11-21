@@ -96,7 +96,7 @@
         $('.curtain-left').removeClass('move-left');
         $('.curtain-right').removeClass('move-right');
         $('.curtain-front').removeClass('move-up');
-        curtainOn = false;
+        curtainOn = true;
     }
     let marioJ = $('#marioJump');
     let marioR = $('#marioRun');
@@ -133,6 +133,14 @@
         let winner = getWinner();
         setNameSelected(winner.userid, true, prizeText);
         addWinner(winner);
+        if (prizeCount >= prizeTotal) {
+            clearInterval(timmer);
+            saveWinner(winnerList, prizeText);
+            console.log(getNameList());
+            setTimeout(initScene, 400);
+            console.log(winnerList);
+            return;
+        }
         timmer = setInterval(() => {
             prizeCount++;
             $('#audioCoin')[0].currentTime = 0;
@@ -142,15 +150,9 @@
             addWinner(winner);
             if (prizeCount == prizeTotal) {
                 clearInterval(timmer);
-                //need to hold a little bit till animation finish up;
-                // winnerList.forEach(w => {
-                //     console.log(w);
-                //     setNameSelected(w.userid, true, prizeText);
-                // });
                 saveWinner(winnerList, prizeText);
                 console.log(getNameList());
-                setTimeout(initScene, 300);
-                // initScene();
+                setTimeout(initScene, 400);
                 console.log(winnerList);
             }
         }, 1000);
@@ -197,6 +199,7 @@
             switchtoprize: (id, count) => {
                 if (count) prizeTotal = count;
                 closeCurtain();
+                winnerContainer.empty();
                 setTimeout(() => {
                     $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
                 }, 1000);
@@ -257,8 +260,18 @@
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
-        if (!command[cmdfun]) console.warn("no command:" + cmdfun);
-        else command[cmdfun](cmdarg);
+        let cmdarg2 = cmdstr.split(':')[2] || '';
+        console.log('Command===>',cmdfun, cmdarg, cmdarg2);
+        if (!command[cmdfun]) {
+            console.warn("no command:" + cmdfun);
+            return;
+        }
+        if (cmdarg2) {
+            command[cmdfun](cmdarg, cmdarg2);
+        }
+        else {
+            command[cmdfun](cmdarg);
+        }
     });
 
     connection.on("ReceiveMessage", (user, message) => {

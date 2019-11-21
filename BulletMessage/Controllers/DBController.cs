@@ -33,22 +33,75 @@ namespace BulletMessage.Controllers
             return Ok(DateTime.Now.ToString());
         }
 
+        [HttpGet]
+        [Route("execption")]
+        public async Task<IActionResult> Exception()
+        {
+            try
+            {
+                var k = 0;
+                var i = 1 / k;
+                return Ok(DateTime.Now.ToString());
+            }catch(Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpPost]
+        [Route("ClearWinners")]
+        public IActionResult clearAllWinners2()
+        {
+            _logger.LogInformation("get Winners");
+            try
+            {
+                var dbName = "LuckyDrawWinners";
+                var count = 0;
+                List<WinnerUser> result = new List<WinnerUser>();
+                using (var db = new LiteDatabase(_pathDB))
+                {
+                    result = db.GetCollection<WinnerUser>(dbName).FindAll().ToList();
+                    foreach (var r in result)
+                    {
+                        db.GetCollection<WinnerUser>(dbName).Delete(r.UserID);
+                        count++;
+                    }
+                }
+                return Ok(count);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw e;
+            }
+        }
 
         [HttpDelete]
         [Route("Winners")]
         public IActionResult clearAllWinners()
         {
-            var dbName = "LuckyDrawWinners";
-            List<WinnerUser> result = new List<WinnerUser>();
-            using (var db = new LiteDatabase(_pathDB))
+            _logger.LogInformation("get Winners");
+            try
             {
-                result = db.GetCollection<WinnerUser>(dbName).FindAll().ToList();
-                foreach(var r in result)
+                var dbName = "LuckyDrawWinners";
+                var count = 0;
+                List<WinnerUser> result = new List<WinnerUser>();
+                using (var db = new LiteDatabase(_pathDB))
                 {
-                    db.GetCollection<WinnerUser>(dbName).Delete(r.UserID);
+                    result = db.GetCollection<WinnerUser>(dbName).FindAll().ToList();
+                    foreach(var r in result)
+                    {
+                        db.GetCollection<WinnerUser>(dbName).Delete(r.UserID);
+                        count++;
+                    }
                 }
+                return Ok(count);
             }
-            return Ok(result);
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw e;
+            }
         }
 
 
@@ -80,7 +133,7 @@ namespace BulletMessage.Controllers
         public IActionResult SaveWinners(SaveWinnerRequest request)
         {
             var dbName = "LuckyDrawWinners";
-            _logger.LogError(JsonConvert.SerializeObject(request));
+            _logger.LogInformation(JsonConvert.SerializeObject(request));
             // Open database (or create if doesn't exist)
             using (var db = new LiteDatabase(_pathDB))
             {

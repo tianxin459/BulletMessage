@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,6 +10,48 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
     <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
     <title>LuckyList</title>
+    <style>
+        table {
+            color: #333;
+            font-family: Helvetica, Arial, sans-serif;
+            width: 640px;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        td, th {
+            border: 1px solid transparent; /* No more visible border */
+            height: 30px;
+            transition: all 0.3s; /* Simple transition for hover effect */
+        }
+
+        th {
+            background: #007dc6; /* Darken header a bit */
+            color:white;
+            font-weight: bold;
+        }
+
+        td {
+            /*background: #FAFAFA;*/
+            text-align: center;
+        }
+
+        /* Cells in even rows (2,4,6...) are one color */
+        tr:nth-child(even) {
+            background: #dfebed;
+        }
+
+        /* Cells in odd rows (1,3,5...) are another (excludes header cells)  */
+        tr:nth-child(odd) {
+            background: #FEFEFE;
+        }
+
+        tr:hover {
+            background: #666;
+            color: #FFF;
+        }
+        /* Hover cell effect! */
+    </style>
 </head>
 
 <body>
@@ -29,10 +71,10 @@
 <script src="lib/globalConfig.js"></script>
 <script src="lib/common.js"></script>
 <script>
-    $(document).ready(() => {});
+    $(document).ready(() => { });
 
     var $table = $('#table');
-    $(function() {
+    $(function () {
         let data = getNameList().filter(x => x.selected);
         console.table(data);
 

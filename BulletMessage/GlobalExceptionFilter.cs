@@ -18,7 +18,7 @@ namespace BulletMessage
             logger = exceptionLogger;
         }
 
-        public void OnException(ExceptionContext context)
+        public new void OnException(ExceptionContext context)
         {
             HttpStatusCode status = HttpStatusCode.InternalServerError;
             String message = context.Exception.ToString();
@@ -29,6 +29,7 @@ namespace BulletMessage
             HttpResponse response = context.HttpContext.Response;
             response.StatusCode = (int)status;
             response.ContentType = "application/json";
+            //base.OnException(context);
             var err = message + " " + context.Exception.StackTrace;
             response.WriteAsync(err);
         }

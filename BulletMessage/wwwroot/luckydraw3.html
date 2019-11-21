@@ -84,7 +84,12 @@
         }
         curtainOn = !curtainOn;
     }
-
+    
+    function closeCurtain() {
+        $('.curtain-left').removeClass('move-left');
+        $('.curtain-right').removeClass('move-right');
+        curtainOn = true;
+    }
 
     function getLuckyDrawWinner() {
         return getRandomText();
@@ -107,44 +112,30 @@
             console.log(getNameList());
         }
     };
-
+    
+    
     let command = {
             reload: () => location.reload(),
             refreshnamelist: () => loadNameList(() => console.log('refresh list')),
             draw: () => draw(),
             startstop: () => toggleCurtain(),
             showprizetitle: (text) => {
+                console.log(text);
                 showTitle(text);
             },
-            hideprizetitle: () => {
-                $(".prize-title").removeClass('show-prize-title');
-                $(".prize-title").removeClass('hide-prize-title');
-                $(".prize-title").addClass('hide-prize-title');
-            },
+            hideprizetitle: () => hideTitle(),
             refreshprizeimg: (id) => {
                 $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+            },
+            switchtoprize: (id, count) => {
+                if (count) prizeTotal = count;
+                clearAll();
+                closeCurtain();
+                setTimeout(() => {
+                    $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
+                }, 1000);
             }
         }
-        // let command = {
-        //     refreshnamelist: () => loadNameList(() => console.log('refresh list')),
-        //     draw: () => draw(),
-        //     startstop: () => toggleCurtain(),
-        //     showprizetitle: (text) => {
-        //         $(".prize-title").text(text);
-        //         $(".prize-title").removeClass('show-prize-title');
-        //         $(".prize-title").removeClass('hide-prize-title');
-        //         $(".prize-title").addClass('show-prize-title');
-        //         // setTimeout(command['hideprizetitle'](), 6000);
-        //     },
-        //     hideprizetitle: () => {
-        //         $(".prize-title").removeClass('show-prize-title');
-        //         $(".prize-title").removeClass('hide-prize-title');
-        //         $(".prize-title").addClass('hide-prize-title');
-        //     },
-        //     refreshprizeimg: (id) => {
-        //         $(".prize-img").attr("src", `./Uploads/prize/${id}.jpg`);
-        //     }
-        // }
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
@@ -175,14 +166,24 @@
         })
         .build();
 
-    connection.on("Command", (user, message) => {
-        console.log('Command==>', message);
+connection.on("Command", (user, message) => {
+        console.log(message);
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
-        if (!command[cmdfun]) console.warn("no command:" + cmdfun);
-        else command[cmdfun](cmdarg);
-    });
+        let cmdarg2 = cmdstr.split(':')[2] || '';
+        console.log('Command===>',cmdfun, cmdarg, cmdarg2);
+        if (!command[cmdfun]) {
+            console.warn("no command:" + cmdfun);
+            return;
+        }
+        if (cmdarg2) {
+            command[cmdfun](cmdarg, cmdarg2);
+        }
+        else {
+            command[cmdfun](cmdarg);
+        }
+});
 
     connection.on("ReceiveMessage", (user, message) => {
         // addMsg(`${user}: ${message}`);
