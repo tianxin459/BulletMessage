@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="lib/global.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" type="text/css" href="luckydraw.css">
-    <link rel="stylesheet" type="text/css" href="node_modules/animate.css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/animate.css">
 
 
     <!-- <link rel="stylesheet" type="text/css" href="node_modules/jquery-slotmachine/dist/jquery.slotmachine.css" /> -->
@@ -34,7 +34,7 @@
         <div class="curtain-display">
             <div class="curtain-display-text prize-title">1</div>
         </div>
-    </div> 
+    </div>
     <div class="container2">
         <div class="prize-contrainer">
             <img class="prize-img" src="./Uploads/prize/1.jpg">
@@ -81,6 +81,7 @@
     let curtainOn = true;
     let prizeTotal = 15;
     let prizeCount = 0;
+
     function toggleCurtain() {
         if (curtainOn) {
 
@@ -103,6 +104,7 @@
         $('.curtain-front').removeClass('move-up');
         curtainOn = true;
     }
+
     function playAudioBg() {
         $('#audioBg')[0].play();
     }
@@ -150,7 +152,7 @@
             setTimeout(playAudioBg(), 4000);
             valList.forEach(w => {
                 console.log(w.userid);
-                notifyUser(w.userid,`Congratulations ${w.name}! you got the prize ${prizeText}`);
+                notifyUser(w.userid, `Congratulations ${w.name}! you got the prize ${prizeText}`);
             });
             // setNameSelected(valList[slotMachine.active].userid, true, prizeText);
             // valList[slotMachine.active].prize = prizeText;
@@ -184,7 +186,7 @@
         },
         switchtoprize: (id, count) => {
             if (count) prizeTotal = count;
-            console.log('prizeTotal',prizeTotal);
+            console.log('prizeTotal', prizeTotal);
             initList();
             closeCurtain();
             setTimeout(() => {
@@ -196,7 +198,7 @@
 <script type="text/javascript">
     $(document).ready(() => {
         $('#btnTest').click(() => {
-                notifyUser('w.userid',`Congratulations! you got the prize ${prizeText}`);
+            notifyUser('w.userid', `Congratulations! you got the prize ${prizeText}`);
             //command["switchtoprize"](2, 5);
             // ramdonList();
         });
@@ -232,22 +234,21 @@
             transport: signalR.HttpTransportType.WebSockets
         })
         .build();
-    
+
     connection.on("Command", (user, message) => {
         console.log(message);
         let cmdstr = message.replace(cmdPrefix, '');
         let cmdfun = cmdstr.split(':')[0];
         let cmdarg = cmdstr.split(':')[1] || '';
         let cmdarg2 = cmdstr.split(':')[2] || '';
-        console.log('Command===>',cmdfun, cmdarg, cmdarg2);
+        console.log('Command===>', cmdfun, cmdarg, cmdarg2);
         if (!command[cmdfun]) {
             console.warn("no command:" + cmdfun);
             return;
         }
         if (cmdarg2) {
             command[cmdfun](cmdarg, cmdarg2);
-        }
-        else {
+        } else {
             command[cmdfun](cmdarg);
         }
     });

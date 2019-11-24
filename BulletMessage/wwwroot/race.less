@@ -1,0 +1,149 @@
+body {
+    // transform-style: preserve-3d;
+    // perspective: 200px;
+}
+
+.track {
+    width: 100%;
+    height: 100%;
+    /* border: 1px solid green; */
+}
+
+@keyframes runnerHead {
+    from {
+        transform: translateY(-1px);
+        /* top: 19px; */
+    }
+
+    50% {
+        transform: translateY(1px);
+        /* top: 21px; */
+    }
+
+    to {
+        transform: translateY(-1px);
+        /* top: 19px; */
+    }
+}
+
+.runner {
+    position: absolute;
+    /* transition: all linear 0.1s; */
+    transform: translateZ(0);
+}
+
+.runner .running-head {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    border: 1px solid green;
+    box-shadow: 0 0 0 1px white;
+    border-radius: 50%;
+    animation-name: runnerHead;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+}
+
+.runner .running-body {
+    position: absolute;
+    top: 33px;
+    left: -5px;
+    width: 50px;
+}
+
+.runner .info {
+    color: gold;
+    font-size: 30px;
+    margin-right: 20px;
+    text-shadow: 1px 1px 20px white;
+}
+
+@keyframes nickNameAni {
+    0 {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.runner .nickName {
+    color: white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    /* animation: nickNameAni linear 5s infinite; */
+}
+
+.controlbar {
+    position: absolute;
+    color: yellow;
+    bottom: 50px;
+    right: 10px;
+    z-index: 9;
+    border: 2px solid;
+    padding: 5px;
+}
+
+.QRCode-container {
+    position: fixed;
+    margin: 0 auto;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: all 0.5s;
+
+    transform: rotateY(0deg);
+
+    .QRCode {
+        border-radius: 10px;
+        box-shadow: 20px 20px 20px;
+        border: 2px solid yellow;
+        width: 30vw;
+    }
+}
+
+.QRCode-hide {
+    animation: fadeOutUp 0.5s ease forwards;
+    // transform: rotateY(90deg);
+}
+
+.resultDisplay {
+    color: gold;
+    width: 100vw;
+    height: 100vh;
+    background: gainsboro;
+    position: absolute;
+    top: 0;
+    background-size: 50px 50px;
+    background: url('./static/img/logo.png');
+    /* background-size: 5%; */
+    background-color: #137ad4;
+    transition: 1s all;
+    animation: ani-bg 5s linear 0s infinite;
+
+    .ranking {
+        position: absolute;
+        left: 10%;
+        top: 20%;
+        text-shadow: 1px 1px 1px red;
+    }
+}
+
+@keyframes ani-bg {
+    0% {
+        background-position: 0px 0px;
+    }
+
+    100% {
+        background-position: -200px 200px;
+    }
+}

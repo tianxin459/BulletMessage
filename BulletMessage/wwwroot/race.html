@@ -3,12 +3,15 @@
 
 <head>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="lib/race.css">
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="race.css">
+    <link rel="stylesheet" type="text/css" href="lib/animate.css">
     <title>race</title>
     <style>
         body {
             height: 100vh;
+            margin: 0;
+            padding: 0;
         }
         
         .track {
@@ -44,6 +47,8 @@
         
         .finishGame {
             display: none;
+            text-shadow: 1px 1px 1px black;
+            z-index: 9;
         }
         
         .c1,
@@ -116,10 +121,6 @@
         #audioBg {
             display: none;
         }
-        
-        .controlbar {
-            display: none;
-        }
     </style>
 </head>
 
@@ -132,6 +133,7 @@
             <button id="btnSubmit">Submit</button>
             <button id="btnStartRace">StartRace</button>
             <button id="btnFinish">finishRace</button>
+            <button id="btnTest">Test</button>
         </div>
         <div>
             <audio id="audioBg" controls loop>
@@ -162,7 +164,11 @@
         <div class="finishLine"></div>
     </div>
     <div class="resultDisplay">
-        <div class="ranking"></div>
+        <ol class="ranking"></ol>
+    </div>
+
+    <div class="QRCode-container">
+        <image class="QRCode" src="static/img/qr-running-client.jpg" title="qr code" />
     </div>
 </body>
 
@@ -180,21 +186,32 @@
     let finishLinePos, startLinePos, finishDistant;
     let reportSend = false;
     let racerList = [];
+    let winnerTop = 10;
 
     let raceStarted = false;
 
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl(urlRace+"?eventid=100", {
+        .withUrl(urlRace + "?eventid=100", {
             skipNegotiation: true,
             transport: signalR.HttpTransportType.WebSockets,
-            headers: [{"eventid":"dddd"}]
+            headers: [{
+                "eventid": "dddd"
+            }]
         })
         .build();
 
     $('document').ready(() => {
-        //connection.Headers.Add("eventid", "testEventid");
-        connection.qs = { "eventid" : 'tokenValue' };
+        $('.resultDisplay').hide();
+        if (location.search.indexOf('debug=true') > -1) {
+            $('.controlbar').show();
+        } else {
+            $('.controlbar').hide();
+        }
+
+        connection.qs = {
+            "eventid": 'tokenValue'
+        };
         connection
             .start()
             .catch(err => {
@@ -218,6 +235,10 @@
                 .catch(err => console.error(err));
             e.preventDefault();
         })
+
+        $('#btnTest').click(e => {
+            $('.QRCode-container').addClass('QRCode-hide');
+        });
     });
 
     var listRunner = new Set();
@@ -337,33 +358,9 @@
             connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
                 .catch(err => console.error(err));
 
-            if (listFinish.size > 10 || listFinish.size == listRunner.size) {
-                $('.finishGame').show();
-                if (listFinish.size >= 10) {
-                    runner.css("display", "none");
-                }
-                if (!reportSend) {
-                    let resultUrl = apiRace + "/result";
-                    let listData = Array.from(listFinish)
-                    let resultStr = JSON.stringify(listData);
-                    // resultStr = resultStr.replace('"', '\"');
-                    data = {
-                        Value: resultStr
-                    };
-                    console.log('send report', data);
-                    reportSend = true;
-
-                    $.ajax({
-                        url: resultUrl,
-                        type: "POST",
-                        data: JSON.stringify(data),
-                        contentType: "application/json",
-                        dataType: "json",
-                        success: resp => {
-                            console.log(resp);
-                        }
-                    });
-                }
+            if (listFinish.size > winnerTop || listFinish.size == listRunner.size) {
+                runner.css("display", "none");
+                finishRace();
                 // return;
             }
         } else {
@@ -409,10 +406,13 @@
             .catch(err => console.error(err));
     }
 
+
     startRace = () => {
         console.log('startRace');
         if (raceStarted) return;
         raceStarted = true;
+
+        $('.QRCode-container').addClass('QRCode-hide');
         $('.showStart').addClass('show');
         let countI = 1;
         let si = setInterval(() => {
@@ -432,6 +432,44 @@
             cd.addClass('aniBig');
             countI++;
         }, 1000)
+    }
 
+    function finishRace() {
+        $('.finishGame').show();
+        setTimeout(() => {
+            $('.resultDisplay').show();
+            $('.track').hide();
+        }, 1000);
+        let resultDiv = $('.resultDisplay .ranking');
+        [...listFinish].forEach(winnerName => {
+            let strWinner =
+                ` <li id="${parseName(winnerName)}">${parseName(winnerName)}</li>`;
+            let winner = $(strWinner);
+            resultDiv.append(winner);
+        });
+
+
+        if (!reportSend) {
+            let resultUrl = apiRace + "/result";
+            let listData = Array.from(listFinish)
+            let resultStr = JSON.stringify(listData);
+            // resultStr = resultStr.replace('"', '\"');
+            data = {
+                Value: resultStr
+            };
+            console.log('send report', data);
+            reportSend = true;
+
+            $.ajax({
+                url: resultUrl,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: resp => {
+                    console.log(resp);
+                }
+            });
+        }
     }
 </script>
