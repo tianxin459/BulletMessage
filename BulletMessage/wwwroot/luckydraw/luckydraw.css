@@ -1,0 +1,193 @@
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: url("static/img/background/bg.jpg");
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  perspective-origin: center;
+  padding: 0;
+}
+.container .blur {
+  filter: blur(5px);
+}
+.bulletImg {
+  height: 30vh;
+  border: 1px solid black;
+  box-shadow: 0 0 0 1px white;
+}
+.logo {
+  z-index: 1000;
+  position: absolute;
+  top: 70px;
+  left: 70px;
+  width: 100px;
+  height: 100px;
+  display: none;
+}
+.curtain {
+  width: 100%;
+  z-index: 999;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.curtain .curtain-left,
+.curtain .curtain-right {
+  background: green;
+  /*border:1px solid yellow;*/
+  transition: all 1s;
+  transform: translateX(0);
+  background: url("static/img/background/curtain2.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.curtain .curtain-left {
+  background-position: left;
+}
+.curtain .curtain-right {
+  background-position: right;
+}
+.curtain .curtain-front,
+.curtain .curtain-display {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: all 1.5s;
+}
+.curtain .curtain-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.curtain .curtain-display .curtain-display-text {
+  opacity: 0;
+  color: #FFE419;
+  font-size: 200px;
+  text-shadow: 1px 1px 0 #383838, 2px 2px 0 #383838, 3px 3px 0 #383838, 4px 4px 0 #383838, 5px 5px 0 #383838;
+}
+.curtain .move-left {
+  transform: translateX(-100%);
+  /*animation:ani-move-left 1s ease forwards;*/
+}
+.curtain .move-right {
+  transform: translateX(100%);
+  /*animation:ani-move-right 1s ease forwards;*/
+}
+.curtain .move-up {
+  transform: translateY(-120%);
+  /*animation:ani-move-right 1s ease forwards;*/
+}
+/*//--------------------------------------*/
+.controlbar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  border: 1px solid yellow;
+}
+/*----------------------------------------*/
+.show-prize-title {
+  animation: rollIn 0.5s ease forwards;
+}
+.hide-prize-title {
+  animation: rollOut 0.5s ease forwards;
+}
+.prize-contrainer {
+  width: 350px;
+  height: 450px;
+  transition: 0.5s all;
+  transform: translateX(0) rotateY(0deg);
+  position: relative;
+}
+.prize-contrainer .prize-img {
+  transition: 0.5s all;
+  height: 100%;
+  width: 100%;
+  border: 2px solid silver;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px black;
+}
+.move-aside {
+  transform: translateX(200%) rotateY(-35deg);
+}
+#canvas {
+  position: absolute;
+  width: 80%;
+}
+#machine {
+  overflow: hidden;
+  transition: all 0.1s;
+  height: 55px;
+  font-size: 40px;
+  border: 2px solid silver;
+  margin-top: 20px;
+  width: 400px;
+  text-align: center;
+  color: yellow;
+  text-shadow: 3px -2px 1px black;
+}
+.winner-container {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  z-index: 2;
+  color: yellow;
+  text-shadow: 3px -2px 1px black;
+  font-size: 25px;
+  width: 60%;
+  margin: 0 auto;
+  height: 70%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: repeat(15, 1fr);
+}
+.container2 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: url("static/img/background/bg1.jpg");
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  perspective-origin: center;
+  padding: 0;
+  transition: 0.5s all;
+}
+.container2 .blur {
+  filter: blur(5px);
+}
+.container2 .winner-container2 {
+  display: flex;
+  width: 100px;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 2;
+  color: yellow;
+  text-shadow: 3px -2px 1px black;
+  font-size: 25px;
+  margin-left: 50px;
+  height: 70%;
+  transition: all 1s;
+}
+.container2 .winner-container2.showList {
+  width: 400px;
+}
+.container2 .winner-container2 .name {
+  white-space: nowrap;
+}

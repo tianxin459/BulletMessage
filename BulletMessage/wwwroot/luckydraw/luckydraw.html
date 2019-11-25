@@ -3,20 +3,16 @@
 
 <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="lib/global.css">
+    <link rel="stylesheet" type="text/css" href="static/animate.css">
+    <link rel="stylesheet" type="text/css" href="static/global.css">
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" type="text/css" href="luckydraw.css">
-    <link rel="stylesheet" type="text/css" href="lib/animate.css">
-
-
-    <!-- <link rel="stylesheet" type="text/css" href="node_modules/jquery-slotmachine/dist/jquery.slotmachine.css" /> -->
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
     <script type="text/javascript" src="lib/jquery.js"></script>
     <title>LuckyDraw</title>
 </head>
 
 <body>
-    <div class="control">
+    <div class="controlbar">
         <button id="btnTest">test</button>
         <button id="btnOpenClose">open/close</button>
         <button id="btnDraw">LuckyDraw</button>
@@ -40,28 +36,22 @@
         <div class="winner-container2">
 
         </div>
-        <!-- <div id="machine">
-            <div class="item0">gogogo</div>
-            <div class="item1">222</div>
-            <div class="item2">222</div>
-            <div class="item3">222</div>
-        </div> -->
     </div>
 
     <audio id="audioStart" controls preload="auto">
-        <source src="./static/music/open.mp3" type="audio/mp3">
+        <source src="static/music/open.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
     <audio id="audioBg" controls preload="auto" loop>
-        <source src="./static//music/bg.mp3" type="audio/mp3">
+        <source src="static/music/bg.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
     <audio id="audioRolling" controls preload="auto" loop>
-        <source src="./static//music/rolling.m4a" type="audio/mp3">
+        <source src="static/music/rolling.m4a" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
     <audio id="audioWinning" controls preload="auto">
-        <source src="./static//music/winning.mp3" type="audio/mp3">
+        <source src="static/music/winning2.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 </body>
@@ -72,6 +62,11 @@
 <script src="lib/common.js"></script>
 <script>
     $(document).ready(() => {
+        if (location.search.indexOf('debug=true') > -1) {
+            $('.controlbar').show();
+        } else {
+            $('.controlbar').hide();
+        }
         makesureNameList();
     });
 </script>
@@ -82,15 +77,16 @@
 
     function toggleCurtain() {
         if (curtainOn) {
-
             $('#audioStart')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
             $('.curtain-front').addClass('move-up');
+            $('.winner-container2').addClass('showList');
         } else {
             $('.curtain-left').removeClass('move-left');
             $('.curtain-right').removeClass('move-right');
             $('.curtain-front').removeClass('move-up');
+            $('.winner-container2').removeClass('showList');
         }
         curtainOn = !curtainOn;
     }
@@ -100,6 +96,7 @@
         $('.curtain-left').removeClass('move-left');
         $('.curtain-right').removeClass('move-right');
         $('.curtain-front').removeClass('move-up');
+        $('.winner-container2').removeClass('showList');
         curtainOn = true;
     }
 
@@ -152,10 +149,7 @@
                 console.log(w.userid);
                 notifyUser(w.userid, `Congratulations ${w.name}! you got the prize ${prizeText}`);
             });
-            // setNameSelected(valList[slotMachine.active].userid, true, prizeText);
-            // valList[slotMachine.active].prize = prizeText;
             saveWinner(valList, prizeText);
-            console.info(slotMachine.active, valList[slotMachine.active]);
         }
     };
 
@@ -390,6 +384,7 @@
     let slotMachine;
     let valList = [];
     $(document).ready(() => {
+
         $('#btnDraw').click(e => {
             draw();
         })
