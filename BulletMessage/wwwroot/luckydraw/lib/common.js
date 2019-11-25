@@ -77,9 +77,9 @@ function saveWinner(winnerList, prize) {
 }
 
 
-function getLuckyDraw() {
+function getLuckyDraw(existList) {
     let nameList = getNameList();
-    let nameListFree = nameList.filter(x => !x.selected);
+    let nameListFree = nameList.filter(x => !x.selected && !existList.some(exist => exist.userid == x.userid));
     if (nameListFree.length == 0) return {
         "userid": "0",
         "name": "",
@@ -99,18 +99,18 @@ function getWinnerName() {
     return winner.Name; //`${winner.Name} + ${winner.Department}`;
 }
 
-function getWinner() {
-    return getLuckyDraw();
+function getWinner(existList) {
+    return getLuckyDraw(existList);
 }
 
-function notifyUser(userid,message) {
-    let debug=true;
+function notifyUser(userid, message) {
+    let debug = true;
     // debug = (location.search.indexOf('debug=true')>-1)
-    if(debug)userid = 'e0t00nk';
+    if (debug) userid = 'e0t00nk';
     let notifyUrl = `https://extgst.walmart.com/WeChatSSO/wechat/sendmessage?corpId=ww2736b20d7a3be388&corpSecret=5qrZWBSWFW4CTpexor_NDkRkYBRvrqZ_iSvBg_Dj-ds&appid=1000141&userid=${userid}&message=${message}`
-        $.get(notifyUrl, function(data, status){
-            console.log('notify user',userid,message)
-        });
+    $.get(notifyUrl, function(data, status) {
+        console.log('notify user', userid, message)
+    });
 }
 
 //----------------------Command------------------------

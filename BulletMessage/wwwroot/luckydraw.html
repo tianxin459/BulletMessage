@@ -123,7 +123,7 @@
     function ramdonList() {
         valList.length = 0;
         for (let i = 0; i < prizeTotal; i++) {
-            let nameObj = getWinner()
+            let nameObj = getWinner(valList);
             valList.push(nameObj);
             $(`.item${i}`).text(`${nameObj.name} (${nameObj.department})`);
         }

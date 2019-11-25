@@ -51,7 +51,7 @@
         Your browser does not support the audio element.
     </audio>
     <audio id="audioWinning" controls preload="auto">
-        <source src="static/music/winning2.mp3" type="audio/mp3">
+        <source src="static/music/winning.m4a" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 </body>
@@ -68,6 +68,11 @@
             $('.controlbar').hide();
         }
         makesureNameList();
+
+        $('body').click(() => {
+            console.log('go');
+            $('#audioBg')[0].play();
+        });
     });
 </script>
 <script type="text/javascript">
@@ -77,7 +82,7 @@
 
     function toggleCurtain() {
         if (curtainOn) {
-            $('#audioStart')[0].play();
+            $('#audioBg')[0].play();
             $('.curtain-left').addClass('move-left');
             $('.curtain-right').addClass('move-right');
             $('.curtain-front').addClass('move-up');
@@ -101,11 +106,30 @@
     }
 
     function playAudioBg() {
-        $('#audioBg')[0].play();
+        let bgMusic = $('#audioBg')[0];
+        bgMusic.play();
+        let v = bgMusic.volume;
+        let t = setInterval(function() {
+            v += 0.1;
+            if (v <= 1) {
+                bgMusic.volume = v;
+            } else {
+                clearInterval(t);
+            }
+        }, 200);
     }
 
     function stopAudioBg() {
-        $('#audioBg')[0].pause();
+        let bgMusic = $('#audioBg')[0];
+        let v = bgMusic.volume;
+        let t = setInterval(function() {
+            v -= 0.1;
+            if (v > 0.5) {
+                bgMusic.volume = v;
+            } else {
+                clearInterval(t);
+            }
+        }, 200);
     }
 
     function initList(count) {
@@ -120,7 +144,7 @@
     function ramdonList() {
         valList.length = 0;
         for (let i = 0; i < prizeTotal; i++) {
-            let nameObj = getWinner()
+            let nameObj = getWinner(valList);
             valList.push(nameObj);
             $(`.item${i}`).text(`${nameObj.name} (${nameObj.department})`);
         }
@@ -128,25 +152,29 @@
 
 
     function draw() {
-        counting = !counting;
-        if (counting) {
+        if ($('.winner-container2').children().length == 0) {
+            console.log('candidate list empty');
+            return;
+        }
+        if (!counting) {
+            counting = true;
             stopAudioBg();
             iroller = setInterval(() => {
                 ramdonList();
-                // let rd = getRandomText();
-                // valList.length = 0;
-                // valList.push(getWinner());
-                // valList.push(getWinner());
-                // valList.push(getWinner());
-                // valList.push(getWinner());
-            }, 10);
+            }, 100);
             $("#audioRolling")[0].play();
         } else {
             clearInterval(iroller);
+            //throttle
+            setTimeout(() => {
+                counting = false;
+            }, 5000);
             $("#audioRolling")[0].pause();
-            setTimeout(playAudioBg(), 4000);
+            $("#audioWinning")[0].play();
+            setTimeout(playAudioBg, 3000);
             valList.forEach(w => {
                 console.log(w.userid);
+                setNameSelected(w.userid, true, prizeText);
                 notifyUser(w.userid, `Congratulations ${w.name}! you got the prize ${prizeText}`);
             });
             saveWinner(valList, prizeText);
@@ -189,8 +217,12 @@
 </script>
 <script type="text/javascript">
     $(document).ready(() => {
+        let flagTest = false
         $('#btnTest').click(() => {
-            notifyUser('w.userid', `Congratulations! you got the prize ${prizeText}`);
+            // notifyUser('w.userid', `Congratulations! you got the prize ${prizeText}`);
+
+            // stopAudioBg();
+
             //command["switchtoprize"](2, 5);
             // ramdonList();
         });
