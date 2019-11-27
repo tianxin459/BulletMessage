@@ -200,3 +200,16 @@ body button {
 .container2 .winner-container2 .name {
   white-space: nowrap;
 }
+.container2 .winner-container2 .name.total-1 {
+  font-size: 90px;
+  white-space: pre-line;
+}
+.container2 .winner-container2 .name.total-3 {
+  font-size: 70px;
+}
+.container2 .winner-container2 .name.total-5 {
+  font-size: 50px;
+}
+.container2 .winner-container2 .name.total-15 {
+  font-size: 25px;
+}

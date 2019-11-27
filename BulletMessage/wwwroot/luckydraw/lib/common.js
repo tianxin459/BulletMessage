@@ -28,6 +28,7 @@ function loadNameList(cb) {
     $.getJSON("./resource/list.json",
         result => {
             localStorage.setItem(key_nameList, JSON.stringify(result));
+            clearWinnerNameList();
             console.log('name list loaded');
             cb(result);
         });
@@ -44,6 +45,21 @@ function setNameList(nameList) {
 function getNameList() {
     let resp = localStorage.getItem(key_nameList);
     return JSON.parse(resp);
+}
+
+function getWinnerNameList(cb) {
+    let winnerUrl = URLBASE + "/api/DB/winners";
+    $.get(winnerUrl, function(data, status) {
+        cb(data);
+    });
+}
+
+
+function clearWinnerNameList(cb) {
+    let targetUrl = URLBASE + "/api/DB/ClearWinners";
+    $.post(targetUrl, function(data, status) {
+        if (cb) cb(data);
+    });
 }
 
 function setNameSelected(userID, flag, prize) {

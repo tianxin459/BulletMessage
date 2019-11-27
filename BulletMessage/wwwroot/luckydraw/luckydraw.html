@@ -108,35 +108,36 @@
     function playAudioBg() {
         let bgMusic = $('#audioBg')[0];
         bgMusic.play();
-        let v = bgMusic.volume;
-        let t = setInterval(function() {
-            v += 0.1;
-            if (v <= 1) {
-                bgMusic.volume = v;
-            } else {
-                clearInterval(t);
-            }
-        }, 200);
+        // let v = bgMusic.volume;
+        // let t = setInterval(function() {
+        //     v += 0.1;
+        //     if (v <= 1) {
+        //         bgMusic.volume = v;
+        //     } else {
+        //         clearInterval(t);
+        //     }
+        // }, 200);
     }
 
     function stopAudioBg() {
         let bgMusic = $('#audioBg')[0];
-        let v = bgMusic.volume;
-        let t = setInterval(function() {
-            v -= 0.1;
-            if (v > 0.5) {
-                bgMusic.volume = v;
-            } else {
-                clearInterval(t);
-            }
-        }, 200);
+        bgMusic.pause();
+        // let v = bgMusic.volume;
+        // let t = setInterval(function() {
+        //     v -= 0.1;
+        //     if (v > 0.5) {
+        //         bgMusic.volume = v;
+        //     } else {
+        //         clearInterval(t);
+        //     }
+        // }, 200);
     }
 
     function initList(count) {
         let container = $('.winner-container2');
         container.empty();
         for (let i = 0; i < prizeTotal; i++) {
-            let n = $(`<div class="name item${i}">???????</div>`);
+            let n = $(`<div class="name item${i} total-${prizeTotal}">???????</div>`);
             container.append(n);
         }
     }
@@ -146,7 +147,7 @@
         for (let i = 0; i < prizeTotal; i++) {
             let nameObj = getWinner(valList);
             valList.push(nameObj);
-            $(`.item${i}`).text(`${nameObj.name} (${nameObj.department})`);
+            $(`.item${i}`).text(`${nameObj.name}`);
         }
     }
 
