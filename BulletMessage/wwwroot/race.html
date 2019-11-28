@@ -35,8 +35,6 @@
         .showStart,
         .finishGame {
             position: fixed;
-            top: 40%;
-            left: 40%;
             font-weight: bolder;
             font-size: 100px;
             display: none;
@@ -45,7 +43,14 @@
             box-shadow: 0 0 0 2px black; */
         }
         
+        .showStart {
+            top: 40%;
+            left: 40%;
+        }
+        
         .finishGame {
+            top: 20%;
+            right: 10%;
             display: none;
             text-shadow: 1px 1px 1px black;
             z-index: 9;
@@ -136,17 +141,19 @@
             <button id="btnTest">Test</button>
         </div>
         <div>
-            <audio id="audioBg" controls loop>
+            <audio id="audioBg" loop>
                 <source src="static/music/12_bar_bot_funfair_remix.mp3" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
+            <audio id="audioCountDown">
+                <source src="static/music/countdown.m4a" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+            <audio id="audioWin">
+                <source src="static/music/win.m4a" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
         </div>
-        <!-- <div id="ee" class="runner finishRun">
-            <div class="nickName">ellis</div>
-            <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
-            <image class="running-head" src="https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg"></image>
-            <div class="info"></div>
-        </div>  -->
     </div>
     <div class="showStart">
         <div class="c1">3</div>
@@ -162,6 +169,17 @@
     <div class="track">
         <div class="startLine"></div>
         <div class="finishLine"></div>
+
+        <div class="resultDisplay2">
+            <ol class="ranking"></ol>
+        </div>
+        <!-- <div id="ee" class="runner finishRun">
+            <div class="nickName">ellis</div>
+            <image class="running-body" src="static/img/running1.gif" title="this slowpoke moves" />
+            <image class="running-head" src="https://www.pymnts.com/wp-content/uploads/2014/12/green-dot-logo.jpg">
+            </image>
+            <div class="info"></div>
+        </div> -->
     </div>
     <div class="resultDisplay">
         <ol class="ranking"></ol>
@@ -241,11 +259,12 @@
         });
     });
 
-    var listRunner = new Set();
-    var listFinish = new Set();
+    let listRunner = new Set();
+    let listFinish = new Set();
+    let listWinner = [];
 
     connection.on("ReceiveMessage", (userId, message) => {
-        console.log("ReceiveMessage", userId, message);
+        // console.log("ReceiveMessage", userId, message);
         let distant = parseInt(message, 10)
         if (!!distant) {
             moveRunner(userId, distant);
@@ -263,10 +282,11 @@
     connection.on("SetRacer", (userId, avatorUrl, message, englishName) => {
         let distant = parseInt(message, 10)
         if (listRunner.has(userId)) {
-            console.log("moveRacer", userId, message);
+            // console.log("moveRacer", userId, message);
             moveRunner(userId, distant)
         } else {
             listRunner.add(userId);
+            avatorUrl = avatorUrl.replace(/\/\d{1,3}$/, '/46');
             console.log("SetRacer", userId, avatorUrl, message, englishName);
             setRacer(userId, avatorUrl, distant, englishName);
         }
@@ -347,6 +367,12 @@
         if (position > finishDistant) {
             console.log('listFinish', listFinish.size);
             listFinish.add(name);
+            let selectorStr = `#${name} .nickName`;
+            let engName = $(selectorStr).text();
+            listWinner.push({
+                name: name,
+                englishName: engName
+            });
 
             runner.removeClass("stage3");
             runner.addClass('finishRun');
@@ -358,11 +384,12 @@
             connection.invoke("FinishRun", name, 'finish at ' + listFinish.size)
                 .catch(err => console.error(err));
 
-            if (listFinish.size > winnerTop || listFinish.size == listRunner.size) {
+            if (listFinish.size >= winnerTop || listFinish.size == listRunner.size) {
                 runner.css("display", "none");
                 finishRace();
                 // return;
             }
+            $('#audioWin')[0].play();
         } else {
             position = position + parseInt(distant);
             let transformText = `translateX(${position}px) translateZ(${position}px)`;
@@ -396,6 +423,9 @@
         $('#btnFinish').click(() => {
             endRace();
         });
+        $('body').click(() => {
+            $('#audioBg')[0].play();
+        })
     });
 
     endRace = () => {
@@ -431,21 +461,27 @@
             let cd = $('.showStart > .c' + countI);
             cd.addClass('aniBig');
             countI++;
-        }, 1000)
+        }, 1000);
+        $('#audioCountDown')[0].play();
     }
 
     function finishRace() {
+        isRacing = false;
         $('.finishGame').show();
+        console.table(listWinner);
         setTimeout(() => {
             $('.resultDisplay').show();
             $('.track').hide();
         }, 1000);
         let resultDiv = $('.resultDisplay .ranking');
-        [...listFinish].forEach(winnerName => {
+        let resultDiv2 = $('.resultDisplay2 .ranking');
+        listWinner.forEach(winnerName => {
             let strWinner =
-                ` <li id="${parseName(winnerName)}">${parseName(winnerName)}</li>`;
+                ` <li id="${parseName(winnerName.name)}">${winnerName.englishName}(${parseName(winnerName.name)})</li>`;
             let winner = $(strWinner);
+            let winner2 = $(strWinner);
             resultDiv.append(winner);
+            resultDiv2.append(winner2);
         });
 
 
