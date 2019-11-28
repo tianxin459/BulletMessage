@@ -187,8 +187,8 @@ body button {
   justify-content: center;
   flex-direction: column;
   z-index: 2;
-  color: yellow;
-  text-shadow: 3px -2px 1px black;
+  color: #CB0400;
+  text-shadow: 3px -2px 1px white;
   font-size: 25px;
   margin-left: 50px;
   height: 70%;
