@@ -26,5 +26,7 @@ namespace BulletMessage.Contract.Model
         public string Department { get; set; }
         [DataMember(Name = "eventid")]
         public string EventId { get; set; }
+        [DataMember(Name = "claimed")]
+        public bool Claimed { get; set; } = false;
     }
 }
